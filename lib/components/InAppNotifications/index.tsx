@@ -4,31 +4,54 @@ import { Avatar, Badge, Button, List, Popover, Typography } from "antd";
 import {
   BellOutlined,
   CheckCircleOutlined,
-  LoadingOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 import { api } from "../../api";
 import VirtualList from "rc-virtual-list";
+import styled from "styled-components";
 
-export enum InAppNotificationType {
+const NotificationDiv = styled.div<{
+  seen: boolean;
+  redirect: boolean;
+}>`
+  cursor: ${(props) => (props.redirect ? "pointer" : "default")};
+
+  &:hover {
+    background: red;
+  }
+`;
+
+export enum Type {
   CORNER = "CORNER",
   POPUP = "POPUP",
   INLINE = "INLINE",
 }
 
+export enum Pagination {
+  INFINITE_SCROLL = "infinite_scroll",
+  PAGINATED = "paginated",
+}
+
+export enum ImageShape {
+  square = "square",
+  circle = "circle",
+}
+
 export type InAppNotificationsProps = {
-  type?: InAppNotificationType;
-  width?: number | string;
-  maxHeight?: number | string;
+  type?: keyof typeof Type;
+  buttonWidth?: number;
+  buttonHeight?: number;
+  buttonIcon?: React.ReactNode;
+  width?: number;
+  maxHeight?: number;
   unreadCountOffset?: [number, number];
-  loadingAnimation?: boolean | React.ReactNode;
-  imageShape?: "circle" | "square";
-  pagination: "infinite_scroll" | "paginated";
-  callbacks?: {
-    onWebsocketConnected?: () => any;
-    onWebsocketDisconnected?: () => any;
-    onNewNotification?: (notification: any) => any;
-  };
+  imageShape?: keyof typeof ImageShape;
+  pagination?: keyof typeof Pagination;
+  pageSize?: number;
+  pagePosition?: "top" | "bottom";
+  onWebsocketConnected?: () => any;
+  onWebsocketDisconnected?: () => any;
+  onNewNotification?: (notification: any) => any;
 };
 
 interface WS_NewNotification {
@@ -40,30 +63,38 @@ interface WS_NewNotification {
 
 export function InAppNotifications(props: InAppNotificationsProps) {
   // defaults
-  const type = props.type ?? InAppNotificationType.CORNER;
-  const width = props.width ?? 320;
-  const maxHeight = props.maxHeight ?? 600;
-  const unreadCountOffset =
-    props.unreadCountOffset ??
-    (type === InAppNotificationType.CORNER ? [-6, 5] : [-8, 7]);
-  const loadingAnimation =
-    props.loadingAnimation === true || props.loadingAnimation === undefined ? (
-      <LoadingOutlined />
-    ) : (
-      props.loadingAnimation
-    );
-  const imageShape = props.imageShape ?? "circle";
-  const pagination = props.pagination ?? "infinite_scroll";
-  const onWebSocketOpen =
-    props.callbacks?.onWebsocketConnected ??
-    ((websocket: WebSocket) => {
-      console.log("Connected");
-      return websocket;
-    });
+  const defaultConfigs: Required<InAppNotificationsProps> = {
+    type: Type.CORNER,
+    buttonWidth: props.type === Type.POPUP ? 32 : 48,
+    buttonHeight: props.type === Type.POPUP ? 32 : 48,
+    buttonIcon: <BellOutlined />,
+    width: 320,
+    maxHeight: 600,
+    unreadCountOffset: props.type === Type.CORNER ? [-6, 5] : [-8, 7],
+    imageShape: "circle",
+    pagination: "INFINITE_SCROLL",
+    pageSize: 5,
+    pagePosition: "top",
+    onWebsocketConnected: () => {},
+    onWebsocketDisconnected: () => {},
+    onNewNotification: () => {},
+  };
+
+  const config = {
+    ...defaultConfigs,
+    ...props,
+  };
 
   // states
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState<number | undefined>();
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [oldestNotificationDate, setOldestNotificationDate] = useState<string>(
+    new Date().toISOString()
+  );
+  const [loadingNotifications, setLoadingNotifications] =
+    useState<boolean>(false);
+
   const context = useContext(NotificationAPIContext);
 
   if (!context) {
@@ -95,35 +126,62 @@ export function InAppNotifications(props: InAppNotificationsProps) {
     return res.notifications;
   };
 
-  const fetchLastNotifications = async (max: number): Promise<any[]> => {
+  const fetchNotificationsBeforeDate = async (
+    count: number,
+    before: string
+  ): Promise<{
+    notifications: any[];
+    couldLoadMore: boolean;
+    nextBefore: string;
+  }> => {
     let result: any[] = [];
-    let count = 0;
-    let before = new Date().toISOString();
+    let couldLoadMore = true;
+    let nextBefore = before;
     do {
-      const res = await getNotifications(1000, new Date(before).getTime());
-      const newRes = res.filter((n) => !result.find((nn) => nn.id === n.id));
-      count = newRes.length;
-      before = res.reduce((min, n) => (min < n.date ? min : n.date), before);
-      result = [
-        ...result,
-        ...res.filter((n) => !result.find((nn) => nn.id === n.id)),
-      ];
+      const notis = await getNotifications(
+        count,
+        new Date(nextBefore).getTime()
+      );
+      const notisWithoutDuplicates = notis.filter(
+        (n: any) => !result.find((nn) => nn.id === n.id)
+      );
+      nextBefore = notisWithoutDuplicates.reduce(
+        (min: string, n: any) => (min < n.date ? min : n.date),
+        oldestNotificationDate
+      );
+      result = [...result, ...notisWithoutDuplicates];
 
-      console.log(count, before);
-    } while (count > 100000 && result.length < max);
-    return result;
+      couldLoadMore = notisWithoutDuplicates.length > 0;
+    } while (couldLoadMore && result.length < count);
+    return {
+      notifications: result,
+      couldLoadMore,
+      nextBefore,
+    };
+  };
+
+  const loadMoreNotifications = async () => {
+    if (!hasMore) return;
+    if (loadingNotifications) return;
+    setLoadingNotifications(true);
+    const res = await fetchNotificationsBeforeDate(
+      1000,
+      oldestNotificationDate
+    );
+    setOldestNotificationDate(res.nextBefore);
+    setHasMore(res.couldLoadMore);
+    addNotificationsToState(res.notifications);
+    setLoadingNotifications(false);
   };
 
   useEffect(() => {
-    fetchLastNotifications(1000).then((res) => {
-      addNotificationsToState(res);
-    });
+    loadMoreNotifications();
 
     const websocket = new WebSocket(
       `${context.wsURL}?userId=${context.userId}&envId=${context.clientId}`
     );
 
-    websocket.onopen = () => onWebSocketOpen(websocket);
+    websocket.onopen = () => config.onWebsocketConnected();
     websocket.onmessage = (m) => {
       console.log("WebSocket message", m);
 
@@ -155,26 +213,47 @@ export function InAppNotifications(props: InAppNotificationsProps) {
     setUnreadCount(newUnreadState);
   };
 
-  const Notification = (props: { notification: any }) => {
+  const Notification = ({ notification }: { notification: any }) => {
     return (
-      <div
+      <NotificationDiv
+        seen={notification.seen}
+        redirect={notification.redirectURL}
         style={{
-          display: "grid",
-          gridTemplateColumns: "auto 1fr",
-          padding: "4px 0",
-          background: props.notification.read ? "#f0f0f0" : "white",
+          padding: "16px 6px 16px 0",
+          background: "#fff",
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
         }}
       >
-        <Avatar
-          src={props.notification.imageURL}
-          size="large"
+        <div>
+          <Avatar
+            src={notification.imageURL}
+            size="large"
+            style={{
+              marginRight: 8,
+            }}
+            shape={config.imageShape}
+          />
+        </div>
+
+        <div
           style={{
-            marginRight: 8,
+            flexGrow: 1,
           }}
-          shape={imageShape}
+        >
+          <Typography.Text>{notification.title}</Typography.Text>
+        </div>
+
+        <Badge
+          dot
+          style={{
+            marginRight: 6,
+            marginTop: 6,
+          }}
         />
-        <Typography.Text>{props.notification.title}</Typography.Text>
-      </div>
+      </NotificationDiv>
     );
   };
 
@@ -199,78 +278,73 @@ export function InAppNotifications(props: InAppNotificationsProps) {
     );
   };
 
-  const InboxInfiniteScroll = (props: {
-    children: React.ReactNode;
-  }): JSX.Element => {
-    if (pagination === "infinite_scroll") {
-      return (
-        <VirtualList
-          data={notifications}
-          height={maxHeight}
-          itemKey="id"
-          onScroll={() => {
-            console.log("scrolled");
-          }}
-        >
-          {props.children}
-        </VirtualList>
-      );
-    } else {
-      return <>{props.children}</>;
-    }
-  };
-
   const Inbox = (notifications: any[]) => {
     return (
       <div
         style={{
-          width,
+          width: config.width,
           borderRadius: 8,
           background: "#fff",
-          padding: type === InAppNotificationType.INLINE ? 12 : 0,
+          padding: config.type === Type.INLINE ? 12 : 0,
         }}
       >
-        <List header={<InboxHeader />} dataSource={notifications}>
-          <VirtualList
-            data={notifications}
-            height={maxHeight}
-            itemHeight={47}
-            itemKey="id"
-            onScroll={(e) => {
-              // Refer to: https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#problems_and_solutions
-              if (
-                Math.abs(
-                  e.currentTarget.scrollHeight -
-                    e.currentTarget.scrollTop -
-                    maxHeight
-                ) <= 1
-              ) {
-                console.log("scrolled to the bottom");
-              }
-            }}
-          >
-            {(n: any) => (
-              <List.Item key={n.id}>
+        {config.pagination === "INFINITE_SCROLL" ? (
+          <List header={<InboxHeader />} dataSource={notifications}>
+            <VirtualList
+              data={notifications}
+              height={config.maxHeight}
+              itemHeight={47}
+              itemKey="id"
+              onScroll={(e) => {
+                // Refer to: https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#problems_and_solutions
+                if (
+                  Math.abs(
+                    e.currentTarget.scrollHeight -
+                      e.currentTarget.scrollTop -
+                      config.maxHeight
+                  ) <= 1
+                ) {
+                  loadMoreNotifications();
+                }
+              }}
+            >
+              {(n: any) => (
+                <List.Item key={n.id} style={{ padding: 0 }}>
+                  <Notification notification={n} />
+                </List.Item>
+              )}
+            </VirtualList>
+          </List>
+        ) : (
+          <List
+            header={<InboxHeader />}
+            dataSource={notifications}
+            renderItem={(n: any) => (
+              <List.Item key={n.id} style={{ padding: 0 }}>
                 <Notification notification={n} />
               </List.Item>
             )}
-          </VirtualList>
-        </List>
+            pagination={{
+              pageSize: config.pageSize,
+              align: "center",
+              position: config.pagePosition,
+              showSizeChanger: false,
+              simple: true,
+              onChange(page, pageSize) {
+                if (page >= Math.floor(notifications.length / pageSize)) {
+                  loadMoreNotifications();
+                }
+              },
+            }}
+          ></List>
+        )}
       </div>
     );
   };
 
   const UnreadCount: React.FunctionComponent<PropsWithChildren> = (props) => {
     return (
-      <Badge
-        count={
-          unreadCount === undefined && loadingAnimation
-            ? loadingAnimation
-            : unreadCount
-        }
-        size="small"
-        offset={unreadCountOffset}
-      >
+      <Badge count={unreadCount} size="small" offset={config.unreadCountOffset}>
         {props.children}
       </Badge>
     );
@@ -289,7 +363,7 @@ export function InAppNotifications(props: InAppNotificationsProps) {
           maxHeight: "80vh",
         }}
       >
-        {type === InAppNotificationType.CORNER ? (
+        {config.type === Type.CORNER ? (
           <div
             style={{
               position: "fixed",
@@ -298,25 +372,50 @@ export function InAppNotifications(props: InAppNotificationsProps) {
             }}
           >
             <UnreadCount>
-              <Button size="large" icon={<BellOutlined />} shape="circle" />
+              <Button
+                style={{
+                  width: config.buttonWidth,
+                  height: config.buttonHeight,
+                }}
+                icon={
+                  <BellOutlined
+                    style={{
+                      fontSize: config.buttonHeight / 3,
+                    }}
+                  />
+                }
+                shape="circle"
+              />
             </UnreadCount>
           </div>
-        ) : type === InAppNotificationType.POPUP ? (
+        ) : config.type === Type.POPUP ? (
           <div
             style={{
               display: "inline-block",
             }}
           >
             <UnreadCount>
-              <Button icon={<BellOutlined />} shape="circle" type="text" />
+              <Button
+                icon={
+                  <BellOutlined
+                    style={{
+                      fontSize: config.buttonHeight / 2,
+                    }}
+                  />
+                }
+                style={{
+                  width: config.buttonWidth,
+                  height: config.buttonHeight,
+                }}
+                shape="circle"
+                type="text"
+              />
             </UnreadCount>
           </div>
         ) : null}
       </Popover>
 
-      {type === InAppNotificationType.INLINE && (
-        <div>{Inbox(notifications)}</div>
-      )}
+      {config.type === Type.INLINE && <div>{Inbox(notifications)}</div>}
     </div>
   );
 }
