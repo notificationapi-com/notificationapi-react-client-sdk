@@ -1,25 +1,37 @@
-import React, { PropsWithChildren, createContext } from "react";
+import React, { PropsWithChildren, createContext, useEffect } from "react";
 
 type Props = {
   clientId: string;
   userId: string;
+  apiURL?: string;
+  wsURL?: string;
 };
 
-export const NotificationAPIContext = createContext({
-  clientId: "",
-  userId: "",
-});
+// Context should be Required<Props> + some custom properties:
+
+type Context = Required<Props>;
+
+export const NotificationAPIContext = createContext<Context | undefined>(
+  undefined
+);
 
 export const NotificatinAPIProvider: React.FunctionComponent<
   PropsWithChildren<Props>
 > = (props) => {
-  if (props.children === undefined) return null;
+  const apiURL = props.apiURL ?? "https://api.notificationapi.com";
+  const wsURL = props.wsURL ?? "wss://ws.notificationapi.com";
+
+  useEffect(() => {
+    // fetch server defaults
+  });
 
   return (
     <NotificationAPIContext.Provider
       value={{
         clientId: props.clientId,
         userId: props.userId,
+        apiURL,
+        wsURL,
       }}
     >
       {props.children}
