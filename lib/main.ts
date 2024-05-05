@@ -1,2 +1,7 @@
-export { InAppNotifications, Type } from "./components/InAppNotifications";
-export { NotificationPreferences } from "./components/NotificationPreferences";
+export {
+  NotificationFeed,
+  NotificationPopup,
+  NotificationLauncher,
+  NotificationCounter,
+} from "./components/Notifications";
+export { NotificatinAPIProvider } from "./components/Provider";

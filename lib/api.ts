@@ -1,6 +1,6 @@
 export const api = (
   endpoint: string,
-  method: "GET" | "POST",
+  method: "GET" | "POST" | "PATCH",
   resource: string,
   clientId: string,
   userId: string,
