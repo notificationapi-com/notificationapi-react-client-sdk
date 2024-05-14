@@ -26,7 +26,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
     <div>
       {props.pagination === "INFINITE_SCROLL" ? (
         <List
-          header={<InboxHeader markAsRead={context.markAsRead} />}
+          header={<InboxHeader markAsArchived={context.markAsArchived} />}
           dataSource={context.notifications}
         >
           <VirtualList
@@ -51,7 +51,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               <List.Item key={n.id} style={{ padding: 0 }}>
                 <Notification
                   imageShape={props.imageShape}
-                  markAsRead={context.markAsRead}
+                  markAsArchived={context.markAsArchived}
                   notification={n}
                 />
               </List.Item>
@@ -66,7 +66,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             <List.Item key={n.id} style={{ padding: 0 }}>
               <Notification
                 imageShape={props.imageShape}
-                markAsRead={context.markAsRead}
+                markAsArchived={context.markAsArchived}
                 notification={n}
               />
             </List.Item>

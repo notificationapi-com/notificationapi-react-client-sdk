@@ -1,7 +1,7 @@
 import { Button, Popover } from "antd";
 import { Inbox, Pagination } from "./Inbox";
 import { BellOutlined } from "@ant-design/icons";
-import { COUNTING_TYPE, UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
+import { UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
 import { ImageShape } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
@@ -18,7 +18,7 @@ export type NotificationPopupProps = {
   pagePosition?: "top" | "bottom";
   style?: React.CSSProperties;
   unreadBadgeProps?: UnreadBadgeProps;
-  counting?: keyof typeof COUNTING_TYPE | ((notifications: any[]) => number);
+  counting?: UnreadBadgeProps["counting"];
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
@@ -35,16 +35,25 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     pagePosition: props.pagePosition || "top",
     style: props.style || {},
     unreadBadgeProps: props.unreadBadgeProps ?? {},
-    counting: props.counting || "COUNT_NOT_OPENED",
+    counting: props.counting || "COUNT_UNTOUCHED_NOTIFICATIONS",
   };
 
   const context = useContext(NotificationAPIContext);
+
+  if (!context) {
+    return null;
+  }
 
   return (
     <Popover
       autoAdjustOverflow
       trigger="click"
       content={<Inbox maxHeight={500} pagination={config.pagination} />}
+      onOpenChange={(visible) => {
+        if (visible) {
+          context.markAsOpened();
+        }
+      }}
       arrow={false}
       overlayStyle={{
         padding: "0 16px",
@@ -62,6 +71,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
             top: 5,
             right: 5,
           }}
+          counting={config.counting}
         >
           <Button
             icon={

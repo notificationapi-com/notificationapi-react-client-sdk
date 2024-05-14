@@ -22,13 +22,13 @@ export type UnreadBadgeProps = {
   dot?: boolean;
   showZero?: boolean;
   size?: "default" | "small";
-  counting?: keyof typeof COUNTING_TYPE | ((notifications: any[]) => number);
   style?: React.CSSProperties;
+  counting?: keyof typeof COUNTING_TYPE | ((notifications: any[]) => number);
 };
 
 export enum COUNTING_TYPE {
-  COUNT_NOT_OPENED = "count_not_opened",
-  COUNT_NOT_RESOLVED = "count_not_resolved",
+  COUNT_UNSEEN_NOTIFICATIONS = "COUNT_UNSEEN_NOTIFICATIONS",
+  COUNT_UNTOUCHED_NOTIFICATIONS = "COUNT_UNTOUCHED_NOTIFICATIONS",
 }
 
 export const UnreadBadge: React.FunctionComponent<
@@ -37,10 +37,20 @@ export const UnreadBadge: React.FunctionComponent<
   const context = useContext(NotificationAPIContext);
 
   const countingFunction = (notifications: any[]) => {
-    if (props.counting === "COUNT_NOT_OPENED" || props.counting === undefined) {
+    if (
+      props.counting === "COUNT_UNSEEN_NOTIFICATIONS" ||
+      props.counting === undefined
+    ) {
       return notifications.filter((n) => !n.opened && !n.seen).length;
-    } else if (props.counting === "COUNT_NOT_RESOLVED") {
-      return notifications.filter((n) => !n.resolved).length;
+    } else if (props.counting === "COUNT_UNTOUCHED_NOTIFICATIONS") {
+      return notifications.filter(
+        (n) =>
+          !n.archived &&
+          !n.clicked &&
+          !n.replied &&
+          !n.actioned1 &&
+          !n.actioned2
+      ).length;
     } else {
       return props.counting(notifications);
     }

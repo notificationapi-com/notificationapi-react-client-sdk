@@ -41,9 +41,14 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     offsetX: props.offsetX || 16,
     offsetY: props.offsetY || 16,
     position: props.position || "BOTTOM_RIGHT",
+    counting: props.counting || "COUNT_UNTOUCHED_NOTIFICATIONS",
   };
 
   const context = useContext(NotificationAPIContext);
+
+  if (!context) {
+    return null;
+  }
 
   return (
     <div
@@ -63,6 +68,11 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
           padding: "0 16px",
           minWidth: config.popupWidth,
         }}
+        onOpenChange={(visible) => {
+          if (visible) {
+            context.markAsOpened();
+          }
+        }}
       >
         <div
           style={{
@@ -75,6 +85,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
               top: 5,
               right: 5,
             }}
+            counting={config.counting}
           >
             <Button
               icon={

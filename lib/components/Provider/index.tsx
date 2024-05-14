@@ -22,10 +22,20 @@ interface WS_NewNotification {
   };
 }
 
+export const NOTIFICATION_ACTIONS = {
+  opened: "opened",
+  clicked: "clicked",
+  archived: "archived",
+  replied: "replied",
+  actioned1: "actioned1",
+  actioned2: "actioned2",
+};
+
 export type Context = {
   notifications: any[];
   loadNotifications: (initial?: boolean) => void;
-  markAsRead: (trackingId?: string) => void;
+  markAsOpened: () => void;
+  markAsArchived: (ids: string[] | "ALL") => void;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -136,11 +146,16 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     setLoadingNotifications(false);
   };
 
-  const markAsRead = async (trackingId?: string) => {
-    const trackingIds = trackingId
-      ? [trackingId]
-      : notifications.map((n) => n.id);
-    await api(
+  const markAsOpened = async () => {
+    console.log("marking as opened");
+    const date = new Date().toISOString();
+    const trackingIds: string[] = notifications
+      .filter((n) => !n.opened || !n.seen)
+      .map((n) => n.id);
+
+    if (trackingIds.length === 0) return;
+
+    api(
       config.apiURL,
       "PATCH",
       `notifications/INAPP_WEB`,
@@ -149,7 +164,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
       "",
       {
         trackingIds,
-        opened: true,
+        opened: date,
       }
     );
 
@@ -158,8 +173,40 @@ export const NotificatinAPIProvider: React.FunctionComponent<
       newNotifications
         .filter((n) => trackingIds.includes(n.id))
         .forEach((n) => {
-          n.opened = new Date().toISOString();
+          n.opened = date;
           n.seen = true;
+        });
+      return newNotifications;
+    });
+  };
+
+  const markAsArchived = async (ids: string[] | "ALL") => {
+    const date = new Date().toISOString();
+    const trackingIds: string[] = (
+      ids === "ALL" ? notifications.map((n) => n.id) : ids
+    ).filter((n) => !n.archived);
+
+    if (trackingIds.length === 0) return;
+
+    api(
+      config.apiURL,
+      "PATCH",
+      `notifications/INAPP_WEB`,
+      props.clientId,
+      props.userId,
+      "",
+      {
+        trackingIds,
+        archived: date,
+      }
+    );
+
+    setNotifications((prev) => {
+      const newNotifications = [...prev];
+      newNotifications
+        .filter((n) => trackingIds.includes(n.id))
+        .forEach((n) => {
+          n.archived = date;
         });
       return newNotifications;
     });
@@ -188,7 +235,8 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   const value: Context = {
     notifications,
     loadNotifications,
-    markAsRead,
+    markAsOpened,
+    markAsArchived,
   };
 
   return (

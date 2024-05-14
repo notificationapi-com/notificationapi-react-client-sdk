@@ -16,6 +16,7 @@ export enum ImageShape {
 const NotificationDiv = styled.div<{
   $redirect: boolean;
   $seen: boolean;
+  $archived: boolean;
 }>`
   cursor: ${(props) => (props.$redirect ? "pointer" : "default")};
 
@@ -23,25 +24,26 @@ const NotificationDiv = styled.div<{
     background: #eee !important;
   }
 
-  & .notification-mark-as-read {
+  & .notification-archive-button {
     visibility: hidden;
     transition: visibility 0s;
   }
 
-  &:hover .notification-mark-as-read {
-    visibility: ${(props) => (props.$seen ? "hidden" : "visible")};
+  &:hover .notification-archive-button {
+    visibility: ${(props) => (props.$archived ? "hidden" : "visible")};
   }
 `;
 
 export const Notification = (props: {
   notification: any;
-  markAsRead: (id: string) => void;
+  markAsArchived: (ids: string[] | "ALL") => void;
   imageShape: keyof typeof ImageShape;
 }) => {
   return (
     <NotificationDiv
       $redirect={props.notification.redirectURL ? true : false}
       $seen={props.notification.seen || props.notification.opened}
+      $archived={props.notification.archived}
       style={{
         padding: "16px 6px 16px 0",
         background: "#fff",
@@ -90,23 +92,20 @@ export const Notification = (props: {
         }}
       >
         <Button
-          className="notification-mark-as-read"
+          className="notification-archive-button"
           icon={<CheckOutlined />}
           size="small"
           type="text"
           shape="circle"
           onClick={() => {
-            props.markAsRead(props.notification.id);
+            props.markAsArchived([props.notification.id]);
           }}
         />
         <Badge
           dot
           className="notification-highlight"
           style={{
-            visibility:
-              props.notification.opened || props.notification.seen
-                ? "hidden"
-                : "visible",
+            visibility: props.notification.archived ? "hidden" : "visible",
             marginRight: 10,
             marginLeft: 8,
             marginTop: 6,

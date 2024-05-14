@@ -27,7 +27,7 @@ function App() {
 
         <h2>Launcher:</h2>
         <p>Look at the bottom right :)</p>
-        <NotificationLauncher />
+        <NotificationLauncher counting="COUNT_UNSEEN_NOTIFICATIONS" />
 
         <Divider />
 

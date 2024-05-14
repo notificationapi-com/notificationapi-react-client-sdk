@@ -1,7 +1,9 @@
 import { CheckOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Popover, Typography } from "antd";
 
-export const InboxHeader = (props: { markAsRead: () => void }) => {
+export const InboxHeader = (props: {
+  markAsArchived: (ids: string[] | "ALL") => void;
+}) => {
   return (
     <div
       style={{
@@ -13,13 +15,13 @@ export const InboxHeader = (props: { markAsRead: () => void }) => {
       <Typography.Text strong>Notifications</Typography.Text>
 
       <div>
-        <Popover content="Mark all as read">
+        <Popover content="Resolve all">
           <Button
             icon={<CheckOutlined />}
             size="small"
             type="text"
             onClick={() => {
-              props.markAsRead();
+              props.markAsArchived("ALL");
             }}
           />
         </Popover>
