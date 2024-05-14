@@ -1,4 +1,4 @@
-import { Divider } from "antd";
+import { Button, Divider } from "antd";
 import {
   NotificationFeed,
   NotificationPopup,
@@ -17,8 +17,8 @@ function App() {
       }}
     >
       <NotificatinAPIProvider
-        userId="123"
-        clientId="74763kfj366vdlde4jg20fibj5"
+        userId="sahand"
+        clientId="24nojpnrsdc53fkslha0roov05"
       >
         <h2>Popup:</h2>
         <NotificationPopup />
@@ -36,9 +36,9 @@ function App() {
 
         <Divider />
 
-        <h2>Counter (Wrapper)</h2>
+        <h2>Counter on an element</h2>
         <NotificationCounter>
-          <div style={{ border: "1px solid #000", width: 100, height: 100 }} />
+          <Button>Hello World</Button>
         </NotificationCounter>
 
         <Divider />

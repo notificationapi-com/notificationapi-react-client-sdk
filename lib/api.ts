@@ -1,4 +1,4 @@
-export const api = (
+export const api = async (
   endpoint: string,
   method: "GET" | "POST" | "PATCH",
   resource: string,
@@ -10,7 +10,7 @@ export const api = (
   const token = hashedUserId
     ? btoa(clientId + ":" + userId + ":" + hashedUserId)
     : btoa(clientId + ":" + userId);
-  return fetch(
+  const res = await fetch(
     `${endpoint}/${clientId}/users/${encodeURIComponent(userId)}/${resource}`,
     {
       method,
@@ -19,5 +19,12 @@ export const api = (
         Authorization: `Basic ${token}`,
       },
     }
-  ).then((res) => res.json());
+  );
+
+  try {
+    const responseData = await res.json();
+    return responseData;
+  } catch (e) {
+    return undefined;
+  }
 };

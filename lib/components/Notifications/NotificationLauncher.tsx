@@ -3,6 +3,8 @@ import { Inbox } from "./Inbox";
 import { BellOutlined } from "@ant-design/icons";
 import { UnreadBadge } from "./UnreadBadge";
 import { NotificationPopupProps } from "./NotificationPopup";
+import { useContext } from "react";
+import { NotificationAPIContext } from "../Provider";
 
 export enum Position {
   TOP_LEFT = "top-left",
@@ -41,6 +43,8 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     position: props.position || "BOTTOM_RIGHT",
   };
 
+  const context = useContext(NotificationAPIContext);
+
   return (
     <div
       style={{
@@ -65,7 +69,13 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
             display: "inline-block",
           }}
         >
-          <UnreadBadge {...props.unreadBadgeProps}>
+          <UnreadBadge
+            {...props.unreadBadgeProps}
+            style={{
+              top: 5,
+              right: 5,
+            }}
+          >
             <Button
               icon={
                 <BellOutlined

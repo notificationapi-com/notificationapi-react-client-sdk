@@ -1,7 +1,7 @@
 import { Button, Popover } from "antd";
 import { Inbox, Pagination } from "./Inbox";
 import { BellOutlined } from "@ant-design/icons";
-import { UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
+import { COUNTING_TYPE, UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
 import { ImageShape } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
@@ -18,6 +18,7 @@ export type NotificationPopupProps = {
   pagePosition?: "top" | "bottom";
   style?: React.CSSProperties;
   unreadBadgeProps?: UnreadBadgeProps;
+  counting?: keyof typeof COUNTING_TYPE | ((notifications: any[]) => number);
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
@@ -34,6 +35,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     pagePosition: props.pagePosition || "top",
     style: props.style || {},
     unreadBadgeProps: props.unreadBadgeProps ?? {},
+    counting: props.counting || "COUNT_NOT_OPENED",
   };
 
   const context = useContext(NotificationAPIContext);
@@ -56,7 +58,10 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
       >
         <UnreadBadge
           {...props.unreadBadgeProps}
-          count={context?.notifications.filter((n) => !n.seen).length}
+          style={{
+            top: 5,
+            right: 5,
+          }}
         >
           <Button
             icon={

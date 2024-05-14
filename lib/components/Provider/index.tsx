@@ -53,18 +53,12 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   const [hasMore, setHasMore] = useState(true);
 
   const addNotificationsToState = (notis: any[]) => {
-    // filter out duplicates
-    const notisWithoutDups = notis.filter(
-      (n) => !notifications.find((nn) => nn.id === n.id)
-    );
-
-    // calculate unread ones
-    const newNotificationsState = [...notisWithoutDups, ...notifications];
-
-    // calculate unread
-    const newUnreadState = newNotificationsState.filter((n) => !n.seen).length;
-
-    setNotifications(newNotificationsState);
+    setNotifications((prev) => [
+      ...notis.filter((n) => {
+        return !prev.find((p) => p.id === n.id);
+      }),
+      ...prev,
+    ]);
   };
 
   const getNotifications = async (
@@ -143,20 +137,32 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   };
 
   const markAsRead = async (trackingId?: string) => {
+    const trackingIds = trackingId
+      ? [trackingId]
+      : notifications.map((n) => n.id);
     await api(
       config.apiURL,
       "PATCH",
-      `unread/INAPP_WEB`,
+      `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
       "",
       {
-        trackingId: trackingId ?? undefined,
+        trackingIds,
+        opened: true,
       }
     );
-    const newNotifications = { ...notifications };
-    newNotifications.find((n) => n.id === trackingId).seen = true;
-    setNotifications(newNotifications);
+
+    setNotifications((prev) => {
+      const newNotifications = [...prev];
+      newNotifications
+        .filter((n) => trackingIds.includes(n.id))
+        .forEach((n) => {
+          n.opened = new Date().toISOString();
+          n.seen = true;
+        });
+      return newNotifications;
+    });
   };
 
   useEffect(() => {
@@ -167,8 +173,6 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     );
 
     websocket.onmessage = (m) => {
-      console.log("WebSocket message", m);
-
       const body = JSON.parse(m.data);
       if (!body || !body.route) {
         return;
