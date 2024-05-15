@@ -6,6 +6,11 @@ import { ImageShape } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 
+export enum Filter {
+  ALL = "ALL",
+  UNARCHIVED = "UNARCHIVED",
+}
+
 export type NotificationPopupProps = {
   buttonIconSize?: number;
   buttonWidth?: number;
@@ -18,7 +23,8 @@ export type NotificationPopupProps = {
   pagePosition?: "top" | "bottom";
   style?: React.CSSProperties;
   unreadBadgeProps?: UnreadBadgeProps;
-  counting?: UnreadBadgeProps["counting"];
+  count?: UnreadBadgeProps["count"];
+  filter?: keyof typeof Filter | ((n: any) => boolean);
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
@@ -35,7 +41,8 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     pagePosition: props.pagePosition || "top",
     style: props.style || {},
     unreadBadgeProps: props.unreadBadgeProps ?? {},
-    counting: props.counting || "COUNT_UNTOUCHED_NOTIFICATIONS",
+    count: props.count || "COUNT_UNOPENED_NOTIFICATIONS",
+    filter: props.filter || Filter.ALL,
   };
 
   const context = useContext(NotificationAPIContext);
@@ -48,7 +55,16 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     <Popover
       autoAdjustOverflow
       trigger="click"
-      content={<Inbox maxHeight={500} pagination={config.pagination} />}
+      content={
+        <Inbox
+          maxHeight={500}
+          pagination={config.pagination}
+          filter={config.filter}
+          imageShape={config.imageShape}
+          pageSize={config.pageSize}
+          pagePosition={config.pagePosition}
+        />
+      }
       onOpenChange={(visible) => {
         if (visible) {
           context.markAsOpened();
@@ -71,7 +87,8 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
             top: 5,
             right: 5,
           }}
-          counting={config.counting}
+          count={config.count}
+          filter={config.filter}
         >
           <Button
             icon={

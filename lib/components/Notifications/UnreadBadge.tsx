@@ -1,6 +1,7 @@
 import { Badge } from "antd";
 import { PropsWithChildren, useContext } from "react";
 import { NotificationAPIContext } from "../Provider";
+import { NotificationPopupProps } from "./NotificationPopup";
 
 export type UnreadBadgeProps = {
   color?:
@@ -23,12 +24,13 @@ export type UnreadBadgeProps = {
   showZero?: boolean;
   size?: "default" | "small";
   style?: React.CSSProperties;
-  counting?: keyof typeof COUNTING_TYPE | ((notifications: any[]) => number);
+  count?: keyof typeof COUNT_TYPE | ((notification: any) => boolean);
+  filter?: NotificationPopupProps["filter"];
 };
 
-export enum COUNTING_TYPE {
-  COUNT_UNSEEN_NOTIFICATIONS = "COUNT_UNSEEN_NOTIFICATIONS",
-  COUNT_UNTOUCHED_NOTIFICATIONS = "COUNT_UNTOUCHED_NOTIFICATIONS",
+export enum COUNT_TYPE {
+  COUNT_UNOPENED_NOTIFICATIONS = "COUNT_UNOPENED_NOTIFICATIONS",
+  COUNT_UNARCHIVED_NOTIFICATIONS = "COUNT_UNARCHIVED_NOTIFICATIONS",
 }
 
 export const UnreadBadge: React.FunctionComponent<
@@ -38,11 +40,11 @@ export const UnreadBadge: React.FunctionComponent<
 
   const countingFunction = (notifications: any[]) => {
     if (
-      props.counting === "COUNT_UNSEEN_NOTIFICATIONS" ||
-      props.counting === undefined
+      props.count === "COUNT_UNOPENED_NOTIFICATIONS" ||
+      props.count === undefined
     ) {
       return notifications.filter((n) => !n.opened && !n.seen).length;
-    } else if (props.counting === "COUNT_UNTOUCHED_NOTIFICATIONS") {
+    } else if (props.count === "COUNT_UNARCHIVED_NOTIFICATIONS") {
       return notifications.filter(
         (n) =>
           !n.archived &&
@@ -52,7 +54,7 @@ export const UnreadBadge: React.FunctionComponent<
           !n.actioned2
       ).length;
     } else {
-      return props.counting(notifications);
+      return notifications.filter(props.count).length;
     }
   };
 

@@ -37,6 +37,7 @@ const NotificationDiv = styled.div<{
 export const Notification = (props: {
   notification: any;
   markAsArchived: (ids: string[] | "ALL") => void;
+  markAsClicked: (id: string) => void;
   imageShape: keyof typeof ImageShape;
 }) => {
   return (
@@ -44,6 +45,13 @@ export const Notification = (props: {
       $redirect={props.notification.redirectURL ? true : false}
       $seen={props.notification.seen || props.notification.opened}
       $archived={props.notification.archived}
+      onClick={() => {
+        props.markAsClicked(props.notification.id);
+        // redirect the same tab:
+        if (props.notification.redirectURL) {
+          window.location.href = props.notification.redirectURL;
+        }
+      }}
       style={{
         padding: "16px 6px 16px 0",
         background: "#fff",
@@ -59,6 +67,7 @@ export const Notification = (props: {
           size="large"
           style={{
             marginRight: 8,
+            marginLeft: 12,
           }}
           shape={props.imageShape}
         />

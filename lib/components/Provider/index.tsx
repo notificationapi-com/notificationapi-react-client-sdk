@@ -36,6 +36,7 @@ export type Context = {
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
   markAsArchived: (ids: string[] | "ALL") => void;
+  markAsClicked: (id: string) => void;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -146,6 +147,32 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     setLoadingNotifications(false);
   };
 
+  const markAsClicked = async (id: string) => {
+    console.log("marking as clicked");
+    const date = new Date().toISOString();
+    api(
+      config.apiURL,
+      "PATCH",
+      `notifications/INAPP_WEB`,
+      props.clientId,
+      props.userId,
+      "",
+      {
+        trackingIds: [id],
+        clicked: date,
+      }
+    );
+
+    setNotifications((prev) => {
+      const newNotifications = [...prev];
+      const n = newNotifications.find((n) => n.id === id);
+      if (n) {
+        n.clicked = date;
+      }
+      return newNotifications;
+    });
+  };
+
   const markAsOpened = async () => {
     console.log("marking as opened");
     const date = new Date().toISOString();
@@ -237,6 +264,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     loadNotifications,
     markAsOpened,
     markAsArchived,
+    markAsClicked,
   };
 
   return (

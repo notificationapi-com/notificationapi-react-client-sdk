@@ -41,7 +41,8 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     offsetX: props.offsetX || 16,
     offsetY: props.offsetY || 16,
     position: props.position || "BOTTOM_RIGHT",
-    counting: props.counting || "COUNT_UNTOUCHED_NOTIFICATIONS",
+    count: props.count || "COUNT_UNOPENED_NOTIFICATIONS",
+    filter: props.filter || "ALL",
   };
 
   const context = useContext(NotificationAPIContext);
@@ -62,7 +63,13 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
       <Popover
         autoAdjustOverflow
         trigger="click"
-        content={<Inbox maxHeight={500} pagination={config.pagination} />}
+        content={
+          <Inbox
+            maxHeight={500}
+            pagination={config.pagination}
+            filter={config.filter}
+          />
+        }
         arrow={false}
         overlayStyle={{
           padding: "0 16px",
@@ -85,7 +92,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
               top: 5,
               right: 5,
             }}
-            counting={config.counting}
+            count={config.count}
           >
             <Button
               icon={

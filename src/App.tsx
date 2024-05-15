@@ -27,7 +27,7 @@ function App() {
 
         <h2>Launcher:</h2>
         <p>Look at the bottom right :)</p>
-        <NotificationLauncher counting="COUNT_UNSEEN_NOTIFICATIONS" />
+        <NotificationLauncher filter="UNARCHIVED" pagination="PAGINATED" />
 
         <Divider />
 
