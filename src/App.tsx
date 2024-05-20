@@ -46,20 +46,6 @@ function App() {
         <h2>Feed:</h2>
         <NotificationFeed infiniteScrollHeight={300} />
       </NotificatinAPIProvider>
-
-      {/* <NotificatinAPIProvider
-        userId="sahand"
-        clientId="24nojpnrsdc53fkslha0roov05"
-      >
-        <InAppNotifications type="POPUP" pagination="INFINITE_SCROLL" />
-      </NotificatinAPIProvider>
-
-      <NotificatinAPIProvider
-        userId="123"
-        clientId="74763kfj366vdlde4jg20fibj5"
-      >
-        <InAppNotifications type="INLINE" />
-      </NotificatinAPIProvider> */}
     </div>
   );
 }

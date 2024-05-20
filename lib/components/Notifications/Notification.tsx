@@ -47,7 +47,6 @@ export const Notification = (props: {
       $archived={props.notification.archived}
       onClick={() => {
         props.markAsClicked(props.notification.id);
-        // redirect the same tab:
         if (props.notification.redirectURL) {
           window.location.href = props.notification.redirectURL;
         }

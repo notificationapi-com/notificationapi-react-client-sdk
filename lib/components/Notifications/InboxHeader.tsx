@@ -26,7 +26,12 @@ export const InboxHeader = (props: {
           />
         </Popover>
         <Popover content="Notification Preferences">
-          <Button icon={<SettingOutlined />} size="small" type="text" />
+          <Button
+            icon={<SettingOutlined />}
+            size="small"
+            type="text"
+            onClick={() => {}}
+          />
         </Popover>
       </div>
     </div>

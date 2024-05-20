@@ -31,12 +31,124 @@ export const NOTIFICATION_ACTIONS = {
   actioned2: "actioned2",
 };
 
+export enum Channels {
+  EMAIL = "EMAIL",
+  INAPP_WEB = "INAPP_WEB",
+  SMS = "SMS",
+  CALL = "CALL",
+  PUSH = "PUSH",
+  WEB_PUSH = "WEB_PUSH",
+}
+
+export enum DeliveryOptions {
+  OFF = "off",
+  INSTANT = "instant",
+  HOURLY = "hourly",
+  DAILY = "daily",
+  WEEKLY = "weekly",
+  MONTHLY = "monthly",
+}
+
+export interface Notification {
+  envId: string;
+  notificationId: string;
+  title: string;
+  channels: Channels[];
+  enabled: boolean;
+  deduplication?: {
+    duration: number; // seconds
+  };
+  throttling?: {
+    max: number;
+    period: number;
+    unit: "seconds" | "minutes" | "hours" | "days" | "months" | "years";
+    forever: boolean;
+    scope: ["userId", "notificationId"];
+  };
+  retention?: number;
+  options?: {
+    [key in Channels]?: {
+      defaultDeliveryOption: DeliveryOptions;
+      [DeliveryOptions.OFF]: {
+        enabled: boolean;
+      };
+      [DeliveryOptions.INSTANT]: {
+        enabled: boolean;
+      };
+      [DeliveryOptions.HOURLY]: {
+        enabled: boolean;
+      };
+      [DeliveryOptions.DAILY]: {
+        enabled: boolean;
+        hour: string;
+      };
+      [DeliveryOptions.WEEKLY]: {
+        enabled: boolean;
+        hour: string;
+        day: string;
+      };
+      [DeliveryOptions.MONTHLY]: {
+        enabled: boolean;
+        hour: string;
+        date: "first" | "last";
+      };
+    };
+  };
+}
+
+export interface InappNotification {
+  id: string;
+  seen: boolean;
+  title: string;
+  redirectURL?: string;
+  imageURL?: string;
+  date: Date;
+  parameters?: Record<string, unknown>;
+  expDate?: Date;
+  opened?: string;
+  clicked?: string;
+  archived?: string;
+  actioned1?: string;
+  actioned2?: string;
+  replies?: {
+    date: string;
+    message: string;
+  }[];
+}
+
+export interface Preferences {
+  preferences: {
+    notificationId: string;
+    channel: Channels;
+    delivery: DeliveryOptions;
+    subNotificationId?: string;
+  }[];
+  notifications: {
+    notificationId: string;
+    title: string;
+    channels: Channels[];
+    options: Notification["options"];
+  }[];
+  subNotifications: {
+    notificationId: string;
+    subNotificationId: string;
+    title: string;
+  }[];
+}
+
 export type Context = {
-  notifications: any[];
+  notifications?: InappNotification[];
+  preferences?: Preferences;
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
   markAsArchived: (ids: string[] | "ALL") => void;
   markAsClicked: (id: string) => void;
+  updateDelivery: (
+    notificationId: string,
+    channel: Channels,
+    delivery: DeliveryOptions,
+    subNotificationId?: string
+  ) => void;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -58,7 +170,8 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     ...props,
   };
 
-  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notifications, setNotifications] = useState<InappNotification[]>([]);
+  const [preferences, setPreferences] = useState<Preferences>();
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
@@ -239,6 +352,24 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     });
   };
 
+  const updateDelivery = (
+    notificationId: string,
+    channel: Channels,
+    delivery: DeliveryOptions,
+    subNotificationId?: string
+  ) => {
+    if (!preferences) return;
+    const newPreferences = { ...preferences };
+    const pref = newPreferences.preferences.find(
+      (p) =>
+        p.notificationId === notificationId &&
+        p.subNotificationId === subNotificationId &&
+        p.channel === channel
+    );
+    if (pref) pref.delivery = delivery;
+    setPreferences(newPreferences);
+  };
+
   useEffect(() => {
     loadNotifications(true);
 
@@ -257,14 +388,22 @@ export const NotificatinAPIProvider: React.FunctionComponent<
         addNotificationsToState(message.payload.notifications);
       }
     };
+
+    api(config.apiURL, "GET", `preferences`, props.clientId, props.userId).then(
+      (res) => {
+        setPreferences(res);
+      }
+    );
   }, []);
 
   const value: Context = {
     notifications,
+    preferences,
     loadNotifications,
     markAsOpened,
     markAsArchived,
     markAsClicked,
+    updateDelivery,
   };
 
   return (

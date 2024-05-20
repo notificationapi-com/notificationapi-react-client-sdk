@@ -4,4 +4,8 @@ export {
   NotificationLauncher,
   NotificationCounter,
 } from "./components/Notifications";
+export {
+  NotificationPreferencesInline,
+  NotificationPreferencesPopup,
+} from "./components/Preferences";
 export { NotificatinAPIProvider } from "./components/Provider";

@@ -1,5 +1,2 @@
-export function NotificationPreferences(
-  props: React.HTMLAttributes<HTMLElement>
-) {
-  return <div {...props} />;
-}
+export { NotificationPreferencesPopup } from "./NotificationPreferencesPopup";
+export { NotificationPreferencesInline } from "./NotificationPreferencesInline";
