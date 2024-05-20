@@ -105,8 +105,11 @@ export const Notification = (props: {
           size="small"
           type="text"
           shape="circle"
-          onClick={() => {
+          onClick={(e) => {
             props.markAsArchived([props.notification.id]);
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
           }}
         />
         <Badge
