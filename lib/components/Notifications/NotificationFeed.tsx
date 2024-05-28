@@ -1,3 +1,4 @@
+import React from "react";
 import { useContext, useEffect } from "react";
 import { Inbox, Pagination } from "./Inbox";
 import { ImageShape } from "./Notification";
