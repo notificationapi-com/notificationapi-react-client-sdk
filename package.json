@@ -11,14 +11,14 @@
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0"
   },
   "devDependencies": {
     "@ant-design/icons": "^5.3.6",
     "@types/node": "^20.12.7",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
+    "@types/react": "^16.14.0",
+    "@types/react-dom": "^16.9.8",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -38,7 +38,7 @@
     "**/*.css"
   ],
   "dependencies": {
-    "antd": "^5.16.4",
+    "antd": "^5.17.4",
     "javascript-time-ago": "^2.5.10",
     "rc-virtual-list": "^3.11.5",
     "react-time-ago": "^7.3.3",
