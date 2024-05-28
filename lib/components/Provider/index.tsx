@@ -9,6 +9,7 @@ import { api } from "../../api";
 type Props = {
   clientId: string;
   userId: string;
+  hashedUserId?: string;
   apiURL?: string;
   wsURL?: string;
   initialLoadMaxCount?: number;
@@ -198,7 +199,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
       "GET",
       `notifications/INAPP_WEB?count=${count}&before=${before}`,
       props.clientId,
-      props.userId
+      props.userId,
+      props.hashedUserId
     );
     return res.notifications;
   };
@@ -272,7 +274,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      props.hashedUserId,
       {
         trackingIds: [id],
         clicked: date,
@@ -306,7 +308,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      props.hashedUserId,
       {
         trackingIds,
         opened: date,
@@ -344,7 +346,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      props.hashedUserId,
       {
         trackingIds,
         archived: date,
@@ -400,11 +402,16 @@ export const NotificationAPIProvider: React.FunctionComponent<
       }
     };
 
-    api(config.apiURL, "GET", `preferences`, props.clientId, props.userId).then(
-      (res) => {
-        setPreferences(res);
-      }
-    );
+    api(
+      config.apiURL,
+      "GET",
+      `preferences`,
+      props.clientId,
+      props.userId,
+      props.hashedUserId
+    ).then((res) => {
+      setPreferences(res);
+    });
   }, []);
 
   const value: Context = {
