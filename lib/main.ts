@@ -8,4 +8,4 @@ export {
   NotificationPreferencesInline,
   NotificationPreferencesPopup,
 } from "./components/Preferences";
-export { NotificatinAPIProvider } from "./components/Provider";
+export { NotificationAPIProvider } from "./components/Provider";

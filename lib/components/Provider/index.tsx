@@ -155,7 +155,7 @@ export const NotificationAPIContext = createContext<Context | undefined>(
   undefined
 );
 
-export const NotificatinAPIProvider: React.FunctionComponent<
+export const NotificationAPIProvider: React.FunctionComponent<
   PropsWithChildren<Props>
 > = (props) => {
   const defaultConfigs = {

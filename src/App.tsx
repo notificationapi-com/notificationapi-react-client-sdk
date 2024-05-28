@@ -4,7 +4,7 @@ import {
   NotificationPopup,
   NotificationLauncher,
   NotificationCounter,
-  NotificatinAPIProvider,
+  NotificationAPIProvider,
 } from "../lib/main";
 
 function App() {
@@ -16,7 +16,7 @@ function App() {
         padding: 24,
       }}
     >
-      <NotificatinAPIProvider
+      <NotificationAPIProvider
         userId="sahand"
         clientId="24nojpnrsdc53fkslha0roov05"
       >
@@ -45,7 +45,7 @@ function App() {
 
         <h2>Feed:</h2>
         <NotificationFeed infiniteScrollHeight={300} />
-      </NotificatinAPIProvider>
+      </NotificationAPIProvider>
     </div>
   );
 }
