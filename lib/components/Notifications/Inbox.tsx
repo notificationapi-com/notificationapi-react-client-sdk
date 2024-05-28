@@ -1,4 +1,3 @@
-import React from "react";
 import { Empty, List } from "antd";
 import { InboxHeader } from "./InboxHeader";
 import VirtualList from "rc-virtual-list";

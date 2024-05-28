@@ -1,4 +1,3 @@
-import React from "react";
 import { CheckOutlined } from "@ant-design/icons";
 import { Avatar, Badge, Button, Typography } from "antd";
 import { styled } from "styled-components";

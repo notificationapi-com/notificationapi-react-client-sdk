@@ -1,4 +1,3 @@
-import React from "react";
 import { Typography } from "antd";
 import { Channels, NotificationAPIContext } from "../Provider";
 import { useContext } from "react";

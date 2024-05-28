@@ -1,9 +1,4 @@
-import React, {
-  PropsWithChildren,
-  createContext,
-  useEffect,
-  useState,
-} from "react";
+import { PropsWithChildren, createContext, useEffect, useState } from "react";
 import { api } from "../../api";
 
 type Props = {
@@ -387,7 +382,9 @@ export const NotificationAPIProvider: React.FunctionComponent<
     loadNotifications(true);
 
     const websocket = new WebSocket(
-      `${config.wsURL}?userId=${config.userId}&envId=${config.clientId}`
+      config.hashedUserId
+        ? `${config.wsURL}?userId=${config.userId}&envId=${config.clientId}&userIdHash=${config.hashedUserId}`
+        : `${config.wsURL}?userId=${config.userId}&envId=${config.clientId}`
     );
 
     websocket.onmessage = (m) => {

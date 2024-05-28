@@ -1,4 +1,3 @@
-import React from "react";
 import { CheckOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Popover, Typography } from "antd";
 
