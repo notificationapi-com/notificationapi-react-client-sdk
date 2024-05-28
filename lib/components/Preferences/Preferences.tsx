@@ -1,6 +1,6 @@
-import { Collapse, CollapseProps, Divider, List, Menu, Typography } from "antd";
-import { Channels, DeliveryOptions, NotificationAPIContext } from "../Provider";
-import { useContext, useEffect, useState } from "react";
+import { Typography } from "antd";
+import { Channels, NotificationAPIContext } from "../Provider";
+import { useContext } from "react";
 import {
   BellOutlined,
   ChromeOutlined,
@@ -11,11 +11,8 @@ import {
 } from "@ant-design/icons";
 import { blue } from "@ant-design/colors";
 import { PreferenceGroup } from "./PreferenceGroup";
-import Sider from "antd/es/layout/Sider";
 
 const Text = Typography.Text;
-
-type PreferencesProps = {};
 
 export const getChannelLabel = (c: Channels) => {
   const labels = {
@@ -48,8 +45,7 @@ export const getChannelIcon = (channel: Channels): React.ReactElement => {
   }
 };
 
-export function Preferences(props: PreferencesProps) {
-  const config: Required<PreferencesProps> = {};
+export function Preferences() {
   const context = useContext(NotificationAPIContext);
 
   if (!context || !context.preferences) {
@@ -58,7 +54,6 @@ export function Preferences(props: PreferencesProps) {
 
   const prefs = context.preferences.preferences;
   console.log(prefs);
-  const notifications = context.preferences.notifications;
   const subNotifications = context.preferences.subNotifications;
   const uniqueSubNotifications: {
     subNotificationId: string;

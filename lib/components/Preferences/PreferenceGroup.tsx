@@ -7,14 +7,7 @@ import {
   Switch,
   Typography,
 } from "antd";
-import {
-  Channels,
-  Context,
-  DeliveryOptions,
-  Notification,
-  NotificationAPIContext,
-  Preferences,
-} from "../Provider";
+import { Channels, DeliveryOptions, NotificationAPIContext } from "../Provider";
 import { getChannelIcon, getChannelLabel } from "./Preferences";
 import { useContext } from "react";
 
@@ -61,7 +54,7 @@ const sortDeliveries = (a: DeliveryOptions, b: DeliveryOptions) => {
   return order.indexOf(a) - order.indexOf(b);
 };
 
-export const PreferenceGroup: React.FC<PreferenceGroupProps> = (props) => {
+export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
   const context = useContext(NotificationAPIContext);
 
   if (!context || !context.preferences) {
