@@ -170,19 +170,23 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     ...props,
   };
 
-  const [notifications, setNotifications] = useState<InappNotification[]>([]);
+  const [notifications, setNotifications] = useState<InappNotification[]>();
   const [preferences, setPreferences] = useState<Preferences>();
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
 
   const addNotificationsToState = (notis: any[]) => {
-    setNotifications((prev) => [
-      ...notis.filter((n) => {
-        return !prev.find((p) => p.id === n.id);
-      }),
-      ...prev,
-    ]);
+    setNotifications((prev) => {
+      if (!prev) return notis; // if no existing notifications in state, just return the new ones
+
+      return [
+        ...notis.filter((n) => {
+          return !prev.find((p) => p.id === n.id);
+        }),
+        ...prev,
+      ];
+    });
   };
 
   const getNotifications = async (
@@ -261,7 +265,6 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   };
 
   const markAsClicked = async (id: string) => {
-    console.log("marking as clicked");
     const date = new Date().toISOString();
     api(
       config.apiURL,
@@ -277,6 +280,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     );
 
     setNotifications((prev) => {
+      if (!prev) return [];
       const newNotifications = [...prev];
       const n = newNotifications.find((n) => n.id === id);
       if (n) {
@@ -287,7 +291,8 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   };
 
   const markAsOpened = async () => {
-    console.log("marking as opened");
+    if (!notifications) return;
+
     const date = new Date().toISOString();
     const trackingIds: string[] = notifications
       .filter((n) => !n.opened || !n.seen)
@@ -309,6 +314,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     );
 
     setNotifications((prev) => {
+      if (!prev) return [];
       const newNotifications = [...prev];
       newNotifications
         .filter((n) => trackingIds.includes(n.id))
@@ -321,10 +327,14 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   };
 
   const markAsArchived = async (ids: string[] | "ALL") => {
+    if (!notifications) return;
+
     const date = new Date().toISOString();
-    const trackingIds: string[] = (
-      ids === "ALL" ? notifications.map((n) => n.id) : ids
-    ).filter((n) => !n.archived);
+    const trackingIds: string[] = notifications
+      .filter((n) => {
+        return !n.archived && (ids === "ALL" || ids.includes(n.id));
+      })
+      .map((n) => n.id);
 
     if (trackingIds.length === 0) return;
 
@@ -342,6 +352,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     );
 
     setNotifications((prev) => {
+      if (!prev) return [];
       const newNotifications = [...prev];
       newNotifications
         .filter((n) => trackingIds.includes(n.id))

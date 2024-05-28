@@ -68,6 +68,9 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
             maxHeight={500}
             pagination={config.pagination}
             filter={config.filter}
+            imageShape={config.imageShape}
+            pageSize={config.pageSize}
+            pagePosition={config.pagePosition}
           />
         }
         arrow={false}

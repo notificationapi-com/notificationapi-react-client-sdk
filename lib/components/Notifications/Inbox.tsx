@@ -1,7 +1,7 @@
-import { Empty, List, notification } from "antd";
+import { Empty, List } from "antd";
 import { InboxHeader } from "./InboxHeader";
 import VirtualList from "rc-virtual-list";
-import { Notification } from "./Notification";
+import { ImageShape, Notification } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 import { Filter, NotificationPopupProps } from "./NotificationPopup";
@@ -15,7 +15,7 @@ type InboxProps = {
   pagination: keyof typeof Pagination;
   maxHeight: number;
   filter: NotificationPopupProps["filter"];
-  imageShape: NotificationPopupProps["imageShape"];
+  imageShape: keyof typeof ImageShape;
   pageSize: number;
   pagePosition: NotificationPopupProps["pagePosition"];
 };
@@ -36,6 +36,8 @@ export const Inbox: React.FC<InboxProps> = (props) => {
   if (!context) {
     return null;
   }
+
+  if (context.notifications === undefined) return null;
 
   return (
     <div>
@@ -101,7 +103,9 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             showSizeChanger: false,
             simple: true,
             onChange(page, pageSize) {
-              if (page >= Math.floor(context.notifications.length / pageSize)) {
+              if (
+                page >= Math.floor(context.notifications!.length / pageSize)
+              ) {
                 context.loadNotifications();
               }
             },
