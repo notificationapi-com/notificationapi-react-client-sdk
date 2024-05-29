@@ -1,5 +1,6 @@
 import { PropsWithChildren, createContext, useEffect, useState } from "react";
 import { api } from "../../api";
+import { InAppNotification } from "../../interface";
 
 type Props = {
   clientId: string;
@@ -14,7 +15,7 @@ type Props = {
 interface WS_NewNotification {
   route: "inapp_web/new_notifications";
   payload: {
-    notifications: any[];
+    notifications: InAppNotification[];
   };
 }
 
@@ -92,26 +93,6 @@ export interface Notification {
   };
 }
 
-export interface InappNotification {
-  id: string;
-  seen: boolean;
-  title: string;
-  redirectURL?: string;
-  imageURL?: string;
-  date: Date;
-  parameters?: Record<string, unknown>;
-  expDate?: Date;
-  opened?: string;
-  clicked?: string;
-  archived?: string;
-  actioned1?: string;
-  actioned2?: string;
-  replies?: {
-    date: string;
-    message: string;
-  }[];
-}
-
 export interface Preferences {
   preferences: {
     notificationId: string;
@@ -133,7 +114,7 @@ export interface Preferences {
 }
 
 export type Context = {
-  notifications?: InappNotification[];
+  notifications?: InAppNotification[];
   preferences?: Preferences;
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
@@ -166,14 +147,22 @@ export const NotificationAPIProvider: React.FunctionComponent<
     ...props,
   };
 
-  const [notifications, setNotifications] = useState<InappNotification[]>();
+  const [notifications, setNotifications] = useState<InAppNotification[]>();
   const [preferences, setPreferences] = useState<Preferences>();
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
 
-  const addNotificationsToState = (notis: any[]) => {
+  const addNotificationsToState = (notis: InAppNotification[]) => {
+    const now = new Date().toISOString();
     setNotifications((prev) => {
+      notis = notis.filter((n) => {
+        if (n.expDate && new Date(n.expDate * 1000).toISOString() > now)
+          return false;
+        if (n.date > now) return false;
+        return true;
+      });
+
       if (!prev) return notis; // if no existing notifications in state, just return the new ones
 
       return [
@@ -188,7 +177,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
   const getNotifications = async (
     count: number,
     before: number
-  ): Promise<any[]> => {
+  ): Promise<InAppNotification[]> => {
     const res = await api(
       config.apiURL,
       "GET",
@@ -205,11 +194,11 @@ export const NotificationAPIProvider: React.FunctionComponent<
     maxCountNeeded: number,
     oldestNeeded?: string
   ): Promise<{
-    notifications: any[];
+    notifications: InAppNotification[];
     couldLoadMore: boolean;
     oldestReceived: string;
   }> => {
-    let result: any[] = [];
+    let result: InAppNotification[] = [];
     let oldestReceived = before;
     let couldLoadMore = true;
     let shouldLoadMore = true;
