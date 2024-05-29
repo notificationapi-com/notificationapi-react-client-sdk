@@ -1,4 +1,4 @@
-import { Typography } from "antd";
+import { Space, Typography } from "antd";
 import { Channels, NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 import {
@@ -52,8 +52,6 @@ export function Preferences() {
     return null;
   }
 
-  const prefs = context.preferences.preferences;
-  console.log(prefs);
   const subNotifications = context.preferences.subNotifications;
   const uniqueSubNotifications: {
     subNotificationId: string;
@@ -73,22 +71,25 @@ export function Preferences() {
   });
 
   return (
-    <>
-      <Text strong>General Notifications</Text>
-      <PreferenceGroup
-        title="General Notifications"
-        subNotificationId={undefined}
-      />
-
+    <Space direction="vertical" style={{ width: "100%" }} size="large">
+      <div style={{ marginTop: 12 }}>
+        {uniqueSubNotifications.length > 0 && (
+          <Text strong>General Notifications</Text>
+        )}
+        <PreferenceGroup
+          title="General Settings"
+          subNotificationId={undefined}
+        />
+      </div>
       {uniqueSubNotifications.map((sn) => (
-        <>
+        <div>
           <Text strong>{sn.title}</Text>
           <PreferenceGroup
             title={sn.title}
             subNotificationId={sn.subNotificationId}
           />
-        </>
+        </div>
       ))}
-    </>
+    </Space>
   );
 }

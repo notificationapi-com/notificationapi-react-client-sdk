@@ -77,7 +77,7 @@ export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
       )
     );
     return {
-      label: n.notificationId,
+      label: n.title,
       key: n.notificationId,
       extra: (
         <Text type="secondary">
