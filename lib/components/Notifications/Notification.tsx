@@ -78,7 +78,11 @@ export const Notification = (props: {
         }}
       >
         <div>
-          <Typography.Text>{props.notification.title}</Typography.Text>
+          <Typography.Text>
+            <span
+              dangerouslySetInnerHTML={{ __html: props.notification.title }}
+            ></span>
+          </Typography.Text>
         </div>
         <div>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
