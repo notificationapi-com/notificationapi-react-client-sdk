@@ -5,6 +5,7 @@ import { UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
 import { ImageShape } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
+import { InAppNotification } from "../../interface";
 
 export enum Filter {
   ALL = "ALL",
@@ -24,7 +25,7 @@ export type NotificationPopupProps = {
   style?: React.CSSProperties;
   unreadBadgeProps?: UnreadBadgeProps;
   count?: UnreadBadgeProps["count"];
-  filter?: keyof typeof Filter | ((n: any) => boolean);
+  filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {

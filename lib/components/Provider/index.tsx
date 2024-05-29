@@ -208,10 +208,10 @@ export const NotificationAPIProvider: React.FunctionComponent<
         new Date(oldestReceived).getTime()
       );
       const notisWithoutDuplicates = notis.filter(
-        (n: any) => !result.find((nn) => nn.id === n.id)
+        (n) => !result.find((nn) => nn.id === n.id)
       );
       oldestReceived = notisWithoutDuplicates.reduce(
-        (min: string, n: any) => (min < n.date ? min : n.date),
+        (min: string, n) => (min < n.date ? min : n.date),
         before
       );
       result = [...result, ...notisWithoutDuplicates];

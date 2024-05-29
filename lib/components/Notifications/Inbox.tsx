@@ -5,6 +5,7 @@ import { ImageShape, Notification } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 import { Filter, NotificationPopupProps } from "./NotificationPopup";
+import { InAppNotification } from "../../interface";
 
 export enum Pagination {
   INFINITE_SCROLL = "infinite_scroll",
@@ -23,7 +24,7 @@ type InboxProps = {
 export const Inbox: React.FC<InboxProps> = (props) => {
   const context = useContext(NotificationAPIContext);
 
-  const filterFunction = (notifications: any[]) => {
+  const filterFunction = (notifications: InAppNotification[]) => {
     if (props.filter === Filter.ALL || !props.filter) {
       return notifications;
     } else if (props.filter === Filter.UNARCHIVED) {
@@ -70,7 +71,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               }
             }}
           >
-            {(n: any) => (
+            {(n) => (
               <List.Item key={n.id} style={{ padding: 0 }}>
                 <Notification
                   imageShape={props.imageShape}
@@ -86,7 +87,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
         <List
           header={<InboxHeader markAsArchived={context.markAsArchived} />}
           dataSource={filterFunction(context.notifications)}
-          renderItem={(n: any) => (
+          renderItem={(n) => (
             <List.Item key={n.id} style={{ padding: 0 }}>
               <Notification
                 imageShape={props.imageShape}

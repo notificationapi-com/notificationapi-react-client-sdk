@@ -2,6 +2,7 @@ import { Badge } from "antd";
 import { PropsWithChildren, useContext } from "react";
 import { NotificationAPIContext } from "../Provider";
 import { NotificationPopupProps } from "./NotificationPopup";
+import { InAppNotification } from "../../interface";
 
 export type UnreadBadgeProps = {
   color?:
@@ -38,7 +39,7 @@ export const UnreadBadge: React.FunctionComponent<
 > = (props) => {
   const context = useContext(NotificationAPIContext);
 
-  const countingFunction = (notifications: any[]) => {
+  const countingFunction = (notifications: InAppNotification[]) => {
     if (
       props.count === "COUNT_UNOPENED_NOTIFICATIONS" ||
       props.count === undefined
@@ -49,7 +50,7 @@ export const UnreadBadge: React.FunctionComponent<
         (n) =>
           !n.archived &&
           !n.clicked &&
-          !n.replied &&
+          !n.replies &&
           !n.actioned1 &&
           !n.actioned2
       ).length;

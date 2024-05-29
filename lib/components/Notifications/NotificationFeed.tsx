@@ -3,6 +3,7 @@ import { Inbox, Pagination } from "./Inbox";
 import { ImageShape } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { Filter } from "./NotificationPopup";
+import { InAppNotification } from "../../interface";
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;
@@ -11,7 +12,7 @@ export type NotificationFeedProps = {
   pagePosition?: "top" | "bottom";
   infiniteScrollHeight?: number;
   style?: React.CSSProperties;
-  filter?: keyof typeof Filter | ((n: any) => boolean);
+  filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
 };
 
 export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
