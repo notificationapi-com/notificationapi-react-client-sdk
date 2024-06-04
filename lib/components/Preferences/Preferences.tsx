@@ -1,4 +1,4 @@
-import { Space, Typography } from "antd";
+import { Collapse, CollapseProps } from "antd";
 import { Channels, NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 import {
@@ -10,9 +10,7 @@ import {
   PhoneOutlined,
 } from "@ant-design/icons";
 import { blue } from "@ant-design/colors";
-import { PreferenceGroup } from "./PreferenceGroup";
-
-const Text = Typography.Text;
+import { PreferenceInput } from "./PreferenceInput";
 
 export const getChannelLabel = (c: Channels) => {
   const labels = {
@@ -52,44 +50,70 @@ export function Preferences() {
     return null;
   }
 
-  const subNotifications = context.preferences.subNotifications;
-  const uniqueSubNotifications: {
-    subNotificationId: string;
-    title: string;
-  }[] = [];
-  subNotifications.forEach((sn) => {
-    if (
-      !uniqueSubNotifications.find(
-        (usn) => usn.subNotificationId === sn.subNotificationId
-      )
-    ) {
-      uniqueSubNotifications.push({
-        subNotificationId: sn.subNotificationId,
-        title: sn.title,
-      });
+  const items: CollapseProps["items"] = context.preferences.notifications.map(
+    (n) => {
+      const mainPreferences = context.preferences?.preferences.filter(
+        (p) => p.notificationId === n.notificationId && !p.subNotificationId
+      );
+
+      const subPreferences = context.preferences?.preferences.filter(
+        (sn) => sn.notificationId === n.notificationId && sn.subNotificationId
+      );
+
+      console.log("subPreferences", n.notificationId, subPreferences);
+
+      const subNotifications = context.preferences?.subNotifications.filter(
+        (sn) =>
+          subPreferences?.find(
+            (p) => p.subNotificationId === sn.subNotificationId
+          )
+      );
+
+      return {
+        label: n.title,
+        key: n.notificationId,
+        children: (
+          <>
+            <PreferenceInput
+              key={n.notificationId}
+              notification={n}
+              preferences={mainPreferences || []}
+              updateDelivery={context.updateDelivery}
+            />
+
+            {subNotifications?.map((sn) => {
+              return (
+                <Collapse
+                  key={sn.subNotificationId}
+                  bordered={false}
+                  items={[
+                    {
+                      label: sn.title,
+                      key: sn.subNotificationId,
+                      children: (
+                        <PreferenceInput
+                          key={sn.subNotificationId}
+                          notification={n}
+                          preferences={subPreferences || []}
+                          updateDelivery={context.updateDelivery}
+                          subNotificationId={sn.subNotificationId}
+                        />
+                      ),
+                    },
+                  ]}
+                  defaultActiveKey={[]}
+                />
+              );
+            })}
+          </>
+        ),
+      };
     }
-  });
+  );
 
   return (
-    <Space direction="vertical" style={{ width: "100%" }} size="large">
-      <div style={{ marginTop: 12 }}>
-        {uniqueSubNotifications.length > 0 && (
-          <Text strong>General Notifications</Text>
-        )}
-        <PreferenceGroup
-          title="General Settings"
-          subNotificationId={undefined}
-        />
-      </div>
-      {uniqueSubNotifications.map((sn) => (
-        <div>
-          <Text strong>{sn.title}</Text>
-          <PreferenceGroup
-            title={sn.title}
-            subNotificationId={sn.subNotificationId}
-          />
-        </div>
-      ))}
-    </Space>
+    <>
+      <Collapse items={items} defaultActiveKey={[]} />
+    </>
   );
 }

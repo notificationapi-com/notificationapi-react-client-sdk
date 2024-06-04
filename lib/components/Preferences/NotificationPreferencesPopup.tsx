@@ -4,6 +4,7 @@ import { Preferences } from "./Preferences";
 type NotificationPreferencesPopupProps = {
   open?: boolean;
   onClose?: () => void;
+  collapse?: boolean;
 };
 
 export function NotificationPreferencesPopup(
@@ -12,6 +13,7 @@ export function NotificationPreferencesPopup(
   const config: Required<NotificationPreferencesPopupProps> = {
     open: props.open === undefined ? true : props.open,
     onClose: props.onClose || (() => {}),
+    collapse: props.collapse === undefined ? false : props.collapse,
   };
 
   return (

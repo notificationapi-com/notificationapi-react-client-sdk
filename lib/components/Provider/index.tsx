@@ -227,7 +227,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
         shouldLoadMore = false;
       }
     }
-    console.log(result.length, couldLoadMore, oldestReceived);
+
     return {
       notifications: result,
       couldLoadMore,
@@ -355,16 +355,33 @@ export const NotificationAPIProvider: React.FunctionComponent<
     delivery: DeliveryOptions,
     subNotificationId?: string
   ) => {
-    if (!preferences) return;
-    const newPreferences = { ...preferences };
-    const pref = newPreferences.preferences.find(
-      (p) =>
-        p.notificationId === notificationId &&
-        p.subNotificationId === subNotificationId &&
-        p.channel === channel
-    );
-    if (pref) pref.delivery = delivery;
-    setPreferences(newPreferences);
+    api(
+      config.apiURL,
+      "POST",
+      `preferences`,
+      props.clientId,
+      props.userId,
+      props.hashedUserId,
+      [
+        {
+          notificationId,
+          subNotificationId,
+          channel,
+          delivery,
+        },
+      ]
+    ).then(() => {
+      api(
+        config.apiURL,
+        "GET",
+        `preferences`,
+        props.clientId,
+        props.userId,
+        props.hashedUserId
+      ).then((res) => {
+        setPreferences(res);
+      });
+    });
   };
 
   useEffect(() => {
