@@ -99,12 +99,6 @@ export const PreferenceInput = ({
                     subNotificationId
                   );
                 } else {
-                  console.log({
-                    notificationId: notification.notificationId,
-                    channel,
-                    delivery: "OFF",
-                    subNotificationId,
-                  });
                   updateDelivery(
                     notification.notificationId,
                     channel,

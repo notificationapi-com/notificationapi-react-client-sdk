@@ -60,8 +60,6 @@ export function Preferences() {
         (sn) => sn.notificationId === n.notificationId && sn.subNotificationId
       );
 
-      console.log("subPreferences", n.notificationId, subPreferences);
-
       const subNotifications = context.preferences?.subNotifications.filter(
         (sn) =>
           subPreferences?.find(
