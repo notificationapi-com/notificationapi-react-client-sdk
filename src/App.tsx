@@ -6,9 +6,14 @@ import {
   NotificationLauncher,
   NotificationCounter,
   NotificationAPIProvider,
+  NotificationPreferencesPopup,
+  NotificationPreferencesInline,
 } from "../lib/main";
 
 function App() {
+  const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
+    React.useState(false);
+
   return (
     <div
       style={{
@@ -46,6 +51,21 @@ function App() {
 
         <h2>Feed:</h2>
         <NotificationFeed infiniteScrollHeight={300} />
+
+        <Divider />
+        <h2>Preferences Popup:</h2>
+        <Button onClick={() => setPreferencesPopupVisiblity(true)}>
+          Preferences Popup
+        </Button>
+        <NotificationPreferencesPopup
+          open={preferencesPopupVisibility}
+          onClose={() => {
+            setPreferencesPopupVisiblity(false);
+          }}
+        />
+
+        <h2>Preferences Inline:</h2>
+        <NotificationPreferencesInline />
       </NotificationAPIProvider>
     </div>
   );
