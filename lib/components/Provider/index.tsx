@@ -1,16 +1,12 @@
-import { PropsWithChildren, createContext, useEffect, useState } from "react";
+import {
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { api } from "../../api";
 import { InAppNotification } from "../../interface";
-
-type Props = {
-  clientId: string;
-  userId: string;
-  hashedUserId?: string;
-  apiURL?: string;
-  wsURL?: string;
-  initialLoadMaxCount?: number;
-  initialLoadMaxAge?: Date;
-};
 
 interface WS_NewNotification {
   route: "inapp_web/new_notifications";
@@ -132,9 +128,21 @@ export const NotificationAPIContext = createContext<Context | undefined>(
   undefined
 );
 
+type Props = {
+  clientId: string;
+  userId: string;
+  hashedUserId?: string;
+  apiURL?: string;
+  wsURL?: string;
+  initialLoadMaxCount?: number;
+  initialLoadMaxAge?: Date;
+};
+
 export const NotificationAPIProvider: React.FunctionComponent<
   PropsWithChildren<Props>
-> = (props) => {
+> & {
+  useNotificationAPIContext: typeof useNotificationAPIContext;
+} = (props) => {
   const defaultConfigs = {
     apiURL: "https://api.notificationapi.com",
     wsURL: "wss://ws.notificationapi.com",
@@ -433,3 +441,12 @@ export const NotificationAPIProvider: React.FunctionComponent<
     </NotificationAPIContext.Provider>
   );
 };
+
+const useNotificationAPIContext = (): Context => {
+  const context = useContext(NotificationAPIContext);
+  if (!context) {
+    throw new Error("useMyContext must be used within a MyProvider");
+  }
+  return context;
+};
+NotificationAPIProvider.useNotificationAPIContext = useNotificationAPIContext;

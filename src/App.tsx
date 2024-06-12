@@ -9,6 +9,7 @@ import {
   NotificationPreferencesPopup,
   NotificationPreferencesInline,
 } from "../lib/main";
+import { MyButton } from "./MyButton";
 
 function App() {
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
@@ -43,8 +44,12 @@ function App() {
         <Divider />
 
         <h2>Counter on an element</h2>
-        <NotificationCounter>
-          <Button>Hello World</Button>
+        <NotificationCounter
+          count={(n) => {
+            return n.notificationId === "conversion_failure" && !n.archived;
+          }}
+        >
+          <MyButton />
         </NotificationCounter>
 
         <Divider />

@@ -25,7 +25,9 @@ export type UnreadBadgeProps = {
   showZero?: boolean;
   size?: "default" | "small";
   style?: React.CSSProperties;
-  count?: keyof typeof COUNT_TYPE | ((notification: any) => boolean);
+  count?:
+    | keyof typeof COUNT_TYPE
+    | ((notification: InAppNotification) => boolean);
   filter?: NotificationPopupProps["filter"];
 };
 
