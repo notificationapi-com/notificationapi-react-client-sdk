@@ -35,12 +35,19 @@ const NotificationDiv = styled.div<{
   }
 `;
 
-export const Notification = (props: {
+export type NotificationProps = {
   notification: InAppNotification;
   markAsArchived: (ids: string[] | "ALL") => void;
   markAsClicked: (id: string) => void;
   imageShape: keyof typeof ImageShape;
-}) => {
+  renderer?: (notification: InAppNotification) => JSX.Element;
+};
+
+export const Notification = (props: NotificationProps) => {
+  if (props.renderer) {
+    return props.renderer(props.notification);
+  }
+
   return (
     <NotificationDiv
       $redirect={props.notification.redirectURL ? true : false}

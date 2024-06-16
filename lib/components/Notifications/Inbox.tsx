@@ -12,17 +12,23 @@ export enum Pagination {
   PAGINATED = "paginated",
 }
 
-type InboxProps = {
+export type InboxProps = {
   pagination: keyof typeof Pagination;
   maxHeight: number;
   filter: NotificationPopupProps["filter"];
   imageShape: keyof typeof ImageShape;
   pageSize: number;
   pagePosition: NotificationPopupProps["pagePosition"];
+  notificationRenderer:
+    | ((notification: InAppNotification) => JSX.Element)
+    | undefined;
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
   const context = useContext(NotificationAPIContext);
+  if (!context) {
+    return null;
+  }
 
   const filterFunction = (notifications: InAppNotification[]) => {
     if (props.filter === Filter.ALL || !props.filter) {
@@ -33,10 +39,6 @@ export const Inbox: React.FC<InboxProps> = (props) => {
       return notifications.filter(props.filter);
     }
   };
-
-  if (!context) {
-    return null;
-  }
 
   if (context.notifications === undefined) return null;
 
@@ -78,6 +80,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   markAsArchived={context.markAsArchived}
                   notification={n}
                   markAsClicked={context.markAsClicked}
+                  renderer={props.notificationRenderer}
                 />
               </List.Item>
             )}

@@ -2,7 +2,7 @@ import { Button, Popover } from "antd";
 import { Inbox, Pagination } from "./Inbox";
 import { BellOutlined } from "@ant-design/icons";
 import { UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
-import { ImageShape } from "./Notification";
+import { ImageShape, NotificationProps } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 import { InAppNotification } from "../../interface";
@@ -26,9 +26,18 @@ export type NotificationPopupProps = {
   unreadBadgeProps?: UnreadBadgeProps;
   count?: UnreadBadgeProps["count"];
   filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
+  renderers?: {
+    notification?: NotificationProps["renderer"];
+  };
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
+  const context = useContext(NotificationAPIContext);
+
+  if (!context) {
+    return null;
+  }
+
   const config: Required<NotificationPopupProps> = {
     buttonWidth: props.buttonWidth || 40,
     buttonHeight: props.buttonHeight || 40,
@@ -44,13 +53,10 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     unreadBadgeProps: props.unreadBadgeProps ?? {},
     count: props.count || "COUNT_UNOPENED_NOTIFICATIONS",
     filter: props.filter || Filter.ALL,
+    renderers: {
+      notification: props.renderers?.notification,
+    },
   };
-
-  const context = useContext(NotificationAPIContext);
-
-  if (!context) {
-    return null;
-  }
 
   return (
     <Popover
@@ -64,6 +70,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
           imageShape={config.imageShape}
           pageSize={config.pageSize}
           pagePosition={config.pagePosition}
+          notificationRenderer={config.renderers.notification}
         />
       }
       onOpenChange={(visible) => {

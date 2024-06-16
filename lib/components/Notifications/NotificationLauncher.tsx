@@ -43,6 +43,9 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     position: props.position || "BOTTOM_RIGHT",
     count: props.count || "COUNT_UNOPENED_NOTIFICATIONS",
     filter: props.filter || "ALL",
+    renderers: {
+      notification: props.renderers?.notification,
+    },
   };
 
   const context = useContext(NotificationAPIContext);
@@ -71,6 +74,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
             imageShape={config.imageShape}
             pageSize={config.pageSize}
             pagePosition={config.pagePosition}
+            notificationRenderer={config.renderers.notification}
           />
         }
         arrow={false}

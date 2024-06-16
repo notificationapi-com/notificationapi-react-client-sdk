@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { Inbox, Pagination } from "./Inbox";
-import { ImageShape } from "./Notification";
+import { ImageShape, NotificationProps } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { Filter } from "./NotificationPopup";
 import { InAppNotification } from "../../interface";
@@ -13,6 +13,9 @@ export type NotificationFeedProps = {
   infiniteScrollHeight?: number;
   style?: React.CSSProperties;
   filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
+  renderers?: {
+    notification?: NotificationProps["renderer"];
+  };
 };
 
 export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
@@ -26,6 +29,9 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
     infiniteScrollHeight: props.infiniteScrollHeight
       ? props.infiniteScrollHeight
       : window.innerHeight * 0.75,
+    renderers: {
+      notification: props.renderers?.notification,
+    },
   };
 
   const context = useContext(NotificationAPIContext);
@@ -59,6 +65,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         imageShape={config.imageShape}
         pageSize={config.pageSize}
         pagePosition={config.pagePosition}
+        notificationRenderer={config.renderers.notification}
       />
     </div>
   );

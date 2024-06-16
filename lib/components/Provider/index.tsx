@@ -42,7 +42,7 @@ export enum DeliveryOptions {
   MONTHLY = "monthly",
 }
 
-export interface Notification {
+export interface NotificationConfig {
   envId: string;
   notificationId: string;
   title: string;
@@ -100,7 +100,7 @@ export interface Preferences {
     notificationId: string;
     title: string;
     channels: Channels[];
-    options: Notification["options"];
+    options: NotificationConfig["options"];
   }[];
   subNotifications: {
     notificationId: string;

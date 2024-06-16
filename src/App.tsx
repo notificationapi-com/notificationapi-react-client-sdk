@@ -34,7 +34,7 @@ function App() {
 
         <h2>Launcher:</h2>
         <p>Look at the bottom right :)</p>
-        <NotificationLauncher filter="UNARCHIVED" pagination="PAGINATED" />
+        <NotificationLauncher />
 
         <Divider />
 
