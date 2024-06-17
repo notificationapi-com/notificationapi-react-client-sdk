@@ -15,6 +15,7 @@ export type NotificationFeedProps = {
   filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
   renderers?: {
     notification?: NotificationProps["renderer"];
+    notificationExtra?: NotificationProps["extraRenderer"];
   };
 };
 
@@ -31,6 +32,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
       : window.innerHeight * 0.75,
     renderers: {
       notification: props.renderers?.notification,
+      notificationExtra: props.renderers?.notificationExtra,
     },
   };
 
@@ -66,6 +68,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         pageSize={config.pageSize}
         pagePosition={config.pagePosition}
         notificationRenderer={config.renderers.notification}
+        notificationExtraRenderer={config.renderers.notificationExtra}
       />
     </div>
   );

@@ -41,6 +41,7 @@ export type NotificationProps = {
   markAsClicked: (id: string) => void;
   imageShape: keyof typeof ImageShape;
   renderer?: (notification: InAppNotification) => JSX.Element;
+  extraRenderer?: (notification: InAppNotification) => JSX.Element;
 };
 
 export const Notification = (props: NotificationProps) => {
@@ -102,6 +103,9 @@ export const Notification = (props: NotificationProps) => {
             />
           </Typography.Text>
         </div>
+        {props.extraRenderer && (
+          <div>{props.extraRenderer(props.notification)}</div>
+        )}
       </div>
 
       <div

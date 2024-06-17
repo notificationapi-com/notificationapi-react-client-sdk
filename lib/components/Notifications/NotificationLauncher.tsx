@@ -45,6 +45,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     filter: props.filter || "ALL",
     renderers: {
       notification: props.renderers?.notification,
+      notificationExtra: props.renderers?.notificationExtra,
     },
   };
 
@@ -75,6 +76,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
             pageSize={config.pageSize}
             pagePosition={config.pagePosition}
             notificationRenderer={config.renderers.notification}
+            notificationExtraRenderer={config.renderers.notificationExtra}
           />
         }
         arrow={false}

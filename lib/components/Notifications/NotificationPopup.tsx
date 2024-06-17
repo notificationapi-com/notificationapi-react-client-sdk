@@ -28,6 +28,7 @@ export type NotificationPopupProps = {
   filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
   renderers?: {
     notification?: NotificationProps["renderer"];
+    notificationExtra?: NotificationProps["extraRenderer"];
   };
 };
 
@@ -55,6 +56,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     filter: props.filter || Filter.ALL,
     renderers: {
       notification: props.renderers?.notification,
+      notificationExtra: props.renderers?.notificationExtra,
     },
   };
 
@@ -71,6 +73,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
           pageSize={config.pageSize}
           pagePosition={config.pagePosition}
           notificationRenderer={config.renderers.notification}
+          notificationExtraRenderer={config.renderers.notificationExtra}
         />
       }
       onOpenChange={(visible) => {

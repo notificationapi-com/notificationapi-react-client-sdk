@@ -22,6 +22,9 @@ export type InboxProps = {
   notificationRenderer:
     | ((notification: InAppNotification) => JSX.Element)
     | undefined;
+  notificationExtraRenderer:
+    | ((notification: InAppNotification) => JSX.Element)
+    | undefined;
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
@@ -81,6 +84,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   notification={n}
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
+                  extraRenderer={props.notificationExtraRenderer}
                 />
               </List.Item>
             )}
@@ -97,6 +101,8 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                 markAsArchived={context.markAsArchived}
                 notification={n}
                 markAsClicked={context.markAsClicked}
+                renderer={props.notificationRenderer}
+                extraRenderer={props.notificationExtraRenderer}
               />
             </List.Item>
           )}
