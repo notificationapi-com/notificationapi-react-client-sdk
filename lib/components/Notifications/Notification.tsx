@@ -95,6 +95,9 @@ export const Notification = (props: NotificationProps) => {
             ></span>
           </Typography.Text>
         </div>
+        {props.extraRenderer && (
+          <div>{props.extraRenderer(props.notification)}</div>
+        )}
         <div>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
             <ReactTimeAgo
@@ -103,9 +106,6 @@ export const Notification = (props: NotificationProps) => {
             />
           </Typography.Text>
         </div>
-        {props.extraRenderer && (
-          <div>{props.extraRenderer(props.notification)}</div>
-        )}
       </div>
 
       <div
