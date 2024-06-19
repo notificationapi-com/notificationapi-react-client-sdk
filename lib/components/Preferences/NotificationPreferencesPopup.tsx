@@ -24,6 +24,7 @@ export function NotificationPreferencesPopup(
         config.onClose();
       }}
       footer={null}
+      zIndex={9999}
     >
       <Preferences />
     </Modal>

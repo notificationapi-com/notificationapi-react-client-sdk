@@ -4,8 +4,10 @@ import { BellOutlined } from "@ant-design/icons";
 import { UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
 import { ImageShape, NotificationProps } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { InAppNotification } from "../../interface";
+import { NotificationPreferencesPopup } from "../Preferences";
+import { InboxHeaderProps } from "./InboxHeader";
 
 export enum Filter {
   ALL = "ALL",
@@ -30,12 +32,11 @@ export type NotificationPopupProps = {
   renderers?: {
     notification?: NotificationProps["renderer"];
   };
-  header?: {
-    title?: JSX.Element;
-  };
+  header?: InboxHeaderProps;
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
+  const [openPreferences, setOpenPreferences] = useState(false);
   const context = useContext(NotificationAPIContext);
 
   if (!context) {
@@ -68,6 +69,10 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     filter: props.filter || Filter.ALL,
     header: {
       title: props.header?.title,
+      button1ClickHandler:
+        props.header?.button1ClickHandler ?? context.markAsArchived,
+      button2ClickHandler:
+        props.header?.button2ClickHandler ?? (() => setOpenPreferences(true)),
     },
     renderers: {
       notification: props.renderers?.notification,
@@ -75,58 +80,64 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
   };
 
   return (
-    <Popover
-      autoAdjustOverflow
-      trigger="click"
-      content={
-        <Inbox
-          maxHeight={500}
-          pagination={config.pagination}
-          filter={config.filter}
-          imageShape={config.imageShape}
-          pageSize={config.pageSize}
-          pagePosition={config.pagePosition}
-          notificationRenderer={config.renderers.notification}
-          header={config.header}
-        />
-      }
-      onOpenChange={(visible) => {
-        if (visible) {
-          context.markAsOpened();
-        }
-      }}
-      arrow={false}
-      overlayStyle={{
-        padding: "0 16px",
-        minWidth: config.popupWidth,
-      }}
-      zIndex={props.popupZIndex}
-    >
-      <div
-        style={{
-          display: "inline-block",
-        }}
-      >
-        <UnreadBadge
-          {...props.unreadBadgeProps}
-          style={{
-            top: 5,
-            right: 5,
-          }}
-          count={config.count}
-          filter={config.filter}
-        >
-          <Button
-            icon={config.buttonIcon}
-            style={{
-              width: config.buttonWidth,
-              height: config.buttonHeight,
-            }}
-            shape="circle"
-            type="text"
+    <>
+      <Popover
+        autoAdjustOverflow
+        trigger="click"
+        content={
+          <Inbox
+            maxHeight={500}
+            pagination={config.pagination}
+            filter={config.filter}
+            imageShape={config.imageShape}
+            pageSize={config.pageSize}
+            pagePosition={config.pagePosition}
+            notificationRenderer={config.renderers.notification}
+            header={config.header}
           />
-        </UnreadBadge>
-      </div>
-    </Popover>
+        }
+        onOpenChange={(visible) => {
+          if (visible) {
+            context.markAsOpened();
+          }
+        }}
+        arrow={false}
+        overlayStyle={{
+          padding: "0 16px",
+          minWidth: config.popupWidth,
+        }}
+        zIndex={props.popupZIndex}
+      >
+        <div
+          style={{
+            display: "inline-block",
+          }}
+        >
+          <UnreadBadge
+            {...props.unreadBadgeProps}
+            style={{
+              top: 5,
+              right: 5,
+            }}
+            count={config.count}
+            filter={config.filter}
+          >
+            <Button
+              icon={config.buttonIcon}
+              style={{
+                width: config.buttonWidth,
+                height: config.buttonHeight,
+              }}
+              shape="circle"
+              type="text"
+            />
+          </UnreadBadge>
+        </div>
+      </Popover>
+      <NotificationPreferencesPopup
+        open={openPreferences}
+        onClose={() => setOpenPreferences(false)}
+      />
+    </>
   );
 };

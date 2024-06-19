@@ -1,5 +1,5 @@
 import { Empty, List } from "antd";
-import { InboxHeader } from "./InboxHeader";
+import { InboxHeader, InboxHeaderProps } from "./InboxHeader";
 import VirtualList from "rc-virtual-list";
 import { ImageShape, Notification } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
@@ -22,9 +22,7 @@ export type InboxProps = {
   notificationRenderer:
     | ((notification: InAppNotification) => JSX.Element)
     | undefined;
-  header?: {
-    title?: JSX.Element;
-  };
+  header?: InboxHeaderProps;
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
@@ -52,7 +50,8 @@ export const Inbox: React.FC<InboxProps> = (props) => {
           header={
             <InboxHeader
               title={props.header?.title}
-              markAsArchived={context.markAsArchived}
+              button1ClickHandler={props.header?.button1ClickHandler}
+              button2ClickHandler={props.header?.button2ClickHandler}
             />
           }
           dataSource={filterFunction(context.notifications)}
@@ -96,7 +95,13 @@ export const Inbox: React.FC<InboxProps> = (props) => {
         </List>
       ) : (
         <List
-          header={<InboxHeader markAsArchived={context.markAsArchived} />}
+          header={
+            <InboxHeader
+              title={props.header?.title}
+              button1ClickHandler={props.header?.button1ClickHandler}
+              button2ClickHandler={props.header?.button2ClickHandler}
+            />
+          }
           dataSource={filterFunction(context.notifications)}
           renderItem={(n) => (
             <List.Item key={n.id} style={{ padding: 0 }}>

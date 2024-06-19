@@ -3,8 +3,9 @@ import { Inbox } from "./Inbox";
 import { BellOutlined } from "@ant-design/icons";
 import { UnreadBadge } from "./UnreadBadge";
 import { NotificationPopupProps } from "./NotificationPopup";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { NotificationAPIContext } from "../Provider";
+import { NotificationPreferencesPopup } from "../Preferences";
 
 export enum Position {
   TOP_LEFT = "top-left",
@@ -22,6 +23,13 @@ type NotificationLaucherProps = NotificationPopupProps & {
 export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
   props
 ) => {
+  const [openPreferences, setOpenPreferences] = useState(false);
+  const context = useContext(NotificationAPIContext);
+
+  if (!context) {
+    return null;
+  }
+
   const config: Required<NotificationLaucherProps> = {
     buttonIcon: props.buttonIcon || (
       <BellOutlined
@@ -51,17 +59,15 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     filter: props.filter || "ALL",
     header: {
       title: props.header?.title,
+      button1ClickHandler:
+        props.header?.button1ClickHandler ?? context.markAsArchived,
+      button2ClickHandler:
+        props.header?.button2ClickHandler ?? (() => setOpenPreferences(true)),
     },
     renderers: {
       notification: props.renderers?.notification,
     },
   };
-
-  const context = useContext(NotificationAPIContext);
-
-  if (!context) {
-    return null;
-  }
 
   return (
     <div
@@ -69,6 +75,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
         position: "fixed",
         right: config.offsetX,
         bottom: config.offsetY,
+        zIndex: 9999,
       }}
     >
       <Popover
@@ -122,6 +129,10 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
           </UnreadBadge>
         </div>
       </Popover>
+      <NotificationPreferencesPopup
+        open={openPreferences}
+        onClose={() => setOpenPreferences(false)}
+      />
     </div>
   );
 };

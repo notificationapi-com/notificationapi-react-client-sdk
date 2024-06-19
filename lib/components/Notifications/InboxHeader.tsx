@@ -2,8 +2,9 @@ import { CheckOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Popover, Typography } from "antd";
 
 export type InboxHeaderProps = {
-  markAsArchived: (ids: string[] | "ALL") => void;
   title?: JSX.Element;
+  button1ClickHandler?: (ids: string[] | "ALL") => void;
+  button2ClickHandler?: () => void;
 };
 
 export const InboxHeader = (props: InboxHeaderProps) => {
@@ -28,7 +29,7 @@ export const InboxHeader = (props: InboxHeaderProps) => {
             size="small"
             type="text"
             onClick={() => {
-              props.markAsArchived("ALL");
+              props.button1ClickHandler && props.button1ClickHandler("ALL");
             }}
           />
         </Popover>
@@ -37,7 +38,7 @@ export const InboxHeader = (props: InboxHeaderProps) => {
             icon={<SettingOutlined />}
             size="small"
             type="text"
-            onClick={() => {}}
+            onClick={props.button2ClickHandler}
           />
         </Popover>
       </div>

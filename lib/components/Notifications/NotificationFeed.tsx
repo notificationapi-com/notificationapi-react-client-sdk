@@ -1,9 +1,11 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Inbox, Pagination } from "./Inbox";
 import { ImageShape, NotificationProps } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { Filter } from "./NotificationPopup";
 import { InAppNotification } from "../../interface";
+import { InboxHeaderProps } from "./InboxHeader";
+import { NotificationPreferencesPopup } from "../Preferences";
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;
@@ -16,12 +18,17 @@ export type NotificationFeedProps = {
   renderers?: {
     notification?: NotificationProps["renderer"];
   };
-  header?: {
-    title?: JSX.Element;
-  };
+  header?: InboxHeaderProps;
 };
 
 export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
+  const [openPreferences, setOpenPreferences] = useState(false);
+  const context = useContext(NotificationAPIContext);
+
+  if (!context) {
+    return null;
+  }
+
   const config: Required<NotificationFeedProps> = {
     imageShape: props.imageShape || "circle",
     pagination: props.pagination || "INFINITE_SCROLL",
@@ -37,14 +44,12 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
     },
     header: {
       title: props.header?.title,
+      button1ClickHandler:
+        props.header?.button1ClickHandler ?? context.markAsArchived,
+      button2ClickHandler:
+        props.header?.button2ClickHandler ?? (() => setOpenPreferences(true)),
     },
   };
-
-  const context = useContext(NotificationAPIContext);
-
-  if (!context) {
-    return null;
-  }
 
   // every 5 seconds
   useEffect(() => {
@@ -73,6 +78,10 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         pagePosition={config.pagePosition}
         notificationRenderer={config.renderers.notification}
         header={config.header}
+      />
+      <NotificationPreferencesPopup
+        open={openPreferences}
+        onClose={() => setOpenPreferences(false)}
       />
     </div>
   );
