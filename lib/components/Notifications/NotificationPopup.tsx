@@ -13,6 +13,7 @@ export enum Filter {
 }
 
 export type NotificationPopupProps = {
+  buttonIcon?: React.ReactNode;
   buttonIconSize?: number;
   buttonWidth?: number;
   buttonHeight?: number;
@@ -22,13 +23,15 @@ export type NotificationPopupProps = {
   pagination?: keyof typeof Pagination;
   pageSize?: number;
   pagePosition?: "top" | "bottom";
-  style?: React.CSSProperties;
+  popupZIndex?: number;
   unreadBadgeProps?: UnreadBadgeProps;
   count?: UnreadBadgeProps["count"];
   filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
   renderers?: {
     notification?: NotificationProps["renderer"];
-    notificationExtra?: NotificationProps["extraRenderer"];
+  };
+  header?: {
+    title?: JSX.Element;
   };
 };
 
@@ -40,6 +43,15 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
   }
 
   const config: Required<NotificationPopupProps> = {
+    buttonIcon: props.buttonIcon || (
+      <BellOutlined
+        style={{
+          fontSize:
+            props.buttonIconSize ||
+            (props.buttonWidth ? props.buttonWidth / 2 : 20),
+        }}
+      />
+    ),
     buttonWidth: props.buttonWidth || 40,
     buttonHeight: props.buttonHeight || 40,
     popupWidth: props.popupWidth || 400,
@@ -50,13 +62,15 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     pagination: props.pagination || "INFINITE_SCROLL",
     pageSize: props.pageSize || 10,
     pagePosition: props.pagePosition || "top",
-    style: props.style || {},
+    popupZIndex: props.popupZIndex || 1030,
     unreadBadgeProps: props.unreadBadgeProps ?? {},
     count: props.count || "COUNT_UNOPENED_NOTIFICATIONS",
     filter: props.filter || Filter.ALL,
+    header: {
+      title: props.header?.title,
+    },
     renderers: {
       notification: props.renderers?.notification,
-      notificationExtra: props.renderers?.notificationExtra,
     },
   };
 
@@ -73,7 +87,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
           pageSize={config.pageSize}
           pagePosition={config.pagePosition}
           notificationRenderer={config.renderers.notification}
-          notificationExtraRenderer={config.renderers.notificationExtra}
+          header={config.header}
         />
       }
       onOpenChange={(visible) => {
@@ -86,6 +100,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         padding: "0 16px",
         minWidth: config.popupWidth,
       }}
+      zIndex={props.popupZIndex}
     >
       <div
         style={{
@@ -102,13 +117,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
           filter={config.filter}
         >
           <Button
-            icon={
-              <BellOutlined
-                style={{
-                  fontSize: config.buttonIconSize,
-                }}
-              />
-            }
+            icon={config.buttonIcon}
             style={{
               width: config.buttonWidth,
               height: config.buttonHeight,

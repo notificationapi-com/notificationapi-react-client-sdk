@@ -1,9 +1,16 @@
 import { CheckOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Popover, Typography } from "antd";
 
-export const InboxHeader = (props: {
+export type InboxHeaderProps = {
   markAsArchived: (ids: string[] | "ALL") => void;
-}) => {
+  title?: JSX.Element;
+};
+
+export const InboxHeader = (props: InboxHeaderProps) => {
+  const titleComponent = props.title ?? (
+    <Typography.Text strong>Notifications</Typography.Text>
+  );
+
   return (
     <div
       style={{
@@ -12,7 +19,7 @@ export const InboxHeader = (props: {
         paddingRight: 5,
       }}
     >
-      <Typography.Text strong>Notifications</Typography.Text>
+      {titleComponent}
 
       <div>
         <Popover content="Resolve all">

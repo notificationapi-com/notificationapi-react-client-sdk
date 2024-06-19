@@ -28,22 +28,7 @@ function App() {
         clientId="24nojpnrsdc53fkslha0roov05"
       >
         <h2>Popup:</h2>
-        <NotificationPopup
-          renderers={{
-            notificationExtra: (notification) => {
-              return (
-                <button
-                  onClick={() => {
-                    console.log("notification custom action", notification);
-                  }}
-                >
-                  {/* notification.parameters is equal to the passed mergeTags */}
-                  Respond to {notification.parameters?.comment}
-                </button>
-              );
-            },
-          }}
-        />
+        <NotificationPopup />
 
         <Divider />
 

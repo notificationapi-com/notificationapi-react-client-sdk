@@ -23,6 +23,15 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
   props
 ) => {
   const config: Required<NotificationLaucherProps> = {
+    buttonIcon: props.buttonIcon || (
+      <BellOutlined
+        style={{
+          fontSize:
+            props.buttonIconSize ||
+            (props.buttonWidth ? props.buttonWidth / 2 : 20),
+        }}
+      />
+    ),
     buttonWidth: props.buttonWidth || 40,
     buttonHeight: props.buttonHeight || 40,
     popupWidth: props.popupWidth || 400,
@@ -33,19 +42,18 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     pagination: props.pagination || "INFINITE_SCROLL",
     pageSize: props.pageSize || 10,
     pagePosition: props.pagePosition || "top",
-    style: {
-      zIndex: 999,
-      ...props.style,
-    },
+    popupZIndex: props.popupZIndex || 1030,
     unreadBadgeProps: props.unreadBadgeProps ?? {},
     offsetX: props.offsetX || 16,
     offsetY: props.offsetY || 16,
     position: props.position || "BOTTOM_RIGHT",
     count: props.count || "COUNT_UNOPENED_NOTIFICATIONS",
     filter: props.filter || "ALL",
+    header: {
+      title: props.header?.title,
+    },
     renderers: {
       notification: props.renderers?.notification,
-      notificationExtra: props.renderers?.notificationExtra,
     },
   };
 
@@ -61,7 +69,6 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
         position: "fixed",
         right: config.offsetX,
         bottom: config.offsetY,
-        ...config.style,
       }}
     >
       <Popover
@@ -76,7 +83,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
             pageSize={config.pageSize}
             pagePosition={config.pagePosition}
             notificationRenderer={config.renderers.notification}
-            notificationExtraRenderer={config.renderers.notificationExtra}
+            header={config.header}
           />
         }
         arrow={false}
@@ -104,13 +111,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
             count={config.count}
           >
             <Button
-              icon={
-                <BellOutlined
-                  style={{
-                    fontSize: config.buttonIconSize,
-                  }}
-                />
-              }
+              icon={config.buttonIcon}
               style={{
                 width: config.buttonWidth,
                 height: config.buttonHeight,

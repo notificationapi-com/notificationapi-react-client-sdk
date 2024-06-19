@@ -22,9 +22,9 @@ export type InboxProps = {
   notificationRenderer:
     | ((notification: InAppNotification) => JSX.Element)
     | undefined;
-  notificationExtraRenderer:
-    | ((notification: InAppNotification) => JSX.Element)
-    | undefined;
+  header?: {
+    title?: JSX.Element;
+  };
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
@@ -49,7 +49,12 @@ export const Inbox: React.FC<InboxProps> = (props) => {
     <div>
       {props.pagination === "INFINITE_SCROLL" ? (
         <List
-          header={<InboxHeader markAsArchived={context.markAsArchived} />}
+          header={
+            <InboxHeader
+              title={props.header?.title}
+              markAsArchived={context.markAsArchived}
+            />
+          }
           dataSource={filterFunction(context.notifications)}
         >
           {filterFunction(context.notifications).length === 0 && (
@@ -84,7 +89,6 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   notification={n}
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
-                  extraRenderer={props.notificationExtraRenderer}
                 />
               </List.Item>
             )}
@@ -102,7 +106,6 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                 notification={n}
                 markAsClicked={context.markAsClicked}
                 renderer={props.notificationRenderer}
-                extraRenderer={props.notificationExtraRenderer}
               />
             </List.Item>
           )}
