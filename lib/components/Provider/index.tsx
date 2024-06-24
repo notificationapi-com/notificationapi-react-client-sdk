@@ -115,6 +115,7 @@ export type Context = {
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
   markAsArchived: (ids: string[] | "ALL") => void;
+  markAsUnarchived: (ids: string[] | "ALL") => void;
   markAsClicked: (id: string) => void;
   updateDelivery: (
     notificationId: string,
@@ -320,6 +321,42 @@ export const NotificationAPIProvider: React.FunctionComponent<
     });
   };
 
+  const markAsUnarchived = async (ids: string[] | "ALL") => {
+    if (!notifications) return;
+
+    const trackingIds: string[] = notifications
+      .filter((n) => {
+        return n.archived && (ids === "ALL" || ids.includes(n.id));
+      })
+      .map((n) => n.id);
+
+    if (trackingIds.length === 0) return;
+
+    api(
+      config.apiURL,
+      "PATCH",
+      `notifications/INAPP_WEB`,
+      props.clientId,
+      props.userId,
+      props.hashedUserId,
+      {
+        trackingIds,
+        archived: null,
+      }
+    );
+
+    setNotifications((prev) => {
+      if (!prev) return [];
+      const newNotifications = [...prev];
+      newNotifications
+        .filter((n) => trackingIds.includes(n.id))
+        .forEach((n) => {
+          n.archived = undefined;
+        });
+      return newNotifications;
+    });
+  };
+
   const markAsArchived = async (ids: string[] | "ALL") => {
     if (!notifications) return;
 
@@ -431,6 +468,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     loadNotifications,
     markAsOpened,
     markAsArchived,
+    markAsUnarchived,
     markAsClicked,
     updateDelivery,
   };
