@@ -183,6 +183,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     });
   };
 
+  // API Wrapper
   const getNotifications = async (
     count: number,
     before: number
@@ -198,6 +199,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     return res.notifications;
   };
 
+  // Makes multiple API calls to get all notifications before a certain date
   const fetchNotificationsBeforeDate = async (
     before: string,
     maxCountNeeded: number,
@@ -244,12 +246,13 @@ export const NotificationAPIProvider: React.FunctionComponent<
     };
   };
 
+  // Notificaiton loading and state updates
   const loadNotifications = async (initial?: boolean) => {
-    if (!hasMore) return;
-    if (loadingNotifications) return;
+    if (!initial && !hasMore) return;
+    if (!initial && loadingNotifications) return;
     setLoadingNotifications(true);
     const res = await fetchNotificationsBeforeDate(
-      oldestLoaded,
+      initial ? new Date().toISOString() : oldestLoaded,
       initial ? config.initialLoadMaxCount : 1000,
       initial ? config.initialLoadMaxAge.toISOString() : undefined
     );
@@ -430,6 +433,13 @@ export const NotificationAPIProvider: React.FunctionComponent<
   };
 
   useEffect(() => {
+    // reset state
+    setNotifications([]);
+    setLoadingNotifications(false);
+    setPreferences(undefined);
+    setOldestLoaded(new Date().toISOString());
+    setHasMore(true);
+
     loadNotifications(true);
 
     const websocket = new WebSocket(
@@ -460,7 +470,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     ).then((res) => {
       setPreferences(res);
     });
-  }, []);
+  }, [props]);
 
   const value: Context = {
     notifications,
