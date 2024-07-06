@@ -42,6 +42,7 @@
   "dependencies": {
     "antd": "^5.17.4",
     "javascript-time-ago": "^2.5.10",
+    "liquidjs": "^10.14.0",
     "rc-virtual-list": "^3.11.5",
     "react-time-ago": "^7.3.3",
     "styled-components": "^6.1.9"

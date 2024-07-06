@@ -116,7 +116,7 @@ export type Context = {
   markAsOpened: () => void;
   markAsArchived: (ids: string[] | "ALL") => void;
   markAsUnarchived: (ids: string[] | "ALL") => void;
-  markAsClicked: (id: string) => void;
+  markAsClicked: (ids: string[]) => void;
   updateDelivery: (
     notificationId: string,
     channel: Channels,
@@ -262,8 +262,14 @@ export const NotificationAPIProvider: React.FunctionComponent<
     setLoadingNotifications(false);
   };
 
-  const markAsClicked = async (id: string) => {
+  const markAsClicked = async (ids: string[]) => {
+    if (!notifications) return;
+
     const date = new Date().toISOString();
+    const trackingIds: string[] = notifications
+      .filter((n) => ids.includes(n.id) && !n.clicked)
+      .map((n) => n.id);
+
     api(
       config.apiURL,
       "PATCH",
@@ -272,7 +278,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
       props.userId,
       props.hashedUserId,
       {
-        trackingIds: [id],
+        trackingIds,
         clicked: date,
       }
     );
@@ -280,10 +286,11 @@ export const NotificationAPIProvider: React.FunctionComponent<
     setNotifications((prev) => {
       if (!prev) return [];
       const newNotifications = [...prev];
-      const n = newNotifications.find((n) => n.id === id);
-      if (n) {
-        n.clicked = date;
-      }
+      newNotifications
+        .filter((n) => trackingIds.includes(n.id))
+        .forEach((n) => {
+          n.clicked = date;
+        });
       return newNotifications;
     });
   };

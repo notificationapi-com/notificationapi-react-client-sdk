@@ -5,6 +5,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ReactTimeAgo from "react-time-ago";
 import { InAppNotification } from "../../interface";
+import { Liquid } from "liquidjs";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
@@ -36,29 +37,64 @@ const NotificationDiv = styled.div<{
 `;
 
 export type NotificationProps = {
-  notification: InAppNotification;
+  notifications: InAppNotification[];
   markAsArchived: (ids: string[] | "ALL") => void;
-  markAsClicked: (id: string) => void;
+  markAsClicked: (ids: string[]) => void;
   imageShape: keyof typeof ImageShape;
-  renderer?: (notification: InAppNotification) => JSX.Element;
+  renderer?: (notification: InAppNotification[]) => JSX.Element;
 };
 
 export const Notification = (props: NotificationProps) => {
   if (props.renderer) {
-    return props.renderer(props.notification);
+    return props.renderer(props.notifications);
   }
+
+  const liquid = new Liquid();
+  const groupSize = props.notifications.length;
+  const lastNotification = props.notifications[groupSize - 1];
+  const template = lastNotification.deliveryOptions?.["instant"]?.batching
+    ? lastNotification.template?.batch
+    : lastNotification.template?.instant;
+  let parameters: {
+    [key: string]: unknown;
+    _items: unknown[];
+  } = { _items: [] };
+
+  props.notifications.forEach((n) => {
+    parameters = {
+      ...parameters,
+      ...n.parameters,
+    };
+  });
+
+  parameters._items = props.notifications.map((n) => {
+    return { ...n.parameters, _items: undefined };
+  });
+
+  const title = liquid.parseAndRenderSync(template?.title ?? "", parameters);
+  const redirectURL = liquid.parseAndRenderSync(
+    template?.redirectURL ?? "",
+    parameters
+  );
+  const imageURL = liquid.parseAndRenderSync(
+    template?.imageURL ?? "",
+    parameters
+  );
+  const seen = props.notifications.every((n) => n.seen);
+  const opened = props.notifications.every((n) => n.opened);
+  const archived = props.notifications.every((n) => n.archived);
+  const date = props.notifications[groupSize - 1].date;
+  const ids = props.notifications.map((n) => n.id);
 
   return (
     <NotificationDiv
-      $redirect={props.notification.redirectURL ? true : false}
-      $seen={
-        props.notification.seen || (props.notification.opened ? true : false)
-      }
-      $archived={props.notification.archived ? true : false}
+      $redirect={redirectURL ? true : false}
+      $seen={seen || (opened ? true : false)}
+      $archived={archived ? true : false}
       onClick={() => {
-        props.markAsClicked(props.notification.id);
-        if (props.notification.redirectURL) {
-          window.location.href = props.notification.redirectURL;
+        props.markAsClicked(ids);
+        if (redirectURL) {
+          window.location.href = redirectURL;
         }
       }}
       style={{
@@ -72,7 +108,7 @@ export const Notification = (props: NotificationProps) => {
     >
       <div>
         <Avatar
-          src={props.notification.imageURL}
+          src={imageURL}
           size="large"
           style={{
             marginRight: 8,
@@ -89,17 +125,12 @@ export const Notification = (props: NotificationProps) => {
       >
         <div>
           <Typography.Text>
-            <span
-              dangerouslySetInnerHTML={{ __html: props.notification.title }}
-            ></span>
+            <span dangerouslySetInnerHTML={{ __html: title as string }}></span>
           </Typography.Text>
         </div>
         <div>
           <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-            <ReactTimeAgo
-              date={new Date(props.notification.date).getTime()}
-              locale="en-US"
-            />
+            <ReactTimeAgo date={new Date(date).getTime()} locale="en-US" />
           </Typography.Text>
         </div>
       </div>
@@ -120,7 +151,7 @@ export const Notification = (props: NotificationProps) => {
           type="text"
           shape="circle"
           onClick={(e) => {
-            props.markAsArchived([props.notification.id]);
+            props.markAsArchived(ids);
             e.preventDefault();
             e.stopPropagation();
             return false;
@@ -130,7 +161,7 @@ export const Notification = (props: NotificationProps) => {
           dot
           className="notification-highlight"
           style={{
-            visibility: props.notification.archived ? "hidden" : "visible",
+            visibility: archived ? "hidden" : "visible",
             marginRight: 10,
             marginLeft: 8,
             marginTop: 6,

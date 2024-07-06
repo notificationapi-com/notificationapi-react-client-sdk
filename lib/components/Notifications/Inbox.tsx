@@ -6,6 +6,7 @@ import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 import { Filter, NotificationPopupProps } from "./NotificationPopup";
 import { InAppNotification } from "../../interface";
+import { Liquid } from "liquidjs";
 
 export enum Pagination {
   INFINITE_SCROLL = "infinite_scroll",
@@ -20,7 +21,7 @@ export type InboxProps = {
   pageSize: number;
   pagePosition: NotificationPopupProps["pagePosition"];
   notificationRenderer:
-    | ((notification: InAppNotification) => JSX.Element)
+    | ((notification: InAppNotification[]) => JSX.Element)
     | undefined;
   header?: InboxHeaderProps;
 };
@@ -43,6 +44,39 @@ export const Inbox: React.FC<InboxProps> = (props) => {
 
   if (context.notifications === undefined) return null;
 
+  const filteredNotifications = filterFunction(context.notifications);
+  const sortedNotifications = filteredNotifications.sort((a, b) => {
+    return new Date(a.date).getTime() - new Date(b.date).getTime();
+  });
+  const batchedNotifications: Record<string, InAppNotification[]> = {};
+  const liquid = new Liquid();
+  sortedNotifications.forEach((n) => {
+    if (n.deliveryOptions?.["instant"]?.batching) {
+      const batchingKey = n.deliveryOptions["instant"].batchingKey;
+      const batchingKeyValue = batchingKey
+        ? liquid.parseAndRenderSync(`{{${batchingKey}}}`, n)
+        : "";
+      const groupKey = `${n.notificationId}-${batchingKeyValue}`;
+      if (batchedNotifications[groupKey]) {
+        batchedNotifications[groupKey].push(n);
+      } else {
+        batchedNotifications[groupKey] = [n];
+      }
+    } else {
+      const groupKey = n.id;
+      batchedNotifications[groupKey] = [n];
+    }
+  });
+
+  const orderedNotifications = Object.values(batchedNotifications).sort(
+    (a, b) => {
+      return (
+        new Date(b[b.length - 1].date).getTime() -
+        new Date(a[a.length - 1].date).getTime()
+      );
+    }
+  );
+
   return (
     <div>
       {props.pagination === "INFINITE_SCROLL" ? (
@@ -54,16 +88,16 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               button2ClickHandler={props.header?.button2ClickHandler}
             />
           }
-          dataSource={filterFunction(context.notifications)}
+          dataSource={orderedNotifications}
         >
-          {filterFunction(context.notifications).length === 0 && (
+          {orderedNotifications.length === 0 && (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
               description="You are caught up!"
             />
           )}
           <VirtualList
-            data={filterFunction(context.notifications)}
+            data={orderedNotifications}
             height={props.maxHeight}
             itemHeight={47}
             itemKey="id"
@@ -81,11 +115,11 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             }}
           >
             {(n) => (
-              <List.Item key={n.id} style={{ padding: 0 }}>
+              <List.Item key={n[0].id} style={{ padding: 0 }}>
                 <Notification
                   imageShape={props.imageShape}
                   markAsArchived={context.markAsArchived}
-                  notification={n}
+                  notifications={n}
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
                 />
@@ -102,13 +136,13 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               button2ClickHandler={props.header?.button2ClickHandler}
             />
           }
-          dataSource={filterFunction(context.notifications)}
+          dataSource={orderedNotifications}
           renderItem={(n) => (
-            <List.Item key={n.id} style={{ padding: 0 }}>
+            <List.Item key={n[0].id} style={{ padding: 0 }}>
               <Notification
                 imageShape={props.imageShape}
                 markAsArchived={context.markAsArchived}
-                notification={n}
+                notifications={n}
                 markAsClicked={context.markAsClicked}
                 renderer={props.notificationRenderer}
               />
@@ -129,7 +163,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             },
           }}
         >
-          {filterFunction(context.notifications).length === 0 && (
+          {orderedNotifications.length === 0 && (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
               description="You are caught up!"
