@@ -439,6 +439,36 @@ export const NotificationAPIProvider: React.FunctionComponent<
     });
   };
 
+  const websocketMessageHandler = (m: MessageEvent) => {
+    const body = JSON.parse(m.data);
+    if (!body || !body.route) {
+      return;
+    }
+
+    if (body.route === "inapp_web/new_notifications") {
+      const message = body as WS_NewNotification;
+      addNotificationsToState(message.payload.notifications);
+    }
+  };
+
+  const websocketOnConnectHandler = (websocket: WebSocket) => {
+    // every 9 minutes, reopen the websocket connection:
+    setTimeout(() => {
+      websocket.onclose = () => openWebSocket();
+      websocket.close();
+    }, 9 * 60 * 1000);
+  };
+
+  const openWebSocket = () => {
+    const websocket = new WebSocket(
+      config.hashedUserId
+        ? `${config.wsURL}?userId=${config.userId}&envId=${config.clientId}&userIdHash=${config.hashedUserId}`
+        : `${config.wsURL}?userId=${config.userId}&envId=${config.clientId}`
+    );
+    websocket.onopen = () => websocketOnConnectHandler(websocket);
+    websocket.onmessage = websocketMessageHandler;
+  };
+
   useEffect(() => {
     // reset state
     setNotifications([]);
@@ -449,23 +479,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
     loadNotifications(true);
 
-    const websocket = new WebSocket(
-      config.hashedUserId
-        ? `${config.wsURL}?userId=${config.userId}&envId=${config.clientId}&userIdHash=${config.hashedUserId}`
-        : `${config.wsURL}?userId=${config.userId}&envId=${config.clientId}`
-    );
-
-    websocket.onmessage = (m) => {
-      const body = JSON.parse(m.data);
-      if (!body || !body.route) {
-        return;
-      }
-
-      if (body.route === "inapp_web/new_notifications") {
-        const message = body as WS_NewNotification;
-        addNotificationsToState(message.payload.notifications);
-      }
-    };
+    openWebSocket();
 
     api(
       config.apiURL,
