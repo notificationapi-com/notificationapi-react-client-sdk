@@ -2,7 +2,7 @@ import { Badge } from "antd";
 import { PropsWithChildren, useContext } from "react";
 import { NotificationAPIContext } from "../Provider";
 import { NotificationPopupProps } from "./NotificationPopup";
-import { InAppNotification } from "../../interface";
+import { InAppNotification } from "@notificationapi/core/dist/interfaces";
 
 export type UnreadBadgeProps = {
   color?:

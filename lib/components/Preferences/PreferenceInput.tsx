@@ -1,33 +1,30 @@
 import { Divider, Radio, Space, Switch, Typography } from "antd";
-import { Channels, DeliveryOptions, Preferences } from "../Provider";
 import { getChannelIcon, getChannelLabel } from "./Preferences";
+import {
+  BaseDeliveryOptions,
+  Channels,
+  DeliveryOptionsForEmail,
+  DeliveryOptionsForInappWeb,
+  GetPreferencesResponse,
+} from "@notificationapi/core/dist/interfaces";
 const Text = Typography.Text;
 
 const sortChannels = (a: Channels, b: Channels) => {
-  const order = [
-    Channels.EMAIL,
-    Channels.INAPP_WEB,
-    Channels.SMS,
-    Channels.CALL,
-    Channels.PUSH,
-    Channels.WEB_PUSH,
-  ];
+  const order = ["EMAIL", "INAPP_WEB", "SMS", "CALL", "PUSH", "WEB_PUSH"];
   return order.indexOf(a) - order.indexOf(b);
 };
 
-const sortDeliveries = (a: DeliveryOptions, b: DeliveryOptions) => {
-  const order = [
-    DeliveryOptions.OFF,
-    DeliveryOptions.INSTANT,
-    DeliveryOptions.HOURLY,
-    DeliveryOptions.DAILY,
-    DeliveryOptions.WEEKLY,
-    DeliveryOptions.MONTHLY,
-  ];
+const sortDeliveries = (
+  a: DeliveryOptionsForEmail | DeliveryOptionsForInappWeb | BaseDeliveryOptions,
+  b: DeliveryOptionsForEmail | DeliveryOptionsForInappWeb | BaseDeliveryOptions
+) => {
+  const order = ["off", "instant", "hourly", "daily", "weekly", "monthly"];
   return order.indexOf(a) - order.indexOf(b);
 };
 
-const getDeliveryLabel = (d: DeliveryOptions) => {
+const getDeliveryLabel = (
+  d: DeliveryOptionsForEmail | DeliveryOptionsForInappWeb | BaseDeliveryOptions
+) => {
   const labels = {
     off: "Off",
     instant: "Instant",
@@ -40,12 +37,15 @@ const getDeliveryLabel = (d: DeliveryOptions) => {
 };
 
 type Props = {
-  preferences: Preferences["preferences"];
-  notification: Preferences["notifications"][0];
+  preferences: GetPreferencesResponse["preferences"];
+  notification: GetPreferencesResponse["notifications"][0];
   updateDelivery: (
     notificationId: string,
     channel: Channels,
-    delivery: DeliveryOptions,
+    delivery:
+      | DeliveryOptionsForEmail
+      | DeliveryOptionsForInappWeb
+      | BaseDeliveryOptions,
     subNotificationId?: string
   ) => void;
   subNotificationId?: string;
@@ -75,23 +75,21 @@ export const PreferenceInput = ({
 
         const deliveries = Object.keys(notification.options![channel]!).filter(
           (o) => o !== "defaultDeliveryOption" && o !== "defaultDeliverOption"
-        ) as DeliveryOptions[];
+        ) as
+          | DeliveryOptionsForEmail[]
+          | DeliveryOptionsForInappWeb[]
+          | BaseDeliveryOptions[];
 
         let selector;
         if (deliveries.length === 1) {
           selector = <Text>{getDeliveryLabel(preference.delivery)}</Text>;
-        } else if (
-          deliveries.length === 2 &&
-          deliveries.includes(DeliveryOptions.OFF)
-        ) {
+        } else if (deliveries.length === 2 && deliveries.includes("off")) {
           selector = (
             <Switch
-              checked={preference.delivery !== DeliveryOptions.OFF}
+              checked={preference.delivery !== "off"}
               onChange={(state) => {
                 if (state) {
-                  const delivery = deliveries.find(
-                    (d) => d !== DeliveryOptions.OFF
-                  )!;
+                  const delivery = deliveries.find((d) => d !== "off")!;
                   updateDelivery(
                     notification.notificationId,
                     channel,
@@ -102,7 +100,7 @@ export const PreferenceInput = ({
                   updateDelivery(
                     notification.notificationId,
                     channel,
-                    DeliveryOptions.OFF,
+                    "off",
                     subNotificationId
                   );
                 }
@@ -113,12 +111,12 @@ export const PreferenceInput = ({
           selector = (
             <>
               <Switch
-                checked={preference.delivery !== DeliveryOptions.OFF}
+                checked={preference.delivery !== "off"}
                 onChange={(state) => {
                   if (state) {
                     const delivery = deliveries
                       .sort(sortDeliveries)
-                      .find((d) => d !== DeliveryOptions.OFF)!;
+                      .find((d) => d !== "off")!;
                     updateDelivery(
                       notification.notificationId,
                       channel,
@@ -129,7 +127,7 @@ export const PreferenceInput = ({
                     updateDelivery(
                       notification.notificationId,
                       channel,
-                      DeliveryOptions.OFF,
+                      "off",
                       subNotificationId
                     );
                   }
@@ -139,8 +137,7 @@ export const PreferenceInput = ({
                 style={{
                   width: "100%",
                   marginTop: 8,
-                  maxHeight:
-                    preference.delivery !== DeliveryOptions.OFF ? 1000 : 0,
+                  maxHeight: preference.delivery !== "off" ? 1000 : 0,
                   overflow: "hidden",
                   transition: "max-height 0.3s ease",
                 }}
@@ -162,7 +159,7 @@ export const PreferenceInput = ({
                   >
                     <Space direction="vertical" style={{ paddingTop: 10 }}>
                       {deliveries
-                        .filter((d) => d !== DeliveryOptions.OFF)
+                        .filter((d) => d !== "off")
                         .sort(sortDeliveries)
                         .map((d) => (
                           <Radio value={d} key={d}>

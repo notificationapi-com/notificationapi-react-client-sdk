@@ -1,5 +1,5 @@
 import { Collapse, CollapseProps } from "antd";
-import { Channels, NotificationAPIContext } from "../Provider";
+import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 import {
   BellOutlined,
@@ -11,6 +11,7 @@ import {
 } from "@ant-design/icons";
 import { blue } from "@ant-design/colors";
 import { PreferenceInput } from "./PreferenceInput";
+import { Channels } from "@notificationapi/core/dist/interfaces";
 
 export const getChannelLabel = (c: Channels) => {
   const labels = {
@@ -26,17 +27,17 @@ export const getChannelLabel = (c: Channels) => {
 
 export const getChannelIcon = (channel: Channels): React.ReactElement => {
   switch (channel) {
-    case Channels.EMAIL:
+    case "EMAIL":
       return <MailOutlined style={{ color: blue.primary }} />;
-    case Channels.SMS:
+    case "SMS":
       return <MessageOutlined style={{ color: blue.primary }} />;
-    case Channels.PUSH:
+    case "PUSH":
       return <MobileOutlined style={{ color: blue.primary }} />;
-    case Channels.CALL:
+    case "CALL":
       return <PhoneOutlined style={{ color: blue.primary }} />;
-    case Channels.INAPP_WEB:
+    case "INAPP_WEB":
       return <BellOutlined style={{ color: blue.primary }} />;
-    case Channels.WEB_PUSH:
+    case "WEB_PUSH":
       return <ChromeOutlined style={{ color: blue.primary }} />;
     default:
       return <MailOutlined style={{ color: blue.primary }} />;

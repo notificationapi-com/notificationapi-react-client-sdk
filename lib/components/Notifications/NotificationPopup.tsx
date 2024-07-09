@@ -5,7 +5,7 @@ import { UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
 import { ImageShape, NotificationProps } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext, useState } from "react";
-import { InAppNotification } from "../../interface";
+import { InAppNotification } from "@notificationapi/core/dist/interfaces";
 import { NotificationPreferencesPopup } from "../Preferences";
 import { InboxHeaderProps } from "./InboxHeader";
 

@@ -4,8 +4,8 @@ import { styled } from "styled-components";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import ReactTimeAgo from "react-time-ago";
-import { InAppNotification } from "../../interface";
 import { Liquid } from "liquidjs";
+import { InAppNotification } from "@notificationapi/core/dist/interfaces";
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);

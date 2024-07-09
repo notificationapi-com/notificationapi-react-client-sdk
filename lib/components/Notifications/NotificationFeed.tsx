@@ -3,9 +3,9 @@ import { Inbox, Pagination } from "./Inbox";
 import { ImageShape, NotificationProps } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { Filter } from "./NotificationPopup";
-import { InAppNotification } from "../../interface";
 import { InboxHeaderProps } from "./InboxHeader";
 import { NotificationPreferencesPopup } from "../Preferences";
+import { InAppNotification } from "@notificationapi/core/dist/interfaces";
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;

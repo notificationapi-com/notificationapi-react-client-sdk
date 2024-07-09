@@ -5,8 +5,8 @@ import { ImageShape, Notification } from "./Notification";
 import { NotificationAPIContext } from "../Provider";
 import { useContext } from "react";
 import { Filter, NotificationPopupProps } from "./NotificationPopup";
-import { InAppNotification } from "../../interface";
 import { Liquid } from "liquidjs";
+import { InAppNotification } from "@notificationapi/core/dist/interfaces";
 
 export enum Pagination {
   INFINITE_SCROLL = "infinite_scroll",
