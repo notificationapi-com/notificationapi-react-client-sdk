@@ -20,7 +20,7 @@ export type NotificationPopupProps = {
   buttonWidth?: number;
   buttonHeight?: number;
   popupWidth?: number | string;
-  popupHeight?: number | string;
+  popupHeight?: number;
   imageShape?: keyof typeof ImageShape;
   pagination?: keyof typeof Pagination;
   pageSize?: number;
@@ -86,7 +86,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         trigger="click"
         content={
           <Inbox
-            maxHeight={500}
+            maxHeight={config.popupHeight - 73}
             pagination={config.pagination}
             filter={config.filter}
             imageShape={config.imageShape}
