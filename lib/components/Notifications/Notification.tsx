@@ -124,7 +124,11 @@ export const Notification = (props: NotificationProps) => {
         }}
       >
         <div>
-          <Typography.Text>
+          <Typography.Text
+            style={{
+              whiteSpace: "pre-line",
+            }}
+          >
             <span dangerouslySetInnerHTML={{ __html: title as string }}></span>
           </Typography.Text>
         </div>
