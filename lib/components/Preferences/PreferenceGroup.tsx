@@ -5,11 +5,11 @@ import {
   Radio,
   Space,
   Switch,
-  Typography,
-} from "antd";
-import { Channels, DeliveryOptions, NotificationAPIContext } from "../Provider";
-import { getChannelIcon, getChannelLabel } from "./Preferences";
-import { useContext } from "react";
+  Typography
+} from 'antd';
+import { Channels, DeliveryOptions, NotificationAPIContext } from '../Provider';
+import { getChannelIcon, getChannelLabel } from './Preferences';
+import { useContext } from 'react';
 
 const Text = Typography.Text;
 
@@ -20,12 +20,12 @@ type PreferenceGroupProps = {
 
 const getDeliveryLabel = (d: DeliveryOptions) => {
   const labels = {
-    off: "Off",
-    instant: "Instant",
-    hourly: "Hourly",
-    daily: "Daily",
-    weekly: "Weekly",
-    monthly: "Monthly",
+    off: 'Off',
+    instant: 'Instant',
+    hourly: 'Hourly',
+    daily: 'Daily',
+    weekly: 'Weekly',
+    monthly: 'Monthly'
   };
   return labels[d];
 };
@@ -37,7 +37,7 @@ const sortChannels = (a: Channels, b: Channels) => {
     Channels.SMS,
     Channels.CALL,
     Channels.PUSH,
-    Channels.WEB_PUSH,
+    Channels.WEB_PUSH
   ];
   return order.indexOf(a) - order.indexOf(b);
 };
@@ -49,7 +49,7 @@ const sortDeliveries = (a: DeliveryOptions, b: DeliveryOptions) => {
     DeliveryOptions.HOURLY,
     DeliveryOptions.DAILY,
     DeliveryOptions.WEEKLY,
-    DeliveryOptions.MONTHLY,
+    DeliveryOptions.MONTHLY
   ];
   return order.indexOf(a) - order.indexOf(b);
 };
@@ -64,7 +64,7 @@ export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
   const prefs = context.preferences.preferences;
   const notifications = context.preferences.notifications;
 
-  const items: CollapseProps["items"] = notifications.map((n) => {
+  const items: CollapseProps['items'] = notifications.map((n) => {
     const onChannels = Array.from(
       new Set(
         prefs
@@ -81,7 +81,7 @@ export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
       key: n.notificationId,
       extra: (
         <Text type="secondary">
-          {onChannels.map((c) => getChannelLabel(c)).join(", ")}
+          {onChannels.map((c) => getChannelLabel(c)).join(', ')}
         </Text>
       ),
       children: (
@@ -97,7 +97,7 @@ export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
 
               const deliveries = Object.keys(n.options![c]!).filter(
                 (o) =>
-                  o !== "defaultDeliveryOption" && o !== "defaultDeliverOption"
+                  o !== 'defaultDeliveryOption' && o !== 'defaultDeliverOption'
               ) as DeliveryOptions[];
 
               let selector;
@@ -148,12 +148,12 @@ export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
                     />
                     <div
                       style={{
-                        width: "100%",
+                        width: '100%',
                         marginTop: 8,
                         maxHeight:
                           p.delivery !== DeliveryOptions.OFF ? 1000 : 0,
-                        overflow: "hidden",
-                        transition: "max-height 0.3s ease",
+                        overflow: 'hidden',
+                        transition: 'max-height 0.3s ease'
                       }}
                     >
                       <div>
@@ -194,11 +194,11 @@ export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
                   <div
                     key={c}
                     style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      flexWrap: "wrap",
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
                       marginTop: i === 0 ? 12 : 0,
-                      marginBottom: i === n.channels.length - 1 ? 12 : 0,
+                      marginBottom: i === n.channels.length - 1 ? 12 : 0
                     }}
                   >
                     <Text>
@@ -212,7 +212,7 @@ export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
             }
           })}
         </div>
-      ),
+      )
     };
   });
 

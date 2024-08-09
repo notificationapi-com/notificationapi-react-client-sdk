@@ -1,23 +1,23 @@
-import { Empty, List } from "antd";
-import { InboxHeader } from "./InboxHeader";
-import VirtualList from "rc-virtual-list";
-import { ImageShape, Notification } from "./Notification";
-import { NotificationAPIContext } from "../Provider";
-import { useContext } from "react";
-import { Filter, NotificationPopupProps } from "./NotificationPopup";
+import { Empty, List } from 'antd';
+import { InboxHeader } from './InboxHeader';
+import VirtualList from 'rc-virtual-list';
+import { ImageShape, Notification } from './Notification';
+import { NotificationAPIContext } from '../Provider';
+import { useContext } from 'react';
+import { Filter, NotificationPopupProps } from './NotificationPopup';
 
 export enum Pagination {
-  INFINITE_SCROLL = "infinite_scroll",
-  PAGINATED = "paginated",
+  INFINITE_SCROLL = 'infinite_scroll',
+  PAGINATED = 'paginated'
 }
 
 type InboxProps = {
   pagination: keyof typeof Pagination;
   maxHeight: number;
-  filter: NotificationPopupProps["filter"];
+  filter: NotificationPopupProps['filter'];
   imageShape: keyof typeof ImageShape;
   pageSize: number;
-  pagePosition: NotificationPopupProps["pagePosition"];
+  pagePosition: NotificationPopupProps['pagePosition'];
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
@@ -41,7 +41,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
 
   return (
     <div>
-      {props.pagination === "INFINITE_SCROLL" ? (
+      {props.pagination === 'INFINITE_SCROLL' ? (
         <List
           header={<InboxHeader markAsArchived={context.markAsArchived} />}
           dataSource={filterFunction(context.notifications)}
@@ -98,7 +98,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
           )}
           pagination={{
             pageSize: props.pageSize,
-            align: "center",
+            align: 'center',
             position: props.pagePosition,
             showSizeChanger: false,
             simple: true,
@@ -108,7 +108,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               ) {
                 context.loadNotifications();
               }
-            },
+            }
           }}
         >
           {filterFunction(context.notifications).length === 0 && (

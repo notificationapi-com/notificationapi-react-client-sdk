@@ -2,9 +2,9 @@ import React, {
   PropsWithChildren,
   createContext,
   useEffect,
-  useState,
-} from "react";
-import { api } from "../../api";
+  useState
+} from 'react';
+import { api } from '../../api';
 
 type Props = {
   clientId: string;
@@ -16,37 +16,37 @@ type Props = {
 };
 
 interface WS_NewNotification {
-  route: "inapp_web/new_notifications";
+  route: 'inapp_web/new_notifications';
   payload: {
     notifications: any[];
   };
 }
 
 export const NOTIFICATION_ACTIONS = {
-  opened: "opened",
-  clicked: "clicked",
-  archived: "archived",
-  replied: "replied",
-  actioned1: "actioned1",
-  actioned2: "actioned2",
+  opened: 'opened',
+  clicked: 'clicked',
+  archived: 'archived',
+  replied: 'replied',
+  actioned1: 'actioned1',
+  actioned2: 'actioned2'
 };
 
 export enum Channels {
-  EMAIL = "EMAIL",
-  INAPP_WEB = "INAPP_WEB",
-  SMS = "SMS",
-  CALL = "CALL",
-  PUSH = "PUSH",
-  WEB_PUSH = "WEB_PUSH",
+  EMAIL = 'EMAIL',
+  INAPP_WEB = 'INAPP_WEB',
+  SMS = 'SMS',
+  CALL = 'CALL',
+  PUSH = 'PUSH',
+  WEB_PUSH = 'WEB_PUSH'
 }
 
 export enum DeliveryOptions {
-  OFF = "off",
-  INSTANT = "instant",
-  HOURLY = "hourly",
-  DAILY = "daily",
-  WEEKLY = "weekly",
-  MONTHLY = "monthly",
+  OFF = 'off',
+  INSTANT = 'instant',
+  HOURLY = 'hourly',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly'
 }
 
 export interface Notification {
@@ -61,9 +61,9 @@ export interface Notification {
   throttling?: {
     max: number;
     period: number;
-    unit: "seconds" | "minutes" | "hours" | "days" | "months" | "years";
+    unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years';
     forever: boolean;
-    scope: ["userId", "notificationId"];
+    scope: ['userId', 'notificationId'];
   };
   retention?: number;
   options?: {
@@ -90,7 +90,7 @@ export interface Notification {
       [DeliveryOptions.MONTHLY]: {
         enabled: boolean;
         hour: string;
-        date: "first" | "last";
+        date: 'first' | 'last';
       };
     };
   };
@@ -127,7 +127,7 @@ export interface Preferences {
     notificationId: string;
     title: string;
     channels: Channels[];
-    options: Notification["options"];
+    options: Notification['options'];
   }[];
   subNotifications: {
     notificationId: string;
@@ -141,7 +141,7 @@ export type Context = {
   preferences?: Preferences;
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
-  markAsArchived: (ids: string[] | "ALL") => void;
+  markAsArchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (id: string) => void;
   updateDelivery: (
     notificationId: string,
@@ -159,15 +159,15 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   PropsWithChildren<Props>
 > = (props) => {
   const defaultConfigs = {
-    apiURL: "https://api.notificationapi.com",
-    wsURL: "wss://ws.notificationapi.com",
+    apiURL: 'https://api.notificationapi.com',
+    wsURL: 'wss://ws.notificationapi.com',
     initialLoadMaxCount: 1000,
-    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3))
   };
 
   const config = {
     ...defaultConfigs,
-    ...props,
+    ...props
   };
 
   const [notifications, setNotifications] = useState<InappNotification[]>();
@@ -184,7 +184,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
         ...notis.filter((n) => {
           return !prev.find((p) => p.id === n.id);
         }),
-        ...prev,
+        ...prev
       ];
     });
   };
@@ -195,7 +195,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   ): Promise<any[]> => {
     const res = await api(
       config.apiURL,
-      "GET",
+      'GET',
       `notifications/INAPP_WEB?count=${count}&before=${before}`,
       props.clientId,
       props.userId
@@ -245,7 +245,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     return {
       notifications: result,
       couldLoadMore,
-      oldestReceived,
+      oldestReceived
     };
   };
 
@@ -268,14 +268,14 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     const date = new Date().toISOString();
     api(
       config.apiURL,
-      "PATCH",
+      'PATCH',
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      '',
       {
         trackingIds: [id],
-        clicked: date,
+        clicked: date
       }
     );
 
@@ -302,14 +302,14 @@ export const NotificatinAPIProvider: React.FunctionComponent<
 
     api(
       config.apiURL,
-      "PATCH",
+      'PATCH',
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      '',
       {
         trackingIds,
-        opened: date,
+        opened: date
       }
     );
 
@@ -326,13 +326,13 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     });
   };
 
-  const markAsArchived = async (ids: string[] | "ALL") => {
+  const markAsArchived = async (ids: string[] | 'ALL') => {
     if (!notifications) return;
 
     const date = new Date().toISOString();
     const trackingIds: string[] = notifications
       .filter((n) => {
-        return !n.archived && (ids === "ALL" || ids.includes(n.id));
+        return !n.archived && (ids === 'ALL' || ids.includes(n.id));
       })
       .map((n) => n.id);
 
@@ -340,14 +340,14 @@ export const NotificatinAPIProvider: React.FunctionComponent<
 
     api(
       config.apiURL,
-      "PATCH",
+      'PATCH',
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      '',
       {
         trackingIds,
-        archived: date,
+        archived: date
       }
     );
 
@@ -394,13 +394,13 @@ export const NotificatinAPIProvider: React.FunctionComponent<
         return;
       }
 
-      if (body.route === "inapp_web/new_notifications") {
+      if (body.route === 'inapp_web/new_notifications') {
         const message = body as WS_NewNotification;
         addNotificationsToState(message.payload.notifications);
       }
     };
 
-    api(config.apiURL, "GET", `preferences`, props.clientId, props.userId).then(
+    api(config.apiURL, 'GET', `preferences`, props.clientId, props.userId).then(
       (res) => {
         setPreferences(res);
       }
@@ -414,7 +414,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     markAsOpened,
     markAsArchived,
     markAsClicked,
-    updateDelivery,
+    updateDelivery
   };
 
   return (

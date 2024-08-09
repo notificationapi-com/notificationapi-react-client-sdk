@@ -1,16 +1,16 @@
-import { CheckOutlined } from "@ant-design/icons";
-import { Avatar, Badge, Button, Typography } from "antd";
-import { styled } from "styled-components";
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
-import ReactTimeAgo from "react-time-ago";
+import { CheckOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, Typography } from 'antd';
+import { styled } from 'styled-components';
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en';
+import ReactTimeAgo from 'react-time-ago';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
 
 export enum ImageShape {
-  square = "square",
-  circle = "circle",
+  square = 'square',
+  circle = 'circle'
 }
 
 const NotificationDiv = styled.div<{
@@ -18,7 +18,7 @@ const NotificationDiv = styled.div<{
   $seen: boolean;
   $archived: boolean;
 }>`
-  cursor: ${(props) => (props.$redirect ? "pointer" : "default")};
+  cursor: ${(props) => (props.$redirect ? 'pointer' : 'default')};
 
   &:hover {
     background: #eee !important;
@@ -30,13 +30,13 @@ const NotificationDiv = styled.div<{
   }
 
   &:hover .notification-archive-button {
-    visibility: ${(props) => (props.$archived ? "hidden" : "visible")};
+    visibility: ${(props) => (props.$archived ? 'hidden' : 'visible')};
   }
 `;
 
 export const Notification = (props: {
   notification: any;
-  markAsArchived: (ids: string[] | "ALL") => void;
+  markAsArchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (id: string) => void;
   imageShape: keyof typeof ImageShape;
 }) => {
@@ -52,12 +52,12 @@ export const Notification = (props: {
         }
       }}
       style={{
-        padding: "16px 6px 16px 0",
-        background: "#fff",
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        width: "100%",
+        padding: '16px 6px 16px 0',
+        background: '#fff',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%'
       }}
     >
       <div>
@@ -66,7 +66,7 @@ export const Notification = (props: {
           size="large"
           style={{
             marginRight: 8,
-            marginLeft: 12,
+            marginLeft: 12
           }}
           shape={props.imageShape}
         />
@@ -74,7 +74,7 @@ export const Notification = (props: {
 
       <div
         style={{
-          flexGrow: 1,
+          flexGrow: 1
         }}
       >
         <div>
@@ -92,11 +92,11 @@ export const Notification = (props: {
 
       <div
         style={{
-          position: "relative",
+          position: 'relative',
           width: 48,
           height: 32,
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center'
         }}
       >
         <Button
@@ -116,11 +116,11 @@ export const Notification = (props: {
           dot
           className="notification-highlight"
           style={{
-            visibility: props.notification.archived ? "hidden" : "visible",
+            visibility: props.notification.archived ? 'hidden' : 'visible',
             marginRight: 10,
             marginLeft: 8,
             marginTop: 6,
-            right: 0,
+            right: 0
           }}
         />
       </div>

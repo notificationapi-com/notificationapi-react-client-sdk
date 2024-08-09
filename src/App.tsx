@@ -1,19 +1,19 @@
-import { Button, Divider } from "antd";
+import { Button, Divider } from 'antd';
 import {
   NotificationFeed,
   NotificationPopup,
   NotificationLauncher,
   NotificationCounter,
-  NotificatinAPIProvider,
-} from "../lib/main";
+  NotificatinAPIProvider
+} from '../lib/main';
 
 function App() {
   return (
     <div
       style={{
-        height: "200vh",
-        background: "#f0f2f5",
-        padding: 24,
+        height: '200vh',
+        background: '#f0f2f5',
+        padding: 24
       }}
     >
       <NotificatinAPIProvider

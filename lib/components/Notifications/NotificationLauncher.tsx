@@ -1,16 +1,16 @@
-import { Button, Popover } from "antd";
-import { Inbox } from "./Inbox";
-import { BellOutlined } from "@ant-design/icons";
-import { UnreadBadge } from "./UnreadBadge";
-import { NotificationPopupProps } from "./NotificationPopup";
-import { useContext } from "react";
-import { NotificationAPIContext } from "../Provider";
+import { Button, Popover } from 'antd';
+import { Inbox } from './Inbox';
+import { BellOutlined } from '@ant-design/icons';
+import { UnreadBadge } from './UnreadBadge';
+import { NotificationPopupProps } from './NotificationPopup';
+import { useContext } from 'react';
+import { NotificationAPIContext } from '../Provider';
 
 export enum Position {
-  TOP_LEFT = "top-left",
-  TOP_RIGHT = "top-right",
-  BOTTOM_LEFT = "bottom-left",
-  BOTTOM_RIGHT = "bottom-right",
+  TOP_LEFT = 'top-left',
+  TOP_RIGHT = 'top-right',
+  BOTTOM_LEFT = 'bottom-left',
+  BOTTOM_RIGHT = 'bottom-right'
 }
 
 type NotificationLaucherProps = NotificationPopupProps & {
@@ -29,20 +29,20 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     popupHeight: props.popupHeight || 600,
     buttonIconSize:
       props.buttonIconSize || (props.buttonWidth ? props.buttonWidth / 2 : 20),
-    imageShape: props.imageShape || "circle",
-    pagination: props.pagination || "INFINITE_SCROLL",
+    imageShape: props.imageShape || 'circle',
+    pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
-    pagePosition: props.pagePosition || "top",
+    pagePosition: props.pagePosition || 'top',
     style: {
       zIndex: 999,
-      ...props.style,
+      ...props.style
     },
     unreadBadgeProps: props.unreadBadgeProps ?? {},
     offsetX: props.offsetX || 16,
     offsetY: props.offsetY || 16,
-    position: props.position || "BOTTOM_RIGHT",
-    count: props.count || "COUNT_UNOPENED_NOTIFICATIONS",
-    filter: props.filter || "ALL",
+    position: props.position || 'BOTTOM_RIGHT',
+    count: props.count || 'COUNT_UNOPENED_NOTIFICATIONS',
+    filter: props.filter || 'ALL'
   };
 
   const context = useContext(NotificationAPIContext);
@@ -54,10 +54,10 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
   return (
     <div
       style={{
-        position: "fixed",
+        position: 'fixed',
         right: config.offsetX,
         bottom: config.offsetY,
-        ...config.style,
+        ...config.style
       }}
     >
       <Popover
@@ -75,8 +75,8 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
         }
         arrow={false}
         overlayStyle={{
-          padding: "0 16px",
-          minWidth: config.popupWidth,
+          padding: '0 16px',
+          minWidth: config.popupWidth
         }}
         onOpenChange={(visible) => {
           if (visible) {
@@ -86,14 +86,14 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
       >
         <div
           style={{
-            display: "inline-block",
+            display: 'inline-block'
           }}
         >
           <UnreadBadge
             {...props.unreadBadgeProps}
             style={{
               top: 5,
-              right: 5,
+              right: 5
             }}
             count={config.count}
           >
@@ -101,13 +101,13 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
               icon={
                 <BellOutlined
                   style={{
-                    fontSize: config.buttonIconSize,
+                    fontSize: config.buttonIconSize
                   }}
                 />
               }
               style={{
                 width: config.buttonWidth,
-                height: config.buttonHeight,
+                height: config.buttonHeight
               }}
               shape="circle"
               type="default"

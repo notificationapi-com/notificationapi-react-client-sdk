@@ -1,27 +1,27 @@
-import { Typography } from "antd";
-import { Channels, NotificationAPIContext } from "../Provider";
-import { useContext } from "react";
+import { Typography } from 'antd';
+import { Channels, NotificationAPIContext } from '../Provider';
+import { useContext } from 'react';
 import {
   BellOutlined,
   ChromeOutlined,
   MailOutlined,
   MessageOutlined,
   MobileOutlined,
-  PhoneOutlined,
-} from "@ant-design/icons";
-import { blue } from "@ant-design/colors";
-import { PreferenceGroup } from "./PreferenceGroup";
+  PhoneOutlined
+} from '@ant-design/icons';
+import { blue } from '@ant-design/colors';
+import { PreferenceGroup } from './PreferenceGroup';
 
 const Text = Typography.Text;
 
 export const getChannelLabel = (c: Channels) => {
   const labels = {
-    EMAIL: "Email",
-    INAPP_WEB: "In-App",
-    SMS: "Text",
-    CALL: "Automated Calling",
-    PUSH: "Mobile",
-    WEB_PUSH: "Browser",
+    EMAIL: 'Email',
+    INAPP_WEB: 'In-App',
+    SMS: 'Text',
+    CALL: 'Automated Calling',
+    PUSH: 'Mobile',
+    WEB_PUSH: 'Browser'
   };
   return labels[c];
 };
@@ -67,7 +67,7 @@ export function Preferences() {
     ) {
       uniqueSubNotifications.push({
         subNotificationId: sn.subNotificationId,
-        title: sn.title,
+        title: sn.title
       });
     }
   });

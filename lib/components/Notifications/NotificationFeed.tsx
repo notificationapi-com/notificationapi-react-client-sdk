@@ -1,14 +1,14 @@
-import { useContext, useEffect } from "react";
-import { Inbox, Pagination } from "./Inbox";
-import { ImageShape } from "./Notification";
-import { NotificationAPIContext } from "../Provider";
-import { Filter } from "./NotificationPopup";
+import { useContext, useEffect } from 'react';
+import { Inbox, Pagination } from './Inbox';
+import { ImageShape } from './Notification';
+import { NotificationAPIContext } from '../Provider';
+import { Filter } from './NotificationPopup';
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;
   pagination?: keyof typeof Pagination;
   pageSize?: number;
-  pagePosition?: "top" | "bottom";
+  pagePosition?: 'top' | 'bottom';
   infiniteScrollHeight?: number;
   style?: React.CSSProperties;
   filter?: keyof typeof Filter | ((n: any) => boolean);
@@ -16,15 +16,15 @@ export type NotificationFeedProps = {
 
 export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
   const config: Required<NotificationFeedProps> = {
-    imageShape: props.imageShape || "circle",
-    pagination: props.pagination || "INFINITE_SCROLL",
+    imageShape: props.imageShape || 'circle',
+    pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
-    pagePosition: props.pagePosition || "top",
+    pagePosition: props.pagePosition || 'top',
     style: props.style || {},
     filter: props.filter || Filter.ALL,
     infiniteScrollHeight: props.infiniteScrollHeight
       ? props.infiniteScrollHeight
-      : window.innerHeight * 0.75,
+      : window.innerHeight * 0.75
   };
 
   const context = useContext(NotificationAPIContext);
@@ -46,9 +46,9 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
     <div
       style={{
         padding: 12,
-        boxSizing: "border-box",
-        background: "#fff",
-        ...props.style,
+        boxSizing: 'border-box',
+        background: '#fff',
+        ...props.style
       }}
     >
       <Inbox
