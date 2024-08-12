@@ -3,7 +3,7 @@ import { Inbox, Pagination } from './Inbox';
 import { BellOutlined } from '@ant-design/icons';
 import { UnreadBadge, UnreadBadgeProps } from './UnreadBadge';
 import { ImageShape } from './Notification';
-import { NotificationAPIContext } from '../Provider';
+import { InappNotification, NotificationAPIContext } from '../Provider';
 import { useContext } from 'react';
 
 export enum Filter {
@@ -24,7 +24,7 @@ export type NotificationPopupProps = {
   style?: React.CSSProperties;
   unreadBadgeProps?: UnreadBadgeProps;
   count?: UnreadBadgeProps['count'];
-  filter?: keyof typeof Filter | ((n: any) => boolean);
+  filter?: keyof typeof Filter | ((n: InappNotification) => boolean);
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {

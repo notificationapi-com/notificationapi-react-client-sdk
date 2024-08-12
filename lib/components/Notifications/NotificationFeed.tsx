@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { Inbox, Pagination } from './Inbox';
 import { ImageShape } from './Notification';
-import { NotificationAPIContext } from '../Provider';
+import { InappNotification, NotificationAPIContext } from '../Provider';
 import { Filter } from './NotificationPopup';
 
 export type NotificationFeedProps = {
@@ -11,7 +11,7 @@ export type NotificationFeedProps = {
   pagePosition?: 'top' | 'bottom';
   infiniteScrollHeight?: number;
   style?: React.CSSProperties;
-  filter?: keyof typeof Filter | ((n: any) => boolean);
+  filter?: keyof typeof Filter | ((n: InappNotification) => boolean);
 };
 
 export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
@@ -29,18 +29,20 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
 
   const context = useContext(NotificationAPIContext);
 
-  if (!context) {
-    return null;
-  }
-
-  // every 5 seconds
   useEffect(() => {
+    if (!context) return;
+
     context.markAsOpened();
     const interval = setInterval(() => {
       context.markAsOpened();
     }, 5000);
+
     return () => clearInterval(interval);
-  }, []);
+  }, [context]);
+
+  if (!context) {
+    return null;
+  }
 
   return (
     <div

@@ -18,7 +18,7 @@ type Props = {
 interface WS_NewNotification {
   route: 'inapp_web/new_notifications';
   payload: {
-    notifications: any[];
+    notifications: InappNotification[];
   };
 }
 
@@ -102,7 +102,7 @@ export interface InappNotification {
   title: string;
   redirectURL?: string;
   imageURL?: string;
-  date: Date;
+  date: string;
   parameters?: Record<string, unknown>;
   expDate?: Date;
   opened?: string;
@@ -176,7 +176,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
 
-  const addNotificationsToState = (notis: any[]) => {
+  const addNotificationsToState = (notis: InappNotification[]) => {
     setNotifications((prev) => {
       if (!prev) return notis; // if no existing notifications in state, just return the new ones
 
@@ -192,7 +192,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   const getNotifications = async (
     count: number,
     before: number
-  ): Promise<any[]> => {
+  ): Promise<InappNotification[]> => {
     const res = await api(
       config.apiURL,
       'GET',
@@ -200,7 +200,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
       props.clientId,
       props.userId
     );
-    return res.notifications;
+    return (res as { notifications: InappNotification[] }).notifications;
   };
 
   const fetchNotificationsBeforeDate = async (
@@ -208,11 +208,11 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     maxCountNeeded: number,
     oldestNeeded?: string
   ): Promise<{
-    notifications: any[];
+    notifications: InappNotification[];
     couldLoadMore: boolean;
     oldestReceived: string;
   }> => {
-    let result: any[] = [];
+    let result: InappNotification[] = [];
     let oldestReceived = before;
     let couldLoadMore = true;
     let shouldLoadMore = true;
@@ -222,10 +222,10 @@ export const NotificatinAPIProvider: React.FunctionComponent<
         new Date(oldestReceived).getTime()
       );
       const notisWithoutDuplicates = notis.filter(
-        (n: any) => !result.find((nn) => nn.id === n.id)
+        (n: InappNotification) => !result.find((nn) => nn.id === n.id)
       );
       oldestReceived = notisWithoutDuplicates.reduce(
-        (min: string, n: any) => (min < n.date ? min : n.date),
+        (min: string, n: InappNotification) => (min < n.date ? min : n.date),
         before
       );
       result = [...result, ...notisWithoutDuplicates];
@@ -402,10 +402,18 @@ export const NotificatinAPIProvider: React.FunctionComponent<
 
     api(config.apiURL, 'GET', `preferences`, props.clientId, props.userId).then(
       (res) => {
-        setPreferences(res);
+        setPreferences(res as Preferences);
       }
     );
-  }, []);
+  }, [
+    config.apiURL,
+    config.clientId,
+    config.userId,
+    config.wsURL,
+    loadNotifications,
+    props.clientId,
+    props.userId
+  ]);
 
   const value: Context = {
     notifications,

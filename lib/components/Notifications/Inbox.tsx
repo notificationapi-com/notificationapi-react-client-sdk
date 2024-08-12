@@ -2,7 +2,7 @@ import { Empty, List } from 'antd';
 import { InboxHeader } from './InboxHeader';
 import VirtualList from 'rc-virtual-list';
 import { ImageShape, Notification } from './Notification';
-import { NotificationAPIContext } from '../Provider';
+import { InappNotification, NotificationAPIContext } from '../Provider';
 import { useContext } from 'react';
 import { Filter, NotificationPopupProps } from './NotificationPopup';
 
@@ -23,7 +23,7 @@ type InboxProps = {
 export const Inbox: React.FC<InboxProps> = (props) => {
   const context = useContext(NotificationAPIContext);
 
-  const filterFunction = (notifications: any[]) => {
+  const filterFunction = (notifications: InappNotification[]) => {
     if (props.filter === Filter.ALL || !props.filter) {
       return notifications;
     } else if (props.filter === Filter.UNARCHIVED) {
@@ -70,7 +70,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               }
             }}
           >
-            {(n: any) => (
+            {(n: InappNotification) => (
               <List.Item key={n.id} style={{ padding: 0 }}>
                 <Notification
                   imageShape={props.imageShape}
@@ -86,7 +86,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
         <List
           header={<InboxHeader markAsArchived={context.markAsArchived} />}
           dataSource={filterFunction(context.notifications)}
-          renderItem={(n: any) => (
+          renderItem={(n: InappNotification) => (
             <List.Item key={n.id} style={{ padding: 0 }}>
               <Notification
                 imageShape={props.imageShape}

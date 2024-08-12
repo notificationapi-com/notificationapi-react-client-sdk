@@ -5,8 +5,8 @@ export const api = async (
   clientId: string,
   userId: string,
   hashedUserId?: string,
-  data?: any
-): Promise<any> => {
+  data?: unknown
+): Promise<unknown> => {
   const token = hashedUserId
     ? btoa(clientId + ':' + userId + ':' + hashedUserId)
     : btoa(clientId + ':' + userId);

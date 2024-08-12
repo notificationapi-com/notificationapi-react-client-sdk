@@ -4,6 +4,7 @@ import { styled } from 'styled-components';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ReactTimeAgo from 'react-time-ago';
+import { InappNotification } from '../Provider';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
@@ -35,7 +36,7 @@ const NotificationDiv = styled.div<{
 `;
 
 export const Notification = (props: {
-  notification: any;
+  notification: InappNotification;
   markAsArchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (id: string) => void;
   imageShape: keyof typeof ImageShape;

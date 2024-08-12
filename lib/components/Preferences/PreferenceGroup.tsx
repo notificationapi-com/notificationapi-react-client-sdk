@@ -92,8 +92,8 @@ export const PreferenceGroup: React.FC<PreferenceGroupProps> = () => {
             )!;
 
             if (p.notificationId === n.notificationId) {
-              let name = getChannelLabel(c);
-              let icon = getChannelIcon(c);
+              const name = getChannelLabel(c);
+              const icon = getChannelIcon(c);
 
               const deliveries = Object.keys(n.options![c]!).filter(
                 (o) =>
