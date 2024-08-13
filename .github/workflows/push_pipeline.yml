@@ -1,0 +1,70 @@
+name: Push Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Release:
+    name: Test, Build & Publish
+    runs-on: ubuntu-latest
+    outputs:
+      releaseType: ${{ steps.publish.outputs.type }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.17
+
+      - name: Cache node_modules
+        id: cache-modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: 18.17.x-${{ runner.OS }}-build-${{ hashFiles('package.json') }}
+
+      - name: Install Dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check Prettier Formatting
+        run: npm run prettier-check
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Send Slack Notification (Pre-Publish)
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,action,took
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always() # Send notifications even if the job fails or is canceled.
+
+      - name: Publish to npm
+        id: publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.REACT_CLIENT_SDK_NPM_AUTH_TOKEN }}
+        env:
+          NODE_ENV: production
+
+      - name: Send Slack Notification (Post-Publish)
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo
+          text: Published to NPM ${{ steps.publish.outputs.old-version }} -> ${{ steps.publish.outputs.version }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: steps.publish.outputs.type != 'none' && always()
