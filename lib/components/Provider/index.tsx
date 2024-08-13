@@ -2,7 +2,8 @@ import React, {
   PropsWithChildren,
   createContext,
   useEffect,
-  useState
+  useState,
+  useCallback
 } from 'react';
 import { api } from '../../api';
 import { Channels, DeliveryOptions } from '../Notifications/interface';
@@ -163,80 +164,93 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     });
   };
 
-  const getNotifications = async (
-    count: number,
-    before: number
-  ): Promise<InappNotification[]> => {
-    const res = await api(
-      config.apiURL,
-      'GET',
-      `notifications/INAPP_WEB?count=${count}&before=${before}`,
-      props.clientId,
-      props.userId
-    );
-    return (res as { notifications: InappNotification[] }).notifications;
-  };
-
-  const fetchNotificationsBeforeDate = async (
-    before: string,
-    maxCountNeeded: number,
-    oldestNeeded?: string
-  ): Promise<{
-    notifications: InappNotification[];
-    couldLoadMore: boolean;
-    oldestReceived: string;
-  }> => {
-    let result: InappNotification[] = [];
-    let oldestReceived = before;
-    let couldLoadMore = true;
-    let shouldLoadMore = true;
-    while (shouldLoadMore) {
-      const notis = await getNotifications(
-        maxCountNeeded,
-        new Date(oldestReceived).getTime()
+  const getNotifications = useCallback(
+    async (count: number, before: number): Promise<InappNotification[]> => {
+      const res = await api(
+        config.apiURL,
+        'GET',
+        `notifications/INAPP_WEB?count=${count}&before=${before}`,
+        props.clientId,
+        props.userId
       );
-      const notisWithoutDuplicates = notis.filter(
-        (n: InappNotification) => !result.find((nn) => nn.id === n.id)
-      );
-      oldestReceived = notisWithoutDuplicates.reduce(
-        (min: string, n: InappNotification) => (min < n.date ? min : n.date),
-        before
-      );
-      result = [...result, ...notisWithoutDuplicates];
+      return (res as { notifications: InappNotification[] }).notifications;
+    },
+    [config.apiURL, props.clientId, props.userId] // Dependencies of getNotifications
+  );
 
-      couldLoadMore = notisWithoutDuplicates.length > 0;
-      shouldLoadMore = true;
+  const fetchNotificationsBeforeDate = useCallback(
+    async (
+      before: string,
+      maxCountNeeded: number,
+      oldestNeeded?: string
+    ): Promise<{
+      notifications: InappNotification[];
+      couldLoadMore: boolean;
+      oldestReceived: string;
+    }> => {
+      let result: InappNotification[] = [];
+      let oldestReceived = before;
+      let couldLoadMore = true;
+      let shouldLoadMore = true;
+      while (shouldLoadMore) {
+        const notis = await getNotifications(
+          maxCountNeeded,
+          new Date(oldestReceived).getTime()
+        );
+        const notisWithoutDuplicates = notis.filter(
+          (n: InappNotification) => !result.find((nn) => nn.id === n.id)
+        );
+        oldestReceived = notisWithoutDuplicates.reduce(
+          (min: string, n: InappNotification) => (min < n.date ? min : n.date),
+          before
+        );
+        result = [...result, ...notisWithoutDuplicates];
 
-      if (
-        !couldLoadMore ||
-        result.length >= maxCountNeeded ||
-        (oldestNeeded && oldestReceived < oldestNeeded)
-      ) {
-        shouldLoadMore = false;
+        couldLoadMore = notisWithoutDuplicates.length > 0;
+        shouldLoadMore = true;
+
+        if (
+          !couldLoadMore ||
+          result.length >= maxCountNeeded ||
+          (oldestNeeded && oldestReceived < oldestNeeded)
+        ) {
+          shouldLoadMore = false;
+        }
       }
-    }
-    console.log(result.length, couldLoadMore, oldestReceived);
-    return {
-      notifications: result,
-      couldLoadMore,
-      oldestReceived
-    };
-  };
+      console.log(result.length, couldLoadMore, oldestReceived);
+      return {
+        notifications: result,
+        couldLoadMore,
+        oldestReceived
+      };
+    },
+    [getNotifications]
+  );
 
-  const loadNotifications = async (initial?: boolean) => {
-    if (!hasMore) return;
-    if (loadingNotifications) return;
-    setLoadingNotifications(true);
-    const res = await fetchNotificationsBeforeDate(
+  const loadNotifications = useCallback(
+    async (initial?: boolean) => {
+      if (!hasMore) return;
+      if (loadingNotifications) return;
+      setLoadingNotifications(true);
+      const res = await fetchNotificationsBeforeDate(
+        oldestLoaded,
+        initial ? config.initialLoadMaxCount : 1000,
+        initial ? config.initialLoadMaxAge.toISOString() : undefined
+      );
+      setOldestLoaded(res.oldestReceived);
+      setHasMore(res.couldLoadMore);
+      addNotificationsToState(res.notifications);
+      setLoadingNotifications(false);
+    },
+    [
+      hasMore,
+      loadingNotifications,
       oldestLoaded,
-      initial ? config.initialLoadMaxCount : 1000,
-      initial ? config.initialLoadMaxAge.toISOString() : undefined
-    );
-    setOldestLoaded(res.oldestReceived);
-    setHasMore(res.couldLoadMore);
-    addNotificationsToState(res.notifications);
-    setLoadingNotifications(false);
-  };
+      config.initialLoadMaxCount,
+      config.initialLoadMaxAge,
+      fetchNotificationsBeforeDate
+    ]
+  );
 
   const markAsClicked = async (id: string) => {
     const date = new Date().toISOString();
