@@ -10,7 +10,8 @@
     "format": "prettier --write \"{src,lib}/**/*.{ts,tsx,js,jsx,json,css,md,html}\"",
     "prettier-check": "prettier --check \"{src,lib}/**/*.{ts,tsx,js,jsx,json,css,md,html}\"",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "version": "bash scripts/version-update.sh && git add lib/api.ts"
   },
   "peerDependencies": {
     "react": "^18.2.0",
