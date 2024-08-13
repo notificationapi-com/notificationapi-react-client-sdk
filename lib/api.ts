@@ -1,3 +1,5 @@
+const USER_AGENT = 'notificationapi-react-client-sdk';
+const VERSION = '0.0.25';
 export const api = async (
   endpoint: string,
   method: 'GET' | 'POST' | 'PATCH',
@@ -16,7 +18,8 @@ export const api = async (
       method,
       body: JSON.stringify(data),
       headers: {
-        Authorization: `Basic ${token}`
+        Authorization: `Basic ${token}`,
+        'User-Agent': `${USER_AGENT}/${VERSION}`
       }
     }
   );
