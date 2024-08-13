@@ -5,13 +5,7 @@ import { UnreadBadge } from './UnreadBadge';
 import { NotificationPopupProps } from './NotificationPopup';
 import { useContext } from 'react';
 import { NotificationAPIContext } from '../Provider';
-
-export enum Position {
-  TOP_LEFT = 'top-left',
-  TOP_RIGHT = 'top-right',
-  BOTTOM_LEFT = 'bottom-left',
-  BOTTOM_RIGHT = 'bottom-right'
-}
+import { Position } from './interface';
 
 type NotificationLaucherProps = NotificationPopupProps & {
   position?: keyof typeof Position;

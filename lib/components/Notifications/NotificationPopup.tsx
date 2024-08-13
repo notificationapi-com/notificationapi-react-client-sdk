@@ -1,15 +1,10 @@
 import { Button, Popover } from 'antd';
-import { Inbox, Pagination } from './Inbox';
+import { Inbox } from './Inbox';
 import { BellOutlined } from '@ant-design/icons';
 import { UnreadBadge, UnreadBadgeProps } from './UnreadBadge';
-import { ImageShape } from './Notification';
 import { InappNotification, NotificationAPIContext } from '../Provider';
 import { useContext } from 'react';
-
-export enum Filter {
-  ALL = 'ALL',
-  UNARCHIVED = 'UNARCHIVED'
-}
+import { Filter, ImageShape, Pagination } from './interface';
 
 export type NotificationPopupProps = {
   buttonIconSize?: number;

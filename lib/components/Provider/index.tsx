@@ -5,6 +5,7 @@ import React, {
   useState
 } from 'react';
 import { api } from '../../api';
+import { Channels, DeliveryOptions } from '../Notifications/interface';
 
 type Props = {
   clientId: string;
@@ -20,33 +21,6 @@ interface WS_NewNotification {
   payload: {
     notifications: InappNotification[];
   };
-}
-
-export const NOTIFICATION_ACTIONS = {
-  opened: 'opened',
-  clicked: 'clicked',
-  archived: 'archived',
-  replied: 'replied',
-  actioned1: 'actioned1',
-  actioned2: 'actioned2'
-};
-
-export enum Channels {
-  EMAIL = 'EMAIL',
-  INAPP_WEB = 'INAPP_WEB',
-  SMS = 'SMS',
-  CALL = 'CALL',
-  PUSH = 'PUSH',
-  WEB_PUSH = 'WEB_PUSH'
-}
-
-export enum DeliveryOptions {
-  OFF = 'off',
-  INSTANT = 'instant',
-  HOURLY = 'hourly',
-  DAILY = 'daily',
-  WEEKLY = 'weekly',
-  MONTHLY = 'monthly'
 }
 
 export interface Notification {

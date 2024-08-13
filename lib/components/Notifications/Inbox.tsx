@@ -1,15 +1,11 @@
 import { Empty, List } from 'antd';
 import { InboxHeader } from './InboxHeader';
 import VirtualList from 'rc-virtual-list';
-import { ImageShape, Notification } from './Notification';
+import { Notification } from './Notification';
 import { InappNotification, NotificationAPIContext } from '../Provider';
 import { useContext } from 'react';
-import { Filter, NotificationPopupProps } from './NotificationPopup';
-
-export enum Pagination {
-  INFINITE_SCROLL = 'infinite_scroll',
-  PAGINATED = 'paginated'
-}
+import { NotificationPopupProps } from './NotificationPopup';
+import { Filter, ImageShape, Pagination } from './interface';
 
 type InboxProps = {
   pagination: keyof typeof Pagination;

@@ -7,9 +7,10 @@ import {
   Switch,
   Typography
 } from 'antd';
-import { Channels, DeliveryOptions, NotificationAPIContext } from '../Provider';
-import { getChannelIcon, getChannelLabel } from './Preferences';
+import { NotificationAPIContext } from '../Provider';
 import { useContext } from 'react';
+import { Channels, DeliveryOptions } from '../Notifications/interface';
+import { getChannelIcon, getChannelLabel } from './channelUtils';
 
 const Text = Typography.Text;
 

@@ -1,8 +1,7 @@
 import { useContext, useEffect } from 'react';
-import { Inbox, Pagination } from './Inbox';
-import { ImageShape } from './Notification';
+import { Inbox } from './Inbox';
 import { InappNotification, NotificationAPIContext } from '../Provider';
-import { Filter } from './NotificationPopup';
+import { Filter, ImageShape, Pagination } from './interface';
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;
