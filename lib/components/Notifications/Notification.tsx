@@ -39,9 +39,9 @@ export const Notification = (props: {
 }) => {
   return (
     <NotificationDiv
-      $redirect={props.notification.redirectURL ? true : false}
-      $seen={props.notification.seen || props.notification.opened}
-      $archived={props.notification.archived}
+      $redirect={!!props.notification.redirectURL} // Ensuring boolean type
+      $seen={!!(props.notification.seen || props.notification.opened)} // Ensuring boolean type
+      $archived={!!props.notification.archived} // Ensuring boolean type
       onClick={() => {
         props.markAsClicked(props.notification.id);
         if (props.notification.redirectURL) {
