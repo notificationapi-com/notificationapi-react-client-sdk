@@ -261,7 +261,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     client.getPreferences().then((res) => {
       setPreferences(res);
     });
-  }, [props]);
+  }, [client, loadNotifications, props]);
 
   const value: Context = {
     notifications,
