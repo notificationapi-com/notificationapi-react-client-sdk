@@ -70,8 +70,8 @@ export const PreferenceInput = ({
           return null;
         }
 
-        let name = getChannelLabel(channel);
-        let icon = getChannelIcon(channel);
+        const name = getChannelLabel(channel);
+        const icon = getChannelIcon(channel);
 
         const deliveries = Object.keys(notification.options![channel]!).filter(
           (o) => o !== 'defaultDeliveryOption' && o !== 'defaultDeliverOption'
