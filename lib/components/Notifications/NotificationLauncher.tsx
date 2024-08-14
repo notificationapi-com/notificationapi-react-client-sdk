@@ -6,13 +6,7 @@ import { NotificationPopupProps } from './NotificationPopup';
 import { useContext, useState } from 'react';
 import { NotificationAPIContext } from '../Provider';
 import { NotificationPreferencesPopup } from '../Preferences';
-
-export enum Position {
-  TOP_LEFT = 'top-left',
-  TOP_RIGHT = 'top-right',
-  BOTTOM_LEFT = 'bottom-left',
-  BOTTOM_RIGHT = 'bottom-right'
-}
+import { Position } from './interface';
 
 type NotificationLaucherProps = NotificationPopupProps & {
   position?: keyof typeof Position;

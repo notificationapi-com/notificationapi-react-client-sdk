@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from 'react';
-import { Inbox, Pagination } from './Inbox';
-import { ImageShape, NotificationProps } from './Notification';
+import { Inbox } from './Inbox';
+import { NotificationProps } from './Notification';
 import { NotificationAPIContext } from '../Provider';
-import { Filter } from './NotificationPopup';
 import { InboxHeaderProps } from './InboxHeader';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
+import { Filter, ImageShape, Pagination } from './interface';
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;
