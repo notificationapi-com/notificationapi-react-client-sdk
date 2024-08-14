@@ -1,16 +1,16 @@
-import { Divider, Radio, Space, Switch, Typography } from "antd";
-import { getChannelIcon, getChannelLabel } from "./Preferences";
+import { Divider, Radio, Space, Switch, Typography } from 'antd';
+import { getChannelIcon, getChannelLabel } from './Preferences';
 import {
   BaseDeliveryOptions,
   Channels,
   DeliveryOptionsForEmail,
   DeliveryOptionsForInappWeb,
-  GetPreferencesResponse,
-} from "@notificationapi/core/dist/interfaces";
+  GetPreferencesResponse
+} from '@notificationapi/core/dist/interfaces';
 const Text = Typography.Text;
 
 const sortChannels = (a: Channels, b: Channels) => {
-  const order = ["EMAIL", "INAPP_WEB", "SMS", "CALL", "PUSH", "WEB_PUSH"];
+  const order = ['EMAIL', 'INAPP_WEB', 'SMS', 'CALL', 'PUSH', 'WEB_PUSH'];
   return order.indexOf(a) - order.indexOf(b);
 };
 
@@ -18,7 +18,7 @@ const sortDeliveries = (
   a: DeliveryOptionsForEmail | DeliveryOptionsForInappWeb | BaseDeliveryOptions,
   b: DeliveryOptionsForEmail | DeliveryOptionsForInappWeb | BaseDeliveryOptions
 ) => {
-  const order = ["off", "instant", "hourly", "daily", "weekly", "monthly"];
+  const order = ['off', 'instant', 'hourly', 'daily', 'weekly', 'monthly'];
   return order.indexOf(a) - order.indexOf(b);
 };
 
@@ -26,19 +26,19 @@ const getDeliveryLabel = (
   d: DeliveryOptionsForEmail | DeliveryOptionsForInappWeb | BaseDeliveryOptions
 ) => {
   const labels = {
-    off: "Off",
-    instant: "Instant",
-    hourly: "Hourly",
-    daily: "Daily",
-    weekly: "Weekly",
-    monthly: "Monthly",
+    off: 'Off',
+    instant: 'Instant',
+    hourly: 'Hourly',
+    daily: 'Daily',
+    weekly: 'Weekly',
+    monthly: 'Monthly'
   };
   return labels[d];
 };
 
 type Props = {
-  preferences: GetPreferencesResponse["preferences"];
-  notification: GetPreferencesResponse["notifications"][0];
+  preferences: GetPreferencesResponse['preferences'];
+  notification: GetPreferencesResponse['notifications'][0];
   updateDelivery: (
     notificationId: string,
     channel: Channels,
@@ -55,7 +55,7 @@ export const PreferenceInput = ({
   notification,
   preferences,
   updateDelivery,
-  subNotificationId,
+  subNotificationId
 }: Props) => {
   return (
     <>
@@ -74,7 +74,7 @@ export const PreferenceInput = ({
         let icon = getChannelIcon(channel);
 
         const deliveries = Object.keys(notification.options![channel]!).filter(
-          (o) => o !== "defaultDeliveryOption" && o !== "defaultDeliverOption"
+          (o) => o !== 'defaultDeliveryOption' && o !== 'defaultDeliverOption'
         ) as
           | DeliveryOptionsForEmail[]
           | DeliveryOptionsForInappWeb[]
@@ -83,13 +83,13 @@ export const PreferenceInput = ({
         let selector;
         if (deliveries.length === 1) {
           selector = <Text>{getDeliveryLabel(preference.delivery)}</Text>;
-        } else if (deliveries.length === 2 && deliveries.includes("off")) {
+        } else if (deliveries.length === 2 && deliveries.includes('off')) {
           selector = (
             <Switch
-              checked={preference.delivery !== "off"}
+              checked={preference.delivery !== 'off'}
               onChange={(state) => {
                 if (state) {
-                  const delivery = deliveries.find((d) => d !== "off")!;
+                  const delivery = deliveries.find((d) => d !== 'off')!;
                   updateDelivery(
                     notification.notificationId,
                     channel,
@@ -100,7 +100,7 @@ export const PreferenceInput = ({
                   updateDelivery(
                     notification.notificationId,
                     channel,
-                    "off",
+                    'off',
                     subNotificationId
                   );
                 }
@@ -111,12 +111,12 @@ export const PreferenceInput = ({
           selector = (
             <>
               <Switch
-                checked={preference.delivery !== "off"}
+                checked={preference.delivery !== 'off'}
                 onChange={(state) => {
                   if (state) {
                     const delivery = deliveries
                       .sort(sortDeliveries)
-                      .find((d) => d !== "off")!;
+                      .find((d) => d !== 'off')!;
                     updateDelivery(
                       notification.notificationId,
                       channel,
@@ -127,7 +127,7 @@ export const PreferenceInput = ({
                     updateDelivery(
                       notification.notificationId,
                       channel,
-                      "off",
+                      'off',
                       subNotificationId
                     );
                   }
@@ -135,11 +135,11 @@ export const PreferenceInput = ({
               />
               <div
                 style={{
-                  width: "100%",
+                  width: '100%',
                   marginTop: 8,
-                  maxHeight: preference.delivery !== "off" ? 1000 : 0,
-                  overflow: "hidden",
-                  transition: "max-height 0.3s ease",
+                  maxHeight: preference.delivery !== 'off' ? 1000 : 0,
+                  overflow: 'hidden',
+                  transition: 'max-height 0.3s ease'
                 }}
               >
                 <div>
@@ -159,7 +159,7 @@ export const PreferenceInput = ({
                   >
                     <Space direction="vertical" style={{ paddingTop: 10 }}>
                       {deliveries
-                        .filter((d) => d !== "off")
+                        .filter((d) => d !== 'off')
                         .sort(sortDeliveries)
                         .map((d) => (
                           <Radio value={d} key={d}>
@@ -178,11 +178,11 @@ export const PreferenceInput = ({
             <div
               key={channel}
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
                 marginTop: i === 0 ? 12 : 0,
-                marginBottom: i === notification.channels.length - 1 ? 12 : 0,
+                marginBottom: i === notification.channels.length - 1 ? 12 : 0
               }}
             >
               <Text>

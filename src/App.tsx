@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, Divider } from "antd";
+import React from 'react';
+import { Button, Divider } from 'antd';
 import {
   NotificationFeed,
   NotificationPopup,
@@ -7,9 +7,9 @@ import {
   NotificationCounter,
   NotificationAPIProvider,
   NotificationPreferencesPopup,
-  NotificationPreferencesInline,
-} from "../lib/main";
-import { MyButton } from "./MyButton";
+  NotificationPreferencesInline
+} from '../lib/main';
+import { MyButton } from './MyButton';
 
 function App() {
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
@@ -18,9 +18,9 @@ function App() {
   return (
     <div
       style={{
-        height: "200vh",
-        background: "#f0f2f5",
-        padding: 24,
+        height: '200vh',
+        background: '#f0f2f5',
+        padding: 24
       }}
     >
       <NotificationAPIProvider
@@ -46,7 +46,7 @@ function App() {
         <h2>Counter on an element</h2>
         <NotificationCounter
           count={(n) => {
-            return n.notificationId === "conversion_failure" && !n.archived;
+            return n.notificationId === 'conversion_failure' && !n.archived;
           }}
         >
           <MyButton />
