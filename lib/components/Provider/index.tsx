@@ -1,6 +1,7 @@
 import {
   PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState
@@ -105,19 +106,28 @@ export const NotificationAPIProvider: React.FunctionComponent<
   });
 
   // Notificaiton loading and state updates
-  const loadNotifications = async (initial?: boolean) => {
-    if (!initial && !hasMore) return;
-    if (!initial && loadingNotifications) return;
-    setLoadingNotifications(true);
-    const res = await client.rest.getNotifications(
-      initial ? new Date().toISOString() : oldestLoaded,
-      initial ? config.initialLoadMaxCount : 1000
-    );
-    setOldestLoaded(res.oldestReceived);
-    setHasMore(res.couldLoadMore);
-    addNotificationsToState(res.notifications);
-    setLoadingNotifications(false);
-  };
+  const loadNotifications = useCallback(
+    async (initial?: boolean) => {
+      if (!initial && !hasMore) return;
+      if (!initial && loadingNotifications) return;
+      setLoadingNotifications(true);
+      const res = await client.rest.getNotifications(
+        initial ? new Date().toISOString() : oldestLoaded,
+        initial ? config.initialLoadMaxCount : 1000
+      );
+      setOldestLoaded(res.oldestReceived);
+      setHasMore(res.couldLoadMore);
+      addNotificationsToState(res.notifications);
+      setLoadingNotifications(false);
+    },
+    [
+      client.rest,
+      config.initialLoadMaxCount,
+      hasMore,
+      loadingNotifications,
+      oldestLoaded
+    ]
+  );
 
   const markAsClicked = async (_ids: string[]) => {
     if (!notifications) return;
