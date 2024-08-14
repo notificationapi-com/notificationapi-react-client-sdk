@@ -36,6 +36,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
 
     return () => clearInterval(interval);
   }, [context]);
+
   if (!context) {
     return null;
   }
