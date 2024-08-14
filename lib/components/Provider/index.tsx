@@ -3,27 +3,27 @@ import {
   createContext,
   useContext,
   useEffect,
-  useState,
-} from "react";
-import { NotificationAPIClientSDK } from "@notificationapi/core";
+  useState
+} from 'react';
+import { NotificationAPIClientSDK } from '@notificationapi/core';
 import {
   GetPreferencesResponse,
-  InAppNotification,
-} from "@notificationapi/core/dist/interfaces";
+  InAppNotification
+} from '@notificationapi/core/dist/interfaces';
 import {
   BaseDeliveryOptions,
   Channels,
   DeliveryOptionsForEmail,
-  DeliveryOptionsForInappWeb,
-} from "@notificationapi/core/dist/interfaces";
+  DeliveryOptionsForInappWeb
+} from '@notificationapi/core/dist/interfaces';
 
 export type Context = {
   notifications?: InAppNotification[];
   preferences?: GetPreferencesResponse;
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
-  markAsArchived: (ids: string[] | "ALL") => void;
-  markAsUnarchived: (ids: string[] | "ALL") => void;
+  markAsArchived: (ids: string[] | 'ALL') => void;
+  markAsUnarchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (ids: string[]) => void;
   updateDelivery: (
     notificationId: string,
@@ -56,15 +56,15 @@ export const NotificationAPIProvider: React.FunctionComponent<
   useNotificationAPIContext: typeof useNotificationAPIContext;
 } = (props) => {
   const defaultConfigs = {
-    apiURL: "https://api.notificationapi.com",
-    wsURL: "wss://ws.notificationapi.com",
+    apiURL: 'https://api.notificationapi.com',
+    wsURL: 'wss://ws.notificationapi.com',
     initialLoadMaxCount: 1000,
-    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3))
   };
 
   const config = {
     ...defaultConfigs,
-    ...props,
+    ...props
   };
 
   const [notifications, setNotifications] = useState<InAppNotification[]>();
@@ -89,7 +89,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
         ...notis.filter((n) => {
           return !prev.find((p) => p.id === n.id);
         }),
-        ...prev,
+        ...prev
       ];
     });
   };
@@ -101,7 +101,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
     onNewInAppNotifications: (notifications) => {
       addNotificationsToState(notifications);
-    },
+    }
   });
 
   // Notificaiton loading and state updates
@@ -153,7 +153,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
     client.updateInAppNotifications({
       ids,
-      opened: true,
+      opened: true
     });
 
     setNotifications((prev) => {
@@ -169,12 +169,12 @@ export const NotificationAPIProvider: React.FunctionComponent<
     });
   };
 
-  const markAsUnarchived = async (_ids: string[] | "ALL") => {
+  const markAsUnarchived = async (_ids: string[] | 'ALL') => {
     if (!notifications) return;
 
     const ids: string[] = notifications
       .filter((n) => {
-        return n.archived && (_ids === "ALL" || _ids.includes(n.id));
+        return n.archived && (_ids === 'ALL' || _ids.includes(n.id));
       })
       .map((n) => n.id);
 
@@ -182,7 +182,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
     client.updateInAppNotifications({
       ids,
-      archived: false,
+      archived: false
     });
 
     setNotifications((prev) => {
@@ -197,13 +197,13 @@ export const NotificationAPIProvider: React.FunctionComponent<
     });
   };
 
-  const markAsArchived = async (_ids: string[] | "ALL") => {
+  const markAsArchived = async (_ids: string[] | 'ALL') => {
     if (!notifications) return;
 
     const date = new Date().toISOString();
     const ids: string[] = notifications
       .filter((n) => {
-        return !n.archived && (_ids === "ALL" || _ids.includes(n.id));
+        return !n.archived && (_ids === 'ALL' || _ids.includes(n.id));
       })
       .map((n) => n.id);
 
@@ -237,7 +237,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
         notificationId,
         channel,
         delivery,
-        subNotificationId,
+        subNotificationId
       })
       .then(() => {
         client.getPreferences().then((res) => {
@@ -271,7 +271,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsArchived,
     markAsUnarchived,
     markAsClicked,
-    updateDelivery,
+    updateDelivery
   };
 
   return (
@@ -284,7 +284,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
 const useNotificationAPIContext = (): Context => {
   const context = useContext(NotificationAPIContext);
   if (!context) {
-    throw new Error("useMyContext must be used within a MyProvider");
+    throw new Error('useMyContext must be used within a MyProvider');
   }
   return context;
 };

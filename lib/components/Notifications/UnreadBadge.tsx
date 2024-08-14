@@ -1,39 +1,39 @@
-import { Badge } from "antd";
-import { PropsWithChildren, useContext } from "react";
-import { NotificationAPIContext } from "../Provider";
-import { NotificationPopupProps } from "./NotificationPopup";
-import { InAppNotification } from "@notificationapi/core/dist/interfaces";
+import { Badge } from 'antd';
+import { PropsWithChildren, useContext } from 'react';
+import { NotificationAPIContext } from '../Provider';
+import { NotificationPopupProps } from './NotificationPopup';
+import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 
 export type UnreadBadgeProps = {
   color?:
-    | "blue"
-    | "purple"
-    | "cyan"
-    | "green"
-    | "magenta"
-    | "pink"
-    | "red"
-    | "orange"
-    | "yellow"
-    | "volcano"
-    | "geekblue"
-    | "lime"
-    | "gold"
+    | 'blue'
+    | 'purple'
+    | 'cyan'
+    | 'green'
+    | 'magenta'
+    | 'pink'
+    | 'red'
+    | 'orange'
+    | 'yellow'
+    | 'volcano'
+    | 'geekblue'
+    | 'lime'
+    | 'gold'
     | undefined;
   overflowCount?: number;
   dot?: boolean;
   showZero?: boolean;
-  size?: "default" | "small";
+  size?: 'default' | 'small';
   style?: React.CSSProperties;
   count?:
     | keyof typeof COUNT_TYPE
     | ((notification: InAppNotification) => boolean);
-  filter?: NotificationPopupProps["filter"];
+  filter?: NotificationPopupProps['filter'];
 };
 
 export enum COUNT_TYPE {
-  COUNT_UNOPENED_NOTIFICATIONS = "COUNT_UNOPENED_NOTIFICATIONS",
-  COUNT_UNARCHIVED_NOTIFICATIONS = "COUNT_UNARCHIVED_NOTIFICATIONS",
+  COUNT_UNOPENED_NOTIFICATIONS = 'COUNT_UNOPENED_NOTIFICATIONS',
+  COUNT_UNARCHIVED_NOTIFICATIONS = 'COUNT_UNARCHIVED_NOTIFICATIONS'
 }
 
 export const UnreadBadge: React.FunctionComponent<
@@ -43,11 +43,11 @@ export const UnreadBadge: React.FunctionComponent<
 
   const countingFunction = (notifications: InAppNotification[]) => {
     if (
-      props.count === "COUNT_UNOPENED_NOTIFICATIONS" ||
+      props.count === 'COUNT_UNOPENED_NOTIFICATIONS' ||
       props.count === undefined
     ) {
       return notifications.filter((n) => !n.opened && !n.seen).length;
-    } else if (props.count === "COUNT_UNARCHIVED_NOTIFICATIONS") {
+    } else if (props.count === 'COUNT_UNARCHIVED_NOTIFICATIONS') {
       return notifications.filter(
         (n) =>
           !n.archived &&
@@ -70,7 +70,7 @@ export const UnreadBadge: React.FunctionComponent<
       showZero={props.showZero}
       size={props.size}
       style={{
-        ...props.style,
+        ...props.style
       }}
     >
       {props.children}
