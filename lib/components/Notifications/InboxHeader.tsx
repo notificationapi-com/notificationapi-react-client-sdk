@@ -1,15 +1,15 @@
-import { CheckOutlined, SettingOutlined } from "@ant-design/icons";
-import { Button, Popover, Typography } from "antd";
+import { CheckOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Popover, Typography } from 'antd';
 
 export const InboxHeader = (props: {
-  markAsArchived: (ids: string[] | "ALL") => void;
+  markAsArchived: (ids: string[] | 'ALL') => void;
 }) => {
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        paddingRight: 5,
+        display: 'flex',
+        justifyContent: 'space-between',
+        paddingRight: 5
       }}
     >
       <Typography.Text strong>Notifications</Typography.Text>
@@ -21,7 +21,7 @@ export const InboxHeader = (props: {
             size="small"
             type="text"
             onClick={() => {
-              props.markAsArchived("ALL");
+              props.markAsArchived('ALL');
             }}
           />
         </Popover>

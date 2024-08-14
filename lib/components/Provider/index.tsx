@@ -3,8 +3,10 @@ import React, {
   createContext,
   useEffect,
   useState,
-} from "react";
-import { api } from "../../api";
+  useCallback
+} from 'react';
+import { api } from '../../api';
+import { Channels, DeliveryOptions } from '../Notifications/interface';
 
 type Props = {
   clientId: string;
@@ -16,37 +18,10 @@ type Props = {
 };
 
 interface WS_NewNotification {
-  route: "inapp_web/new_notifications";
+  route: 'inapp_web/new_notifications';
   payload: {
-    notifications: any[];
+    notifications: InappNotification[];
   };
-}
-
-export const NOTIFICATION_ACTIONS = {
-  opened: "opened",
-  clicked: "clicked",
-  archived: "archived",
-  replied: "replied",
-  actioned1: "actioned1",
-  actioned2: "actioned2",
-};
-
-export enum Channels {
-  EMAIL = "EMAIL",
-  INAPP_WEB = "INAPP_WEB",
-  SMS = "SMS",
-  CALL = "CALL",
-  PUSH = "PUSH",
-  WEB_PUSH = "WEB_PUSH",
-}
-
-export enum DeliveryOptions {
-  OFF = "off",
-  INSTANT = "instant",
-  HOURLY = "hourly",
-  DAILY = "daily",
-  WEEKLY = "weekly",
-  MONTHLY = "monthly",
 }
 
 export interface Notification {
@@ -61,9 +36,9 @@ export interface Notification {
   throttling?: {
     max: number;
     period: number;
-    unit: "seconds" | "minutes" | "hours" | "days" | "months" | "years";
+    unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years';
     forever: boolean;
-    scope: ["userId", "notificationId"];
+    scope: ['userId', 'notificationId'];
   };
   retention?: number;
   options?: {
@@ -90,7 +65,7 @@ export interface Notification {
       [DeliveryOptions.MONTHLY]: {
         enabled: boolean;
         hour: string;
-        date: "first" | "last";
+        date: 'first' | 'last';
       };
     };
   };
@@ -102,7 +77,7 @@ export interface InappNotification {
   title: string;
   redirectURL?: string;
   imageURL?: string;
-  date: Date;
+  date: string;
   parameters?: Record<string, unknown>;
   expDate?: Date;
   opened?: string;
@@ -127,7 +102,7 @@ export interface Preferences {
     notificationId: string;
     title: string;
     channels: Channels[];
-    options: Notification["options"];
+    options: Notification['options'];
   }[];
   subNotifications: {
     notificationId: string;
@@ -141,7 +116,7 @@ export type Context = {
   preferences?: Preferences;
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
-  markAsArchived: (ids: string[] | "ALL") => void;
+  markAsArchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (id: string) => void;
   updateDelivery: (
     notificationId: string,
@@ -159,15 +134,15 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   PropsWithChildren<Props>
 > = (props) => {
   const defaultConfigs = {
-    apiURL: "https://api.notificationapi.com",
-    wsURL: "wss://ws.notificationapi.com",
+    apiURL: 'https://api.notificationapi.com',
+    wsURL: 'wss://ws.notificationapi.com',
     initialLoadMaxCount: 1000,
-    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3))
   };
 
   const config = {
     ...defaultConfigs,
-    ...props,
+    ...props
   };
 
   const [notifications, setNotifications] = useState<InappNotification[]>();
@@ -176,7 +151,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
 
-  const addNotificationsToState = (notis: any[]) => {
+  const addNotificationsToState = (notis: InappNotification[]) => {
     setNotifications((prev) => {
       if (!prev) return notis; // if no existing notifications in state, just return the new ones
 
@@ -184,98 +159,111 @@ export const NotificatinAPIProvider: React.FunctionComponent<
         ...notis.filter((n) => {
           return !prev.find((p) => p.id === n.id);
         }),
-        ...prev,
+        ...prev
       ];
     });
   };
 
-  const getNotifications = async (
-    count: number,
-    before: number
-  ): Promise<any[]> => {
-    const res = await api(
-      config.apiURL,
-      "GET",
-      `notifications/INAPP_WEB?count=${count}&before=${before}`,
-      props.clientId,
-      props.userId
-    );
-    return res.notifications;
-  };
-
-  const fetchNotificationsBeforeDate = async (
-    before: string,
-    maxCountNeeded: number,
-    oldestNeeded?: string
-  ): Promise<{
-    notifications: any[];
-    couldLoadMore: boolean;
-    oldestReceived: string;
-  }> => {
-    let result: any[] = [];
-    let oldestReceived = before;
-    let couldLoadMore = true;
-    let shouldLoadMore = true;
-    while (shouldLoadMore) {
-      const notis = await getNotifications(
-        maxCountNeeded,
-        new Date(oldestReceived).getTime()
+  const getNotifications = useCallback(
+    async (count: number, before: number): Promise<InappNotification[]> => {
+      const res = await api(
+        config.apiURL,
+        'GET',
+        `notifications/INAPP_WEB?count=${count}&before=${before}`,
+        props.clientId,
+        props.userId
       );
-      const notisWithoutDuplicates = notis.filter(
-        (n: any) => !result.find((nn) => nn.id === n.id)
-      );
-      oldestReceived = notisWithoutDuplicates.reduce(
-        (min: string, n: any) => (min < n.date ? min : n.date),
-        before
-      );
-      result = [...result, ...notisWithoutDuplicates];
+      return (res as { notifications: InappNotification[] }).notifications;
+    },
+    [config.apiURL, props.clientId, props.userId] // Dependencies of getNotifications
+  );
 
-      couldLoadMore = notisWithoutDuplicates.length > 0;
-      shouldLoadMore = true;
+  const fetchNotificationsBeforeDate = useCallback(
+    async (
+      before: string,
+      maxCountNeeded: number,
+      oldestNeeded?: string
+    ): Promise<{
+      notifications: InappNotification[];
+      couldLoadMore: boolean;
+      oldestReceived: string;
+    }> => {
+      let result: InappNotification[] = [];
+      let oldestReceived = before;
+      let couldLoadMore = true;
+      let shouldLoadMore = true;
+      while (shouldLoadMore) {
+        const notis = await getNotifications(
+          maxCountNeeded,
+          new Date(oldestReceived).getTime()
+        );
+        const notisWithoutDuplicates = notis.filter(
+          (n: InappNotification) => !result.find((nn) => nn.id === n.id)
+        );
+        oldestReceived = notisWithoutDuplicates.reduce(
+          (min: string, n: InappNotification) => (min < n.date ? min : n.date),
+          before
+        );
+        result = [...result, ...notisWithoutDuplicates];
 
-      if (
-        !couldLoadMore ||
-        result.length >= maxCountNeeded ||
-        (oldestNeeded && oldestReceived < oldestNeeded)
-      ) {
-        shouldLoadMore = false;
+        couldLoadMore = notisWithoutDuplicates.length > 0;
+        shouldLoadMore = true;
+
+        if (
+          !couldLoadMore ||
+          result.length >= maxCountNeeded ||
+          (oldestNeeded && oldestReceived < oldestNeeded)
+        ) {
+          shouldLoadMore = false;
+        }
       }
-    }
-    console.log(result.length, couldLoadMore, oldestReceived);
-    return {
-      notifications: result,
-      couldLoadMore,
-      oldestReceived,
-    };
-  };
+      console.log(result.length, couldLoadMore, oldestReceived);
+      return {
+        notifications: result,
+        couldLoadMore,
+        oldestReceived
+      };
+    },
+    [getNotifications]
+  );
 
-  const loadNotifications = async (initial?: boolean) => {
-    if (!hasMore) return;
-    if (loadingNotifications) return;
-    setLoadingNotifications(true);
-    const res = await fetchNotificationsBeforeDate(
+  const loadNotifications = useCallback(
+    async (initial?: boolean) => {
+      if (!hasMore) return;
+      if (loadingNotifications) return;
+      setLoadingNotifications(true);
+      const res = await fetchNotificationsBeforeDate(
+        oldestLoaded,
+        initial ? config.initialLoadMaxCount : 1000,
+        initial ? config.initialLoadMaxAge.toISOString() : undefined
+      );
+      setOldestLoaded(res.oldestReceived);
+      setHasMore(res.couldLoadMore);
+      addNotificationsToState(res.notifications);
+      setLoadingNotifications(false);
+    },
+    [
+      hasMore,
+      loadingNotifications,
       oldestLoaded,
-      initial ? config.initialLoadMaxCount : 1000,
-      initial ? config.initialLoadMaxAge.toISOString() : undefined
-    );
-    setOldestLoaded(res.oldestReceived);
-    setHasMore(res.couldLoadMore);
-    addNotificationsToState(res.notifications);
-    setLoadingNotifications(false);
-  };
+      config.initialLoadMaxCount,
+      config.initialLoadMaxAge,
+      fetchNotificationsBeforeDate
+    ]
+  );
 
   const markAsClicked = async (id: string) => {
     const date = new Date().toISOString();
     api(
       config.apiURL,
-      "PATCH",
+      'PATCH',
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      '',
       {
         trackingIds: [id],
-        clicked: date,
+        clicked: date
       }
     );
 
@@ -302,14 +290,14 @@ export const NotificatinAPIProvider: React.FunctionComponent<
 
     api(
       config.apiURL,
-      "PATCH",
+      'PATCH',
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      '',
       {
         trackingIds,
-        opened: date,
+        opened: date
       }
     );
 
@@ -326,13 +314,13 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     });
   };
 
-  const markAsArchived = async (ids: string[] | "ALL") => {
+  const markAsArchived = async (ids: string[] | 'ALL') => {
     if (!notifications) return;
 
     const date = new Date().toISOString();
     const trackingIds: string[] = notifications
       .filter((n) => {
-        return !n.archived && (ids === "ALL" || ids.includes(n.id));
+        return !n.archived && (ids === 'ALL' || ids.includes(n.id));
       })
       .map((n) => n.id);
 
@@ -340,14 +328,14 @@ export const NotificatinAPIProvider: React.FunctionComponent<
 
     api(
       config.apiURL,
-      "PATCH",
+      'PATCH',
       `notifications/INAPP_WEB`,
       props.clientId,
       props.userId,
-      "",
+      '',
       {
         trackingIds,
-        archived: date,
+        archived: date
       }
     );
 
@@ -394,18 +382,26 @@ export const NotificatinAPIProvider: React.FunctionComponent<
         return;
       }
 
-      if (body.route === "inapp_web/new_notifications") {
+      if (body.route === 'inapp_web/new_notifications') {
         const message = body as WS_NewNotification;
         addNotificationsToState(message.payload.notifications);
       }
     };
 
-    api(config.apiURL, "GET", `preferences`, props.clientId, props.userId).then(
+    api(config.apiURL, 'GET', `preferences`, props.clientId, props.userId).then(
       (res) => {
-        setPreferences(res);
+        setPreferences(res as Preferences);
       }
     );
-  }, []);
+  }, [
+    config.apiURL,
+    config.clientId,
+    config.userId,
+    config.wsURL,
+    loadNotifications,
+    props.clientId,
+    props.userId
+  ]);
 
   const value: Context = {
     notifications,
@@ -414,7 +410,7 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     markAsOpened,
     markAsArchived,
     markAsClicked,
-    updateDelivery,
+    updateDelivery
   };
 
   return (

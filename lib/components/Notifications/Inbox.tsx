@@ -1,29 +1,25 @@
-import { Empty, List } from "antd";
-import { InboxHeader } from "./InboxHeader";
-import VirtualList from "rc-virtual-list";
-import { ImageShape, Notification } from "./Notification";
-import { NotificationAPIContext } from "../Provider";
-import { useContext } from "react";
-import { Filter, NotificationPopupProps } from "./NotificationPopup";
-
-export enum Pagination {
-  INFINITE_SCROLL = "infinite_scroll",
-  PAGINATED = "paginated",
-}
+import { Empty, List } from 'antd';
+import { InboxHeader } from './InboxHeader';
+import VirtualList from 'rc-virtual-list';
+import { Notification } from './Notification';
+import { InappNotification, NotificationAPIContext } from '../Provider';
+import { useContext } from 'react';
+import { NotificationPopupProps } from './NotificationPopup';
+import { Filter, ImageShape, Pagination } from './interface';
 
 type InboxProps = {
   pagination: keyof typeof Pagination;
   maxHeight: number;
-  filter: NotificationPopupProps["filter"];
+  filter: NotificationPopupProps['filter'];
   imageShape: keyof typeof ImageShape;
   pageSize: number;
-  pagePosition: NotificationPopupProps["pagePosition"];
+  pagePosition: NotificationPopupProps['pagePosition'];
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
   const context = useContext(NotificationAPIContext);
 
-  const filterFunction = (notifications: any[]) => {
+  const filterFunction = (notifications: InappNotification[]) => {
     if (props.filter === Filter.ALL || !props.filter) {
       return notifications;
     } else if (props.filter === Filter.UNARCHIVED) {
@@ -41,7 +37,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
 
   return (
     <div>
-      {props.pagination === "INFINITE_SCROLL" ? (
+      {props.pagination === 'INFINITE_SCROLL' ? (
         <List
           header={<InboxHeader markAsArchived={context.markAsArchived} />}
           dataSource={filterFunction(context.notifications)}
@@ -70,7 +66,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               }
             }}
           >
-            {(n: any) => (
+            {(n: InappNotification) => (
               <List.Item key={n.id} style={{ padding: 0 }}>
                 <Notification
                   imageShape={props.imageShape}
@@ -86,7 +82,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
         <List
           header={<InboxHeader markAsArchived={context.markAsArchived} />}
           dataSource={filterFunction(context.notifications)}
-          renderItem={(n: any) => (
+          renderItem={(n: InappNotification) => (
             <List.Item key={n.id} style={{ padding: 0 }}>
               <Notification
                 imageShape={props.imageShape}
@@ -98,7 +94,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
           )}
           pagination={{
             pageSize: props.pageSize,
-            align: "center",
+            align: 'center',
             position: props.pagePosition,
             showSizeChanger: false,
             simple: true,
@@ -108,7 +104,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               ) {
                 context.loadNotifications();
               }
-            },
+            }
           }}
         >
           {filterFunction(context.notifications).length === 0 && (
