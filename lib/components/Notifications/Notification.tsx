@@ -1,26 +1,22 @@
-import { CheckOutlined } from "@ant-design/icons";
-import { Avatar, Badge, Button, Typography } from "antd";
-import { styled } from "styled-components";
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
-import ReactTimeAgo from "react-time-ago";
-import { Liquid } from "liquidjs";
-import { InAppNotification } from "@notificationapi/core/dist/interfaces";
+import { CheckOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, Typography } from 'antd';
+import { styled } from 'styled-components';
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en';
+import ReactTimeAgo from 'react-time-ago';
+import { Liquid } from 'liquidjs';
+import { InAppNotification } from '@notificationapi/core/dist/interfaces';
+import { ImageShape } from './interface';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
-
-export enum ImageShape {
-  square = "square",
-  circle = "circle",
-}
 
 const NotificationDiv = styled.div<{
   $redirect: boolean;
   $seen: boolean;
   $archived: boolean;
 }>`
-  cursor: ${(props) => (props.$redirect ? "pointer" : "default")};
+  cursor: ${(props) => (props.$redirect ? 'pointer' : 'default')};
 
   &:hover {
     background: #eee !important;
@@ -32,13 +28,13 @@ const NotificationDiv = styled.div<{
   }
 
   &:hover .notification-archive-button {
-    visibility: ${(props) => (props.$archived ? "hidden" : "visible")};
+    visibility: ${(props) => (props.$archived ? 'hidden' : 'visible')};
   }
 `;
 
 export type NotificationProps = {
   notifications: InAppNotification[];
-  markAsArchived: (ids: string[] | "ALL") => void;
+  markAsArchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (ids: string[]) => void;
   imageShape: keyof typeof ImageShape;
   renderer?: (notification: InAppNotification[]) => JSX.Element;
@@ -52,7 +48,7 @@ export const Notification = (props: NotificationProps) => {
   const liquid = new Liquid();
   const groupSize = props.notifications.length;
   const lastNotification = props.notifications[groupSize - 1];
-  const template = lastNotification.deliveryOptions?.["instant"]?.batching
+  const template = lastNotification.deliveryOptions?.['instant']?.batching
     ? lastNotification.template?.batch
     : lastNotification.template?.instant;
   let parameters: {
@@ -63,7 +59,7 @@ export const Notification = (props: NotificationProps) => {
   props.notifications.forEach((n) => {
     parameters = {
       ...parameters,
-      ...n.parameters,
+      ...n.parameters
     };
   });
 
@@ -71,13 +67,13 @@ export const Notification = (props: NotificationProps) => {
     return { ...n.parameters, _items: undefined };
   });
 
-  const title = liquid.parseAndRenderSync(template?.title ?? "", parameters);
+  const title = liquid.parseAndRenderSync(template?.title ?? '', parameters);
   const redirectURL = liquid.parseAndRenderSync(
-    template?.redirectURL ?? "",
+    template?.redirectURL ?? '',
     parameters
   );
   const imageURL = liquid.parseAndRenderSync(
-    template?.imageURL ?? "",
+    template?.imageURL ?? '',
     parameters
   );
   const seen = props.notifications.every((n) => n.seen);
@@ -98,12 +94,12 @@ export const Notification = (props: NotificationProps) => {
         }
       }}
       style={{
-        padding: "16px 6px 16px 0",
-        background: "#fff",
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        width: "100%",
+        padding: '16px 6px 16px 0',
+        background: '#fff',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%'
       }}
     >
       <div>
@@ -112,7 +108,7 @@ export const Notification = (props: NotificationProps) => {
           size="large"
           style={{
             marginRight: 8,
-            marginLeft: 12,
+            marginLeft: 12
           }}
           shape={props.imageShape}
         />
@@ -120,13 +116,13 @@ export const Notification = (props: NotificationProps) => {
 
       <div
         style={{
-          flexGrow: 1,
+          flexGrow: 1
         }}
       >
         <div>
           <Typography.Text
             style={{
-              whiteSpace: "pre-line",
+              whiteSpace: 'pre-line'
             }}
           >
             <span dangerouslySetInnerHTML={{ __html: title as string }}></span>
@@ -141,11 +137,11 @@ export const Notification = (props: NotificationProps) => {
 
       <div
         style={{
-          position: "relative",
+          position: 'relative',
           width: 48,
           height: 32,
-          display: "flex",
-          alignItems: "center",
+          display: 'flex',
+          alignItems: 'center'
         }}
       >
         <Button
@@ -165,11 +161,11 @@ export const Notification = (props: NotificationProps) => {
           dot
           className="notification-highlight"
           style={{
-            visibility: archived ? "hidden" : "visible",
+            visibility: archived ? 'hidden' : 'visible',
             marginRight: 10,
             marginLeft: 8,
             marginTop: 6,
-            right: 0,
+            right: 0
           }}
         />
       </div>
