@@ -25,6 +25,17 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
   const [openPreferences, setOpenPreferences] = useState(false);
   const context = useContext(NotificationAPIContext);
 
+  // every 5 seconds
+  useEffect(() => {
+    if (!context) return;
+
+    context.markAsOpened();
+    const interval = setInterval(() => {
+      context.markAsOpened();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [context]);
   if (!context) {
     return null;
   }
@@ -50,15 +61,6 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         props.header?.button2ClickHandler ?? (() => setOpenPreferences(true))
     }
   };
-
-  // every 5 seconds
-  useEffect(() => {
-    context.markAsOpened();
-    const interval = setInterval(() => {
-      context.markAsOpened();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div
