@@ -51,8 +51,9 @@ export function Preferences() {
     return null;
   }
 
-  const items: CollapseProps["items"] = context.preferences.notifications.map(
-    (n) => {
+  const items: CollapseProps["items"] = context.preferences.notifications
+    .sort((a, b) => a.title.localeCompare(b.title))
+    .map((n) => {
       const mainPreferences = context.preferences?.preferences.filter(
         (p) => p.notificationId === n.notificationId && !p.subNotificationId
       );
@@ -107,8 +108,7 @@ export function Preferences() {
           </>
         ),
       };
-    }
-  );
+    });
 
   return (
     <>

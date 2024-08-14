@@ -34,6 +34,17 @@ export type Context = {
       | BaseDeliveryOptions,
     subNotificationId?: string
   ) => void;
+  updateDeliveries: (
+    params: {
+      notificationId: string;
+      channel: Channels;
+      delivery:
+        | DeliveryOptionsForEmail
+        | DeliveryOptionsForInappWeb
+        | BaseDeliveryOptions;
+      subNotificationId?: string;
+    }[]
+  ) => void;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -232,18 +243,32 @@ export const NotificationAPIProvider: React.FunctionComponent<
       | BaseDeliveryOptions,
     subNotificationId?: string
   ) => {
-    client
-      .updateDeliveryOption({
+    return updateDeliveries([
+      {
         notificationId,
         channel,
         delivery,
         subNotificationId,
-      })
-      .then(() => {
-        client.getPreferences().then((res) => {
-          setPreferences(res);
-        });
+      },
+    ]);
+  };
+
+  const updateDeliveries = (
+    params: {
+      notificationId: string;
+      channel: Channels;
+      delivery:
+        | DeliveryOptionsForEmail
+        | DeliveryOptionsForInappWeb
+        | BaseDeliveryOptions;
+      subNotificationId?: string;
+    }[]
+  ) => {
+    client.rest.postPreferences(params).then(() => {
+      client.getPreferences().then((res) => {
+        setPreferences(res);
       });
+    });
   };
 
   useEffect(() => {
@@ -272,6 +297,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsUnarchived,
     markAsClicked,
     updateDelivery,
+    updateDeliveries,
   };
 
   return (
