@@ -1,8 +1,11 @@
 import {
   PropsWithChildren,
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
   useState
 } from 'react';
 import { NotificationAPIClientSDK } from '@notificationapi/core';
@@ -73,7 +76,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
 
-  const addNotificationsToState = (notis: InAppNotification[]) => {
+  const addNotificationsToState = useCallback((notis: InAppNotification[]) => {
     const now = new Date().toISOString();
     setNotifications((prev) => {
       notis = notis.filter((n) => {
@@ -92,32 +95,61 @@ export const NotificationAPIProvider: React.FunctionComponent<
         ...prev
       ];
     });
-  };
+  }, []);
 
-  const client = NotificationAPIClientSDK.init({
-    clientId: props.clientId,
-    userId: props.userId,
-    hashedUserId: props.hashedUserId,
-
-    onNewInAppNotifications: (notifications) => {
-      addNotificationsToState(notifications);
-    }
-  });
+  const client = useMemo(() => {
+    return NotificationAPIClientSDK.init({
+      clientId: props.clientId,
+      userId: props.userId,
+      hashedUserId: props.hashedUserId,
+      onNewInAppNotifications: (notifications) => {
+        addNotificationsToState(notifications);
+      }
+    });
+  }, [
+    props.clientId,
+    props.userId,
+    props.hashedUserId,
+    addNotificationsToState
+  ]);
 
   // Notificaiton loading and state updates
-  const loadNotifications = async (initial?: boolean) => {
-    if (!initial && !hasMore) return;
-    if (!initial && loadingNotifications) return;
-    setLoadingNotifications(true);
-    const res = await client.rest.getNotifications(
-      initial ? new Date().toISOString() : oldestLoaded,
-      initial ? config.initialLoadMaxCount : 1000
-    );
-    setOldestLoaded(res.oldestReceived);
-    setHasMore(res.couldLoadMore);
-    addNotificationsToState(res.notifications);
-    setLoadingNotifications(false);
-  };
+  const fetchNotifications = useCallback(
+    async (date: string, count: number) => {
+      const res = await client.rest.getNotifications(date, count);
+      setOldestLoaded(res.oldestReceived);
+      setHasMore(res.couldLoadMore);
+      addNotificationsToState(res.notifications);
+    },
+    [addNotificationsToState, client.rest]
+  );
+  const hasMoreRef = useRef(hasMore);
+  const loadingNotificationsRef = useRef(loadingNotifications);
+  const oldestLoadedRef = useRef(oldestLoaded);
+
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+    loadingNotificationsRef.current = loadingNotifications;
+    oldestLoadedRef.current = oldestLoaded;
+  }, [hasMore, loadingNotifications, oldestLoaded]);
+  const loadNotifications = useCallback(
+    async (initial?: boolean) => {
+      if (!initial && (!hasMoreRef.current || loadingNotificationsRef.current))
+        return;
+
+      setLoadingNotifications(true);
+
+      try {
+        await fetchNotifications(
+          initial ? new Date().toISOString() : oldestLoadedRef.current,
+          initial ? config.initialLoadMaxCount : 1000
+        );
+      } finally {
+        setLoadingNotifications(false);
+      }
+    },
+    [config.initialLoadMaxCount, fetchNotifications]
+  );
 
   const markAsClicked = async (_ids: string[]) => {
     if (!notifications) return;
@@ -261,7 +293,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     client.getPreferences().then((res) => {
       setPreferences(res);
     });
-  }, [props]);
+  }, [client, loadNotifications]);
 
   const value: Context = {
     notifications,
