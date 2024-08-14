@@ -6,6 +6,7 @@ import { NotificationPopupProps } from './NotificationPopup';
 import { useContext, useState } from 'react';
 import { NotificationAPIContext } from '../Provider';
 import { NotificationPreferencesPopup } from '../Preferences';
+import { Position } from './interface';
 
 type NotificationLaucherProps = NotificationPopupProps & {
   position?: keyof typeof Position;
