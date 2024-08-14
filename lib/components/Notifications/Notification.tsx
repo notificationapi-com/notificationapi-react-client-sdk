@@ -6,14 +6,10 @@ import en from 'javascript-time-ago/locale/en';
 import ReactTimeAgo from 'react-time-ago';
 import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
+import { ImageShape } from './interface';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
-
-export enum ImageShape {
-  square = 'square',
-  circle = 'circle'
-}
 
 const NotificationDiv = styled.div<{
   $redirect: boolean;
