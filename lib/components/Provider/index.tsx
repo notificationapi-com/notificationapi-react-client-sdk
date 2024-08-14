@@ -1,152 +1,40 @@
-import React, {
+import {
   PropsWithChildren,
   createContext,
+  useCallback,
+  useContext,
   useEffect,
-  useState,
-} from "react";
-import { api } from "../../api";
-
-type Props = {
-  clientId: string;
-  userId: string;
-  apiURL?: string;
-  wsURL?: string;
-  initialLoadMaxCount?: number;
-  initialLoadMaxAge?: Date;
-};
-
-interface WS_NewNotification {
-  route: "inapp_web/new_notifications";
-  payload: {
-    notifications: any[];
-  };
-}
-
-export const NOTIFICATION_ACTIONS = {
-  opened: "opened",
-  clicked: "clicked",
-  archived: "archived",
-  replied: "replied",
-  actioned1: "actioned1",
-  actioned2: "actioned2",
-};
-
-export enum Channels {
-  EMAIL = "EMAIL",
-  INAPP_WEB = "INAPP_WEB",
-  SMS = "SMS",
-  CALL = "CALL",
-  PUSH = "PUSH",
-  WEB_PUSH = "WEB_PUSH",
-}
-
-export enum DeliveryOptions {
-  OFF = "off",
-  INSTANT = "instant",
-  HOURLY = "hourly",
-  DAILY = "daily",
-  WEEKLY = "weekly",
-  MONTHLY = "monthly",
-}
-
-export interface Notification {
-  envId: string;
-  notificationId: string;
-  title: string;
-  channels: Channels[];
-  enabled: boolean;
-  deduplication?: {
-    duration: number; // seconds
-  };
-  throttling?: {
-    max: number;
-    period: number;
-    unit: "seconds" | "minutes" | "hours" | "days" | "months" | "years";
-    forever: boolean;
-    scope: ["userId", "notificationId"];
-  };
-  retention?: number;
-  options?: {
-    [key in Channels]?: {
-      defaultDeliveryOption: DeliveryOptions;
-      [DeliveryOptions.OFF]: {
-        enabled: boolean;
-      };
-      [DeliveryOptions.INSTANT]: {
-        enabled: boolean;
-      };
-      [DeliveryOptions.HOURLY]: {
-        enabled: boolean;
-      };
-      [DeliveryOptions.DAILY]: {
-        enabled: boolean;
-        hour: string;
-      };
-      [DeliveryOptions.WEEKLY]: {
-        enabled: boolean;
-        hour: string;
-        day: string;
-      };
-      [DeliveryOptions.MONTHLY]: {
-        enabled: boolean;
-        hour: string;
-        date: "first" | "last";
-      };
-    };
-  };
-}
-
-export interface InappNotification {
-  id: string;
-  seen: boolean;
-  title: string;
-  redirectURL?: string;
-  imageURL?: string;
-  date: Date;
-  parameters?: Record<string, unknown>;
-  expDate?: Date;
-  opened?: string;
-  clicked?: string;
-  archived?: string;
-  actioned1?: string;
-  actioned2?: string;
-  replies?: {
-    date: string;
-    message: string;
-  }[];
-}
-
-export interface Preferences {
-  preferences: {
-    notificationId: string;
-    channel: Channels;
-    delivery: DeliveryOptions;
-    subNotificationId?: string;
-  }[];
-  notifications: {
-    notificationId: string;
-    title: string;
-    channels: Channels[];
-    options: Notification["options"];
-  }[];
-  subNotifications: {
-    notificationId: string;
-    subNotificationId: string;
-    title: string;
-  }[];
-}
+  useMemo,
+  useRef,
+  useState
+} from 'react';
+import { NotificationAPIClientSDK } from '@notificationapi/core';
+import {
+  GetPreferencesResponse,
+  InAppNotification
+} from '@notificationapi/core/dist/interfaces';
+import {
+  BaseDeliveryOptions,
+  Channels,
+  DeliveryOptionsForEmail,
+  DeliveryOptionsForInappWeb
+} from '@notificationapi/core/dist/interfaces';
 
 export type Context = {
-  notifications?: InappNotification[];
-  preferences?: Preferences;
+  notifications?: InAppNotification[];
+  preferences?: GetPreferencesResponse;
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
-  markAsArchived: (ids: string[] | "ALL") => void;
-  markAsClicked: (id: string) => void;
+  markAsArchived: (ids: string[] | 'ALL') => void;
+  markAsUnarchived: (ids: string[] | 'ALL') => void;
+  markAsClicked: (ids: string[]) => void;
   updateDelivery: (
     notificationId: string,
     channel: Channels,
-    delivery: DeliveryOptions,
+    delivery:
+      | DeliveryOptionsForEmail
+      | DeliveryOptionsForInappWeb
+      | BaseDeliveryOptions,
     subNotificationId?: string
   ) => void;
 };
@@ -155,137 +43,132 @@ export const NotificationAPIContext = createContext<Context | undefined>(
   undefined
 );
 
-export const NotificatinAPIProvider: React.FunctionComponent<
+type Props = {
+  clientId: string;
+  userId: string;
+  hashedUserId?: string;
+  apiURL?: string;
+  wsURL?: string;
+  initialLoadMaxCount?: number;
+  initialLoadMaxAge?: Date;
+};
+
+export const NotificationAPIProvider: React.FunctionComponent<
   PropsWithChildren<Props>
-> = (props) => {
+> & {
+  useNotificationAPIContext: typeof useNotificationAPIContext;
+} = (props) => {
   const defaultConfigs = {
-    apiURL: "https://api.notificationapi.com",
-    wsURL: "wss://ws.notificationapi.com",
+    apiURL: 'https://api.notificationapi.com',
+    wsURL: 'wss://ws.notificationapi.com',
     initialLoadMaxCount: 1000,
-    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3))
   };
 
   const config = {
     ...defaultConfigs,
-    ...props,
+    ...props
   };
 
-  const [notifications, setNotifications] = useState<InappNotification[]>();
-  const [preferences, setPreferences] = useState<Preferences>();
+  const [notifications, setNotifications] = useState<InAppNotification[]>();
+  const [preferences, setPreferences] = useState<GetPreferencesResponse>();
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
 
-  const addNotificationsToState = (notis: any[]) => {
+  const addNotificationsToState = useCallback((notis: InAppNotification[]) => {
+    const now = new Date().toISOString();
     setNotifications((prev) => {
+      notis = notis.filter((n) => {
+        if (n.expDate && new Date(n.expDate * 1000).toISOString() > now)
+          return false;
+        if (n.date > now) return false;
+        return true;
+      });
+
       if (!prev) return notis; // if no existing notifications in state, just return the new ones
 
       return [
         ...notis.filter((n) => {
           return !prev.find((p) => p.id === n.id);
         }),
-        ...prev,
+        ...prev
       ];
     });
-  };
+  }, []);
 
-  const getNotifications = async (
-    count: number,
-    before: number
-  ): Promise<any[]> => {
-    const res = await api(
-      config.apiURL,
-      "GET",
-      `notifications/INAPP_WEB?count=${count}&before=${before}`,
-      props.clientId,
-      props.userId
-    );
-    return res.notifications;
-  };
-
-  const fetchNotificationsBeforeDate = async (
-    before: string,
-    maxCountNeeded: number,
-    oldestNeeded?: string
-  ): Promise<{
-    notifications: any[];
-    couldLoadMore: boolean;
-    oldestReceived: string;
-  }> => {
-    let result: any[] = [];
-    let oldestReceived = before;
-    let couldLoadMore = true;
-    let shouldLoadMore = true;
-    while (shouldLoadMore) {
-      const notis = await getNotifications(
-        maxCountNeeded,
-        new Date(oldestReceived).getTime()
-      );
-      const notisWithoutDuplicates = notis.filter(
-        (n: any) => !result.find((nn) => nn.id === n.id)
-      );
-      oldestReceived = notisWithoutDuplicates.reduce(
-        (min: string, n: any) => (min < n.date ? min : n.date),
-        before
-      );
-      result = [...result, ...notisWithoutDuplicates];
-
-      couldLoadMore = notisWithoutDuplicates.length > 0;
-      shouldLoadMore = true;
-
-      if (
-        !couldLoadMore ||
-        result.length >= maxCountNeeded ||
-        (oldestNeeded && oldestReceived < oldestNeeded)
-      ) {
-        shouldLoadMore = false;
+  const client = useMemo(() => {
+    return NotificationAPIClientSDK.init({
+      clientId: props.clientId,
+      userId: props.userId,
+      hashedUserId: props.hashedUserId,
+      onNewInAppNotifications: (notifications) => {
+        addNotificationsToState(notifications);
       }
-    }
-    console.log(result.length, couldLoadMore, oldestReceived);
-    return {
-      notifications: result,
-      couldLoadMore,
-      oldestReceived,
-    };
-  };
+    });
+  }, [
+    props.clientId,
+    props.userId,
+    props.hashedUserId,
+    addNotificationsToState
+  ]);
 
-  const loadNotifications = async (initial?: boolean) => {
-    if (!hasMore) return;
-    if (loadingNotifications) return;
-    setLoadingNotifications(true);
-    const res = await fetchNotificationsBeforeDate(
-      oldestLoaded,
-      initial ? config.initialLoadMaxCount : 1000,
-      initial ? config.initialLoadMaxAge.toISOString() : undefined
-    );
-    setOldestLoaded(res.oldestReceived);
-    setHasMore(res.couldLoadMore);
-    addNotificationsToState(res.notifications);
-    setLoadingNotifications(false);
-  };
+  // Notificaiton loading and state updates
+  const fetchNotifications = useCallback(
+    async (date: string, count: number) => {
+      const res = await client.rest.getNotifications(date, count);
+      setOldestLoaded(res.oldestReceived);
+      setHasMore(res.couldLoadMore);
+      addNotificationsToState(res.notifications);
+    },
+    [addNotificationsToState, client.rest]
+  );
+  const hasMoreRef = useRef(hasMore);
+  const loadingNotificationsRef = useRef(loadingNotifications);
+  const oldestLoadedRef = useRef(oldestLoaded);
 
-  const markAsClicked = async (id: string) => {
+  useEffect(() => {
+    hasMoreRef.current = hasMore;
+    loadingNotificationsRef.current = loadingNotifications;
+    oldestLoadedRef.current = oldestLoaded;
+  }, [hasMore, loadingNotifications, oldestLoaded]);
+  const loadNotifications = useCallback(
+    async (initial?: boolean) => {
+      if (!initial && (!hasMoreRef.current || loadingNotificationsRef.current))
+        return;
+
+      setLoadingNotifications(true);
+
+      try {
+        await fetchNotifications(
+          initial ? new Date().toISOString() : oldestLoadedRef.current,
+          initial ? config.initialLoadMaxCount : 1000
+        );
+      } finally {
+        setLoadingNotifications(false);
+      }
+    },
+    [config.initialLoadMaxCount, fetchNotifications]
+  );
+
+  const markAsClicked = async (_ids: string[]) => {
+    if (!notifications) return;
+
     const date = new Date().toISOString();
-    api(
-      config.apiURL,
-      "PATCH",
-      `notifications/INAPP_WEB`,
-      props.clientId,
-      props.userId,
-      "",
-      {
-        trackingIds: [id],
-        clicked: date,
-      }
-    );
+    const ids: string[] = notifications
+      .filter((n) => _ids.includes(n.id) && !n.clicked)
+      .map((n) => n.id);
+
+    client.updateInAppNotifications({ ids, clicked: true });
 
     setNotifications((prev) => {
       if (!prev) return [];
       const newNotifications = [...prev];
-      const n = newNotifications.find((n) => n.id === id);
-      if (n) {
-        n.clicked = date;
-      }
+      newNotifications
+        .filter((n) => ids.includes(n.id))
+        .forEach((n) => {
+          n.clicked = date;
+        });
       return newNotifications;
     });
   };
@@ -294,30 +177,22 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     if (!notifications) return;
 
     const date = new Date().toISOString();
-    const trackingIds: string[] = notifications
+    const ids: string[] = notifications
       .filter((n) => !n.opened || !n.seen)
       .map((n) => n.id);
 
-    if (trackingIds.length === 0) return;
+    if (ids.length === 0) return;
 
-    api(
-      config.apiURL,
-      "PATCH",
-      `notifications/INAPP_WEB`,
-      props.clientId,
-      props.userId,
-      "",
-      {
-        trackingIds,
-        opened: date,
-      }
-    );
+    client.updateInAppNotifications({
+      ids,
+      opened: true
+    });
 
     setNotifications((prev) => {
       if (!prev) return [];
       const newNotifications = [...prev];
       newNotifications
-        .filter((n) => trackingIds.includes(n.id))
+        .filter((n) => ids.includes(n.id))
         .forEach((n) => {
           n.opened = date;
           n.seen = true;
@@ -326,36 +201,53 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     });
   };
 
-  const markAsArchived = async (ids: string[] | "ALL") => {
+  const markAsUnarchived = async (_ids: string[] | 'ALL') => {
     if (!notifications) return;
 
-    const date = new Date().toISOString();
-    const trackingIds: string[] = notifications
+    const ids: string[] = notifications
       .filter((n) => {
-        return !n.archived && (ids === "ALL" || ids.includes(n.id));
+        return n.archived && (_ids === 'ALL' || _ids.includes(n.id));
       })
       .map((n) => n.id);
 
-    if (trackingIds.length === 0) return;
+    if (ids.length === 0) return;
 
-    api(
-      config.apiURL,
-      "PATCH",
-      `notifications/INAPP_WEB`,
-      props.clientId,
-      props.userId,
-      "",
-      {
-        trackingIds,
-        archived: date,
-      }
-    );
+    client.updateInAppNotifications({
+      ids,
+      archived: false
+    });
 
     setNotifications((prev) => {
       if (!prev) return [];
       const newNotifications = [...prev];
       newNotifications
-        .filter((n) => trackingIds.includes(n.id))
+        .filter((n) => ids.includes(n.id))
+        .forEach((n) => {
+          n.archived = undefined;
+        });
+      return newNotifications;
+    });
+  };
+
+  const markAsArchived = async (_ids: string[] | 'ALL') => {
+    if (!notifications) return;
+
+    const date = new Date().toISOString();
+    const ids: string[] = notifications
+      .filter((n) => {
+        return !n.archived && (_ids === 'ALL' || _ids.includes(n.id));
+      })
+      .map((n) => n.id);
+
+    if (ids.length === 0) return;
+
+    client.updateInAppNotifications({ ids, archived: true });
+
+    setNotifications((prev) => {
+      if (!prev) return [];
+      const newNotifications = [...prev];
+      newNotifications
+        .filter((n) => ids.includes(n.id))
         .forEach((n) => {
           n.archived = date;
         });
@@ -366,46 +258,42 @@ export const NotificatinAPIProvider: React.FunctionComponent<
   const updateDelivery = (
     notificationId: string,
     channel: Channels,
-    delivery: DeliveryOptions,
+    delivery:
+      | DeliveryOptionsForEmail
+      | DeliveryOptionsForInappWeb
+      | BaseDeliveryOptions,
     subNotificationId?: string
   ) => {
-    if (!preferences) return;
-    const newPreferences = { ...preferences };
-    const pref = newPreferences.preferences.find(
-      (p) =>
-        p.notificationId === notificationId &&
-        p.subNotificationId === subNotificationId &&
-        p.channel === channel
-    );
-    if (pref) pref.delivery = delivery;
-    setPreferences(newPreferences);
+    client
+      .updateDeliveryOption({
+        notificationId,
+        channel,
+        delivery,
+        subNotificationId
+      })
+      .then(() => {
+        client.getPreferences().then((res) => {
+          setPreferences(res);
+        });
+      });
   };
 
   useEffect(() => {
+    // reset state
+    setNotifications([]);
+    setLoadingNotifications(false);
+    setPreferences(undefined);
+    setOldestLoaded(new Date().toISOString());
+    setHasMore(true);
+
     loadNotifications(true);
 
-    const websocket = new WebSocket(
-      `${config.wsURL}?userId=${config.userId}&envId=${config.clientId}`
-    );
+    client.openWebSocket();
 
-    websocket.onmessage = (m) => {
-      const body = JSON.parse(m.data);
-      if (!body || !body.route) {
-        return;
-      }
-
-      if (body.route === "inapp_web/new_notifications") {
-        const message = body as WS_NewNotification;
-        addNotificationsToState(message.payload.notifications);
-      }
-    };
-
-    api(config.apiURL, "GET", `preferences`, props.clientId, props.userId).then(
-      (res) => {
-        setPreferences(res);
-      }
-    );
-  }, []);
+    client.getPreferences().then((res) => {
+      setPreferences(res);
+    });
+  }, [client, loadNotifications]);
 
   const value: Context = {
     notifications,
@@ -413,8 +301,9 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     loadNotifications,
     markAsOpened,
     markAsArchived,
+    markAsUnarchived,
     markAsClicked,
-    updateDelivery,
+    updateDelivery
   };
 
   return (
@@ -423,3 +312,12 @@ export const NotificatinAPIProvider: React.FunctionComponent<
     </NotificationAPIContext.Provider>
   );
 };
+
+const useNotificationAPIContext = (): Context => {
+  const context = useContext(NotificationAPIContext);
+  if (!context) {
+    throw new Error('useMyContext must be used within a MyProvider');
+  }
+  return context;
+};
+NotificationAPIProvider.useNotificationAPIContext = useNotificationAPIContext;

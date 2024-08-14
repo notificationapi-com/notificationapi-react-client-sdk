@@ -1,18 +1,26 @@
-import { CheckOutlined, SettingOutlined } from "@ant-design/icons";
-import { Button, Popover, Typography } from "antd";
+import { CheckOutlined, SettingOutlined } from '@ant-design/icons';
+import { Button, Popover, Typography } from 'antd';
 
-export const InboxHeader = (props: {
-  markAsArchived: (ids: string[] | "ALL") => void;
-}) => {
+export type InboxHeaderProps = {
+  title?: JSX.Element;
+  button1ClickHandler?: (ids: string[] | 'ALL') => void;
+  button2ClickHandler?: () => void;
+};
+
+export const InboxHeader = (props: InboxHeaderProps) => {
+  const titleComponent = props.title ?? (
+    <Typography.Text strong>Notifications</Typography.Text>
+  );
+
   return (
     <div
       style={{
-        display: "flex",
-        justifyContent: "space-between",
-        paddingRight: 5,
+        display: 'flex',
+        justifyContent: 'space-between',
+        paddingRight: 5
       }}
     >
-      <Typography.Text strong>Notifications</Typography.Text>
+      {titleComponent}
 
       <div>
         <Popover content="Resolve all">
@@ -21,7 +29,7 @@ export const InboxHeader = (props: {
             size="small"
             type="text"
             onClick={() => {
-              props.markAsArchived("ALL");
+              props.button1ClickHandler && props.button1ClickHandler('ALL');
             }}
           />
         </Popover>
@@ -30,7 +38,7 @@ export const InboxHeader = (props: {
             icon={<SettingOutlined />}
             size="small"
             type="text"
-            onClick={() => {}}
+            onClick={props.button2ClickHandler}
           />
         </Popover>
       </div>

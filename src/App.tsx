@@ -1,24 +1,31 @@
-import { Button, Divider } from "antd";
+import React from 'react';
+import { Button, Divider } from 'antd';
 import {
   NotificationFeed,
   NotificationPopup,
   NotificationLauncher,
   NotificationCounter,
-  NotificatinAPIProvider,
-} from "../lib/main";
+  NotificationAPIProvider,
+  NotificationPreferencesPopup,
+  NotificationPreferencesInline
+} from '../lib/main';
+import { MyButton } from './MyButton';
 
 function App() {
+  const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
+    React.useState(false);
+
   return (
     <div
       style={{
-        height: "200vh",
-        background: "#f0f2f5",
-        padding: 24,
+        height: '200vh',
+        background: '#f0f2f5',
+        padding: 24
       }}
     >
-      <NotificatinAPIProvider
+      <NotificationAPIProvider
         userId="sahand"
-        clientId="24nojpnrsdc53fkslha0roov05"
+        clientId="arbfcddhxmx07ncpja31859r6i"
       >
         <h2>Popup:</h2>
         <NotificationPopup />
@@ -27,7 +34,7 @@ function App() {
 
         <h2>Launcher:</h2>
         <p>Look at the bottom right :)</p>
-        <NotificationLauncher filter="UNARCHIVED" pagination="PAGINATED" />
+        <NotificationLauncher />
 
         <Divider />
 
@@ -37,15 +44,34 @@ function App() {
         <Divider />
 
         <h2>Counter on an element</h2>
-        <NotificationCounter>
-          <Button>Hello World</Button>
+        <NotificationCounter
+          count={(n) => {
+            return n.notificationId === 'conversion_failure' && !n.archived;
+          }}
+        >
+          <MyButton />
         </NotificationCounter>
 
         <Divider />
 
         <h2>Feed:</h2>
         <NotificationFeed infiniteScrollHeight={300} />
-      </NotificatinAPIProvider>
+
+        <Divider />
+        <h2>Preferences Popup:</h2>
+        <Button onClick={() => setPreferencesPopupVisiblity(true)}>
+          Preferences Popup
+        </Button>
+        <NotificationPreferencesPopup
+          open={preferencesPopupVisibility}
+          onClose={() => {
+            setPreferencesPopupVisiblity(false);
+          }}
+        />
+
+        <h2>Preferences Inline:</h2>
+        <NotificationPreferencesInline />
+      </NotificationAPIProvider>
     </div>
   );
 }

@@ -1,5 +1,10 @@
+import { Preferences } from './Preferences';
+
+type NotificationPreferencesInlineProps = object;
+
 export function NotificationPreferencesInline(
-  props: React.HTMLAttributes<HTMLElement>
+  props: NotificationPreferencesInlineProps
 ) {
-  return <div {...props}>hi</div>;
+  props;
+  return <Preferences />;
 }
