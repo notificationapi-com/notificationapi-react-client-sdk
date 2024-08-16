@@ -280,8 +280,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
         notificationId,
         channel,
         delivery,
-        subNotificationId,
-      },
+        subNotificationId
+      }
     ]);
   };
 
@@ -329,7 +329,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsUnarchived,
     markAsClicked,
     updateDelivery,
-    updateDeliveries,
+    updateDeliveries
   };
 
   return (
