@@ -1,18 +1,14 @@
-import { Button, Popover } from "antd";
-import { Inbox, Pagination } from "./Inbox";
-import { BellOutlined } from "@ant-design/icons";
-import { UnreadBadge, UnreadBadgeProps } from "./UnreadBadge";
-import { ImageShape, NotificationProps } from "./Notification";
-import { NotificationAPIContext } from "../Provider";
-import { useContext, useState } from "react";
-import { InAppNotification } from "@notificationapi/core/dist/interfaces";
-import { NotificationPreferencesPopup } from "../Preferences";
-import { InboxHeaderProps } from "./InboxHeader";
-
-export enum Filter {
-  ALL = "ALL",
-  UNARCHIVED = "UNARCHIVED",
-}
+import { Button, Popover } from 'antd';
+import { Inbox } from './Inbox';
+import { BellOutlined } from '@ant-design/icons';
+import { UnreadBadge, UnreadBadgeProps } from './UnreadBadge';
+import { NotificationProps } from './Notification';
+import { NotificationAPIContext } from '../Provider';
+import { useContext, useState } from 'react';
+import { InAppNotification } from '@notificationapi/core/dist/interfaces';
+import { NotificationPreferencesPopup } from '../Preferences';
+import { InboxHeaderProps } from './InboxHeader';
+import { Filter, ImageShape, Pagination } from './interface';
 
 export type NotificationPopupProps = {
   buttonIcon?: React.ReactNode;
@@ -24,13 +20,13 @@ export type NotificationPopupProps = {
   imageShape?: keyof typeof ImageShape;
   pagination?: keyof typeof Pagination;
   pageSize?: number;
-  pagePosition?: "top" | "bottom";
+  pagePosition?: 'top' | 'bottom';
   popupZIndex?: number;
   unreadBadgeProps?: UnreadBadgeProps;
-  count?: UnreadBadgeProps["count"];
+  count?: UnreadBadgeProps['count'];
   filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
   renderers?: {
-    notification?: NotificationProps["renderer"];
+    notification?: NotificationProps['renderer'];
   };
   header?: InboxHeaderProps;
 };
@@ -49,7 +45,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         style={{
           fontSize:
             props.buttonIconSize ||
-            (props.buttonWidth ? props.buttonWidth / 2 : 20),
+            (props.buttonWidth ? props.buttonWidth / 2 : 20)
         }}
       />
     ),
@@ -59,24 +55,24 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     popupHeight: props.popupHeight || 600,
     buttonIconSize:
       props.buttonIconSize || (props.buttonWidth ? props.buttonWidth / 2 : 20),
-    imageShape: props.imageShape || "circle",
-    pagination: props.pagination || "INFINITE_SCROLL",
+    imageShape: props.imageShape || 'circle',
+    pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
-    pagePosition: props.pagePosition || "top",
+    pagePosition: props.pagePosition || 'top',
     popupZIndex: props.popupZIndex || 1030,
     unreadBadgeProps: props.unreadBadgeProps ?? {},
-    count: props.count || "COUNT_UNOPENED_NOTIFICATIONS",
+    count: props.count || 'COUNT_UNOPENED_NOTIFICATIONS',
     filter: props.filter || Filter.ALL,
     header: {
       title: props.header?.title,
       button1ClickHandler:
         props.header?.button1ClickHandler ?? context.markAsArchived,
       button2ClickHandler:
-        props.header?.button2ClickHandler ?? (() => setOpenPreferences(true)),
+        props.header?.button2ClickHandler ?? (() => setOpenPreferences(true))
     },
     renderers: {
-      notification: props.renderers?.notification,
-    },
+      notification: props.renderers?.notification
+    }
   };
 
   return (
@@ -103,21 +99,21 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         }}
         arrow={false}
         overlayStyle={{
-          padding: "0 16px",
-          width: config.popupWidth,
+          padding: '0 16px',
+          width: config.popupWidth
         }}
         zIndex={props.popupZIndex}
       >
         <div
           style={{
-            display: "inline-block",
+            display: 'inline-block'
           }}
         >
           <UnreadBadge
             {...props.unreadBadgeProps}
             style={{
               top: 5,
-              right: 5,
+              right: 5
             }}
             count={config.count}
             filter={config.filter}
@@ -126,7 +122,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
               icon={config.buttonIcon}
               style={{
                 width: config.buttonWidth,
-                height: config.buttonHeight,
+                height: config.buttonHeight
               }}
               shape="circle"
               type="text"

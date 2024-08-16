@@ -1,6 +1,6 @@
-import { Preferences } from "./Preferences";
+import { Preferences } from './Preferences';
 
-type NotificationPreferencesInlineProps = {};
+type NotificationPreferencesInlineProps = object;
 
 export function NotificationPreferencesInline(
   props: NotificationPreferencesInlineProps

@@ -1,5 +1,5 @@
-import { Modal } from "antd";
-import { Preferences } from "./Preferences";
+import { Modal } from 'antd';
+import { Preferences } from './Preferences';
 
 type NotificationPreferencesPopupProps = {
   open?: boolean;
@@ -13,7 +13,7 @@ export function NotificationPreferencesPopup(
   const config: Required<NotificationPreferencesPopupProps> = {
     open: props.open === undefined ? true : props.open,
     onClose: props.onClose || (() => {}),
-    collapse: props.collapse === undefined ? false : props.collapse,
+    collapse: props.collapse === undefined ? false : props.collapse
   };
 
   return (

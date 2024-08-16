@@ -1,22 +1,22 @@
-import { useContext, useEffect, useState } from "react";
-import { Inbox, Pagination } from "./Inbox";
-import { ImageShape, NotificationProps } from "./Notification";
-import { NotificationAPIContext } from "../Provider";
-import { Filter } from "./NotificationPopup";
-import { InboxHeaderProps } from "./InboxHeader";
-import { NotificationPreferencesPopup } from "../Preferences";
-import { InAppNotification } from "@notificationapi/core/dist/interfaces";
+import { useContext, useEffect, useState } from 'react';
+import { Inbox } from './Inbox';
+import { NotificationProps } from './Notification';
+import { NotificationAPIContext } from '../Provider';
+import { InboxHeaderProps } from './InboxHeader';
+import { NotificationPreferencesPopup } from '../Preferences';
+import { InAppNotification } from '@notificationapi/core/dist/interfaces';
+import { Filter, ImageShape, Pagination } from './interface';
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;
   pagination?: keyof typeof Pagination;
   pageSize?: number;
-  pagePosition?: "top" | "bottom";
+  pagePosition?: 'top' | 'bottom';
   infiniteScrollHeight?: number;
   style?: React.CSSProperties;
   filter?: keyof typeof Filter | ((n: InAppNotification) => boolean);
   renderers?: {
-    notification?: NotificationProps["renderer"];
+    notification?: NotificationProps['renderer'];
   };
   header?: InboxHeaderProps;
 };
@@ -25,48 +25,51 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
   const [openPreferences, setOpenPreferences] = useState(false);
   const context = useContext(NotificationAPIContext);
 
+  // every 5 seconds
+  useEffect(() => {
+    if (!context) return;
+
+    context.markAsOpened();
+    const interval = setInterval(() => {
+      context.markAsOpened();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [context]);
+
   if (!context) {
     return null;
   }
 
   const config: Required<NotificationFeedProps> = {
-    imageShape: props.imageShape || "circle",
-    pagination: props.pagination || "INFINITE_SCROLL",
+    imageShape: props.imageShape || 'circle',
+    pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
-    pagePosition: props.pagePosition || "top",
+    pagePosition: props.pagePosition || 'top',
     style: props.style || {},
     filter: props.filter || Filter.ALL,
     infiniteScrollHeight: props.infiniteScrollHeight
       ? props.infiniteScrollHeight
       : window.innerHeight * 0.75,
     renderers: {
-      notification: props.renderers?.notification,
+      notification: props.renderers?.notification
     },
     header: {
       title: props.header?.title,
       button1ClickHandler:
         props.header?.button1ClickHandler ?? context.markAsArchived,
       button2ClickHandler:
-        props.header?.button2ClickHandler ?? (() => setOpenPreferences(true)),
-    },
+        props.header?.button2ClickHandler ?? (() => setOpenPreferences(true))
+    }
   };
-
-  // every 5 seconds
-  useEffect(() => {
-    context.markAsOpened();
-    const interval = setInterval(() => {
-      context.markAsOpened();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <div
       style={{
         padding: 12,
-        boxSizing: "border-box",
-        background: "#fff",
-        ...props.style,
+        boxSizing: 'border-box',
+        background: '#fff',
+        ...props.style
       }}
     >
       <Inbox

@@ -1,25 +1,21 @@
-import { Empty, List } from "antd";
-import { InboxHeader, InboxHeaderProps } from "./InboxHeader";
-import VirtualList from "rc-virtual-list";
-import { ImageShape, Notification } from "./Notification";
-import { NotificationAPIContext } from "../Provider";
-import { useContext } from "react";
-import { Filter, NotificationPopupProps } from "./NotificationPopup";
-import { Liquid } from "liquidjs";
-import { InAppNotification } from "@notificationapi/core/dist/interfaces";
-
-export enum Pagination {
-  INFINITE_SCROLL = "infinite_scroll",
-  PAGINATED = "paginated",
-}
+import { Empty, List } from 'antd';
+import { InboxHeader, InboxHeaderProps } from './InboxHeader';
+import VirtualList from 'rc-virtual-list';
+import { Notification } from './Notification';
+import { NotificationAPIContext } from '../Provider';
+import { useContext } from 'react';
+import { NotificationPopupProps } from './NotificationPopup';
+import { Liquid } from 'liquidjs';
+import { InAppNotification } from '@notificationapi/core/dist/interfaces';
+import { Filter, ImageShape, Pagination } from './interface';
 
 export type InboxProps = {
   pagination: keyof typeof Pagination;
   maxHeight: number;
-  filter: NotificationPopupProps["filter"];
+  filter: NotificationPopupProps['filter'];
   imageShape: keyof typeof ImageShape;
   pageSize: number;
-  pagePosition: NotificationPopupProps["pagePosition"];
+  pagePosition: NotificationPopupProps['pagePosition'];
   notificationRenderer:
     | ((notification: InAppNotification[]) => JSX.Element)
     | undefined;
@@ -51,11 +47,11 @@ export const Inbox: React.FC<InboxProps> = (props) => {
   const batchedNotifications: Record<string, InAppNotification[]> = {};
   const liquid = new Liquid();
   sortedNotifications.forEach((n) => {
-    if (n.deliveryOptions?.["instant"]?.batching) {
-      const batchingKey = n.deliveryOptions["instant"].batchingKey;
+    if (n.deliveryOptions?.['instant']?.batching) {
+      const batchingKey = n.deliveryOptions['instant'].batchingKey;
       const batchingKeyValue = batchingKey
         ? liquid.parseAndRenderSync(`{{${batchingKey}}}`, n)
-        : "";
+        : '';
       const groupKey = `${n.notificationId}-${batchingKeyValue}`;
       if (batchedNotifications[groupKey]) {
         batchedNotifications[groupKey].push(n);
@@ -79,7 +75,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
 
   return (
     <div>
-      {props.pagination === "INFINITE_SCROLL" ? (
+      {props.pagination === 'INFINITE_SCROLL' ? (
         <List
           header={
             <InboxHeader
@@ -150,7 +146,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
           )}
           pagination={{
             pageSize: props.pageSize,
-            align: "center",
+            align: 'center',
             position: props.pagePosition,
             showSizeChanger: false,
             simple: true,
@@ -160,7 +156,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
               ) {
                 context.loadNotifications();
               }
-            },
+            }
           }}
         >
           {orderedNotifications.length === 0 && (
