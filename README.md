@@ -6,6 +6,20 @@ The React SDK is mainly used for displaying In-App Notifications and allowing us
 
 Please refer to our [documentations](https://docs.notificationapi.com).
 
+# Development
+
+1. Install dependencies:
+
+```
+npm install
+```
+
+2. Run the example application:
+
+```
+npm run dev
+```
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
