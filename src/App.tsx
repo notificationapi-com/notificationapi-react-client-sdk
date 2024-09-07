@@ -25,7 +25,7 @@ function App() {
     >
       <NotificationAPIProvider
         userId="sahand"
-        clientId="arbfcddhxmx07ncpja31859r6i"
+        clientId="24nojpnrsdc53fkslha0roov05"
       >
         <h2>Popup:</h2>
         <NotificationPopup />
