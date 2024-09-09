@@ -92,14 +92,14 @@ export const NotificationAPIProvider: React.FunctionComponent<
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
 
-  const playSound = () => {
+  const playSound = useCallback(() => {
     if (config.playSoundOnNewNotification) {
       const audio = new Audio(config.newNotificationSoundPath);
       audio.play().catch((e) => {
-        console.error('Failed to play sound:', e);
+        console.log('Failed to play new notification sound:', e);
       });
     }
-  };
+  }, [config.newNotificationSoundPath, config.playSoundOnNewNotification]);
 
   const addNotificationsToState = useCallback((notis: InAppNotification[]) => {
     const now = new Date().toISOString();
@@ -136,7 +136,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
     props.clientId,
     props.userId,
     props.hashedUserId,
-    addNotificationsToState
+    addNotificationsToState,
+    playSound
   ]);
 
   // Notificaiton loading and state updates
