@@ -62,6 +62,8 @@ type Props = {
   wsURL?: string;
   initialLoadMaxCount?: number;
   initialLoadMaxAge?: Date;
+  playSoundOnNewNotification?: boolean;
+  newNotificationSoundPath?: string;
 };
 
 export const NotificationAPIProvider: React.FunctionComponent<
@@ -73,7 +75,10 @@ export const NotificationAPIProvider: React.FunctionComponent<
     apiURL: 'https://api.notificationapi.com',
     wsURL: 'wss://ws.notificationapi.com',
     initialLoadMaxCount: 1000,
-    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3))
+    initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
+    playSoundOnNewNotification: false,
+    newNotificationSoundPath:
+      'https://proxy.notificationsounds.com/notification-sounds/elegant-notification-sound/download/file-sounds-1233-elegant.mp3'
   };
 
   const config = {
@@ -86,6 +91,15 @@ export const NotificationAPIProvider: React.FunctionComponent<
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
+
+  const playSound = useCallback(() => {
+    if (config.playSoundOnNewNotification) {
+      const audio = new Audio(config.newNotificationSoundPath);
+      audio.play().catch((e) => {
+        console.log('Failed to play new notification sound:', e);
+      });
+    }
+  }, [config.newNotificationSoundPath, config.playSoundOnNewNotification]);
 
   const addNotificationsToState = useCallback((notis: InAppNotification[]) => {
     const now = new Date().toISOString();
@@ -114,6 +128,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
       userId: props.userId,
       hashedUserId: props.hashedUserId,
       onNewInAppNotifications: (notifications) => {
+        playSound();
         addNotificationsToState(notifications);
       }
     });
@@ -121,7 +136,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
     props.clientId,
     props.userId,
     props.hashedUserId,
-    addNotificationsToState
+    addNotificationsToState,
+    playSound
   ]);
 
   // Notificaiton loading and state updates
