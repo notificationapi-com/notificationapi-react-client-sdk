@@ -30,7 +30,8 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
         style={{
           fontSize:
             props.buttonIconSize ||
-            (props.buttonWidth ? props.buttonWidth / 2 : 20)
+            (props.buttonWidth ? props.buttonWidth / 2 : 20),
+          color: props.iconColor || '#000000'
         }}
       />
     ),
@@ -41,6 +42,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     buttonIconSize:
       props.buttonIconSize || (props.buttonWidth ? props.buttonWidth / 2 : 20),
     imageShape: props.imageShape || 'circle',
+    iconColor: props.iconColor || '#000000',
     pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
     pagePosition: props.pagePosition || 'top',
