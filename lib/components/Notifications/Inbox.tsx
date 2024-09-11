@@ -96,7 +96,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             data={orderedNotifications}
             height={props.maxHeight}
             itemHeight={47}
-            itemKey="id"
+            itemKey={(item) => item[0].id}
             onScroll={(e) => {
               // Refer to: https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollHeight#problems_and_solutions
               if (
