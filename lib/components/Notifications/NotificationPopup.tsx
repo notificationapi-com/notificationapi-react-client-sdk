@@ -18,6 +18,7 @@ export type NotificationPopupProps = {
   popupWidth?: number | string;
   popupHeight?: number;
   imageShape?: keyof typeof ImageShape;
+  iconColor?: string;
   pagination?: keyof typeof Pagination;
   pageSize?: number;
   pagePosition?: 'top' | 'bottom';
@@ -45,7 +46,8 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         style={{
           fontSize:
             props.buttonIconSize ||
-            (props.buttonWidth ? props.buttonWidth / 2 : 20)
+            (props.buttonWidth ? props.buttonWidth / 2 : 20),
+          color: props.iconColor || '#000000'
         }}
       />
     ),
@@ -56,6 +58,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     buttonIconSize:
       props.buttonIconSize || (props.buttonWidth ? props.buttonWidth / 2 : 20),
     imageShape: props.imageShape || 'circle',
+    iconColor: props.iconColor || '#000000',
     pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
     pagePosition: props.pagePosition || 'top',
