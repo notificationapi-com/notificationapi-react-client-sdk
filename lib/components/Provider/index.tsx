@@ -48,6 +48,7 @@ export type Context = {
       subNotificationId?: string;
     }[]
   ) => void;
+  client: typeof NotificationAPIClientSDK;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -334,6 +335,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     client.getPreferences().then((res) => {
       setPreferences(res);
     });
+
   }, [client, loadNotifications]);
 
   const value: Context = {
@@ -345,7 +347,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsUnarchived,
     markAsClicked,
     updateDelivery,
-    updateDeliveries
+    updateDeliveries,
+    client
   };
 
   return (
