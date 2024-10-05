@@ -123,7 +123,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
   }, []);
 
   const client = useMemo(() => {
-    return NotificationAPIClientSDK.init({
+    const client = NotificationAPIClientSDK.init({
       clientId: props.clientId,
       userId: props.userId,
       hashedUserId: props.hashedUserId,
@@ -132,6 +132,9 @@ export const NotificationAPIProvider: React.FunctionComponent<
         addNotificationsToState(notifications);
       }
     });
+    //  update user's last seen date
+    client.identify({});
+    return client;
   }, [
     props.clientId,
     props.userId,
