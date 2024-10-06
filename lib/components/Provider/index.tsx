@@ -135,7 +135,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     const client = NotificationAPIClientSDK.init({
       clientId: config.clientId,
       userId: config.user.id,
-      hashedUserId: props.hashedUserId,
+      hashedUserId: config.hashedUserId,
       onNewInAppNotifications: (notifications) => {
         playSound();
         addNotificationsToState(notifications);
