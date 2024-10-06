@@ -11,7 +11,8 @@ import {
 import { NotificationAPIClientSDK } from '@notificationapi/core';
 import {
   GetPreferencesResponse,
-  InAppNotification
+  InAppNotification,
+  User
 } from '@notificationapi/core/dist/interfaces';
 import {
   BaseDeliveryOptions,
@@ -55,9 +56,15 @@ export const NotificationAPIContext = createContext<Context | undefined>(
   undefined
 );
 
-type Props = {
+type Props = (
+  | {
+      userId: string;
+    }
+  | {
+      user: Omit<User, 'createdAt' | 'updatedAt' | 'lastSeenTime'>;
+    }
+) & {
   clientId: string;
-  userId: string;
   hashedUserId?: string;
   apiURL?: string;
   wsURL?: string;
@@ -84,7 +91,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
   const config = {
     ...defaultConfigs,
-    ...props
+    ...props,
+    user: 'userId' in props ? { id: props.userId } : props.user
   };
 
   const [notifications, setNotifications] = useState<InAppNotification[]>();
@@ -125,8 +133,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
   const client = useMemo(() => {
     const client = NotificationAPIClientSDK.init({
-      clientId: props.clientId,
-      userId: props.userId,
+      clientId: config.clientId,
+      userId: config.user.id,
       hashedUserId: props.hashedUserId,
       onNewInAppNotifications: (notifications) => {
         playSound();
@@ -134,12 +142,12 @@ export const NotificationAPIProvider: React.FunctionComponent<
       }
     });
     //  update user's last seen date
-    client.identify({});
+    client.identify(config.user);
     return client;
   }, [
-    props.clientId,
-    props.userId,
-    props.hashedUserId,
+    config.clientId,
+    config.user,
+    config.hashedUserId,
     addNotificationsToState,
     playSound
   ]);
