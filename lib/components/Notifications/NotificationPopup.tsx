@@ -30,6 +30,7 @@ export type NotificationPopupProps = {
     notification?: NotificationProps['renderer'];
   };
   header?: InboxHeaderProps;
+  style?: React.CSSProperties;
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
@@ -75,7 +76,8 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     },
     renderers: {
       notification: props.renderers?.notification
-    }
+    },
+    style: props.style || {}
   };
 
   return (
