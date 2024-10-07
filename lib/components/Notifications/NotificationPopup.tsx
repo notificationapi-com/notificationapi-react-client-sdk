@@ -30,7 +30,7 @@ export type NotificationPopupProps = {
     notification?: NotificationProps['renderer'];
   };
   header?: InboxHeaderProps;
-  style?: React.CSSProperties;
+  customStyle?: React.CSSProperties;
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
@@ -77,7 +77,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     renderers: {
       notification: props.renderers?.notification
     },
-    style: props.style || {}
+    customStyle: props.customStyle || {}
   };
 
   return (
@@ -106,7 +106,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         overlayStyle={{
           padding: '0 16px',
           width: config.popupWidth,
-          ...config.style
+          ...config.customStyle
         }}
         zIndex={props.popupZIndex}
       >
