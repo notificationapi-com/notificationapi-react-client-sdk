@@ -105,7 +105,8 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         arrow={false}
         overlayStyle={{
           padding: '0 16px',
-          width: config.popupWidth
+          width: config.popupWidth,
+          ...config.style
         }}
         zIndex={props.popupZIndex}
       >
