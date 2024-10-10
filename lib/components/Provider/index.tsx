@@ -141,12 +141,19 @@ export const NotificationAPIProvider: React.FunctionComponent<
         addNotificationsToState(notifications);
       }
     });
-    //  update user's last seen date
-    client.identify(config.user);
+
+    //  identify user
+    client.identify({
+      email: config.user.email,
+      number: config.user.number
+    });
+
     return client;
   }, [
     config.clientId,
-    config.user,
+    config.user.id,
+    config.user.email,
+    config.user.number,
     config.hashedUserId,
     addNotificationsToState,
     playSound
