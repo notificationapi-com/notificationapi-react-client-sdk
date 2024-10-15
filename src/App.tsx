@@ -24,8 +24,11 @@ function App() {
       }}
     >
       <NotificationAPIProvider
-        userId="sahand"
         clientId="24nojpnrsdc53fkslha0roov05"
+        user={{
+          id: 'sahand',
+          email: 'sahand.seifi@gmail.com'
+        }}
       >
         <h2>Popup:</h2>
         <NotificationPopup />

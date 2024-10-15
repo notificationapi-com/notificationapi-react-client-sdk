@@ -11,7 +11,8 @@ import {
 import { NotificationAPIClientSDK } from '@notificationapi/core';
 import {
   GetPreferencesResponse,
-  InAppNotification
+  InAppNotification,
+  User
 } from '@notificationapi/core/dist/interfaces';
 import {
   BaseDeliveryOptions,
@@ -48,15 +49,22 @@ export type Context = {
       subNotificationId?: string;
     }[]
   ) => void;
+  getClient: () => typeof NotificationAPIClientSDK;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
   undefined
 );
 
-type Props = {
+type Props = (
+  | {
+      userId: string;
+    }
+  | {
+      user: Omit<User, 'createdAt' | 'updatedAt' | 'lastSeenTime'>;
+    }
+) & {
   clientId: string;
-  userId: string;
   hashedUserId?: string;
   apiURL?: string;
   wsURL?: string;
@@ -83,7 +91,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
   const config = {
     ...defaultConfigs,
-    ...props
+    ...props,
+    user: 'userId' in props ? { id: props.userId } : props.user
   };
 
   const [notifications, setNotifications] = useState<InAppNotification[]>();
@@ -123,19 +132,29 @@ export const NotificationAPIProvider: React.FunctionComponent<
   }, []);
 
   const client = useMemo(() => {
-    return NotificationAPIClientSDK.init({
-      clientId: props.clientId,
-      userId: props.userId,
-      hashedUserId: props.hashedUserId,
+    const client = NotificationAPIClientSDK.init({
+      clientId: config.clientId,
+      userId: config.user.id,
+      hashedUserId: config.hashedUserId,
       onNewInAppNotifications: (notifications) => {
         playSound();
         addNotificationsToState(notifications);
       }
     });
+
+    //  identify user
+    client.identify({
+      email: config.user.email,
+      number: config.user.number
+    });
+
+    return client;
   }, [
-    props.clientId,
-    props.userId,
-    props.hashedUserId,
+    config.clientId,
+    config.user.id,
+    config.user.email,
+    config.user.number,
+    config.hashedUserId,
     addNotificationsToState,
     playSound
   ]);
@@ -345,7 +364,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsUnarchived,
     markAsClicked,
     updateDelivery,
-    updateDeliveries
+    updateDeliveries,
+    getClient: () => client
   };
 
   return (
