@@ -10,6 +10,7 @@ import {
   NotificationPreferencesInline
 } from '../lib/main';
 import { MyButton } from './MyButton';
+import { FakeNotification } from './FakeNotification';
 
 function App() {
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
@@ -18,7 +19,7 @@ function App() {
   return (
     <div
       style={{
-        height: '200vh',
+        height: '210vh',
         background: '#f0f2f5',
         padding: 24
       }}
@@ -74,6 +75,15 @@ function App() {
 
         <h2>Preferences Inline:</h2>
         <NotificationPreferencesInline />
+
+        <h2 style={{ textAlign: 'center' }}>
+          Experience the magic of notifications!
+        </h2>
+        <h3 style={{ textAlign: 'center' }}>
+          Fill out the form below to generate a fake notification and see it in
+          action!
+        </h3>
+        <FakeNotification />
       </NotificationAPIProvider>
     </div>
   );
