@@ -28,6 +28,7 @@ export const FakeNotification: React.FC = () => {
         }
       }
     };
+    notification.title = values.title ?? 'My fake notification';
     notificationapi.addNotificationsToState([notification]);
   };
 
@@ -41,7 +42,7 @@ export const FakeNotification: React.FC = () => {
       <Form.Item
         name="title"
         label="Title"
-        rules={[{ required: true, message: 'Please input the title!' }]}
+        // rules={[{ required: true, message: 'Please input the title!' }]}
       >
         <Input placeholder="My fake notification" />
       </Form.Item>
