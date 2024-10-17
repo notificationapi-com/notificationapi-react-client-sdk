@@ -50,6 +50,7 @@ export type Context = {
     }[]
   ) => void;
   getClient: () => typeof NotificationAPIClientSDK;
+  addNotificationsToState: (notis: InAppNotification[]) => void; // using context to add notifications to state
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -72,6 +73,7 @@ type Props = (
   initialLoadMaxAge?: Date;
   playSoundOnNewNotification?: boolean;
   newNotificationSoundPath?: string;
+  connectionMode?: 'live' | 'mocked';
 };
 
 export const NotificationAPIProvider: React.FunctionComponent<
@@ -86,7 +88,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
     initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
     playSoundOnNewNotification: false,
     newNotificationSoundPath:
-      'https://proxy.notificationsounds.com/notification-sounds/elegant-notification-sound/download/file-sounds-1233-elegant.mp3'
+      'https://proxy.notificationsounds.com/notification-sounds/elegant-notification-sound/download/file-sounds-1233-elegant.mp3',
+    connectionMode: 'live'
   };
 
   const config = {
@@ -143,10 +146,11 @@ export const NotificationAPIProvider: React.FunctionComponent<
     });
 
     //  identify user
-    client.identify({
-      email: config.user.email,
-      number: config.user.number
-    });
+    if (config.connectionMode === 'live')
+      client.identify({
+        email: config.user.email,
+        number: config.user.number
+      });
 
     return client;
   }, [
@@ -155,6 +159,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     config.user.email,
     config.user.number,
     config.hashedUserId,
+    config.connectionMode,
     addNotificationsToState,
     playSound
   ]);
@@ -186,15 +191,17 @@ export const NotificationAPIProvider: React.FunctionComponent<
       setLoadingNotifications(true);
 
       try {
-        await fetchNotifications(
-          initial ? new Date().toISOString() : oldestLoadedRef.current,
-          initial ? config.initialLoadMaxCount : 1000
-        );
+        if (config.connectionMode === 'live') {
+          await fetchNotifications(
+            initial ? new Date().toISOString() : oldestLoadedRef.current,
+            initial ? config.initialLoadMaxCount : 1000
+          );
+        }
       } finally {
         setLoadingNotifications(false);
       }
     },
-    [config.initialLoadMaxCount, fetchNotifications]
+    [config.initialLoadMaxCount, config.connectionMode, fetchNotifications]
   );
 
   const markAsClicked = async (_ids: string[]) => {
@@ -205,7 +212,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
       .filter((n) => _ids.includes(n.id) && !n.clicked)
       .map((n) => n.id);
 
-    client.updateInAppNotifications({ ids, clicked: true });
+    if (config.connectionMode === 'live')
+      client.updateInAppNotifications({ ids, clicked: true });
 
     setNotifications((prev) => {
       if (!prev) return [];
@@ -229,10 +237,11 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
     if (ids.length === 0) return;
 
-    client.updateInAppNotifications({
-      ids,
-      opened: true
-    });
+    if (config.connectionMode === 'live')
+      client.updateInAppNotifications({
+        ids,
+        opened: true
+      });
 
     setNotifications((prev) => {
       if (!prev) return [];
@@ -258,10 +267,11 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
     if (ids.length === 0) return;
 
-    client.updateInAppNotifications({
-      ids,
-      archived: false
-    });
+    if (config.connectionMode === 'live')
+      client.updateInAppNotifications({
+        ids,
+        archived: false
+      });
 
     setNotifications((prev) => {
       if (!prev) return [];
@@ -287,7 +297,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
     if (ids.length === 0) return;
 
-    client.updateInAppNotifications({ ids, archived: true });
+    if (config.connectionMode === 'live')
+      client.updateInAppNotifications({ ids, archived: true });
 
     setNotifications((prev) => {
       if (!prev) return [];
@@ -347,13 +358,14 @@ export const NotificationAPIProvider: React.FunctionComponent<
     setHasMore(true);
 
     loadNotifications(true);
+    if (config.connectionMode === 'live') {
+      client.openWebSocket();
 
-    client.openWebSocket();
-
-    client.getPreferences().then((res) => {
-      setPreferences(res);
-    });
-  }, [client, loadNotifications]);
+      client.getPreferences().then((res) => {
+        setPreferences(res);
+      });
+    }
+  }, [client, config.connectionMode, loadNotifications]);
 
   const value: Context = {
     notifications,
@@ -365,7 +377,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsClicked,
     updateDelivery,
     updateDeliveries,
-    getClient: () => client
+    getClient: () => client,
+    addNotificationsToState // using context to add notifications to state
   };
 
   return (
