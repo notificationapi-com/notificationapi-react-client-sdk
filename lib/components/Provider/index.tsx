@@ -201,7 +201,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
         setLoadingNotifications(false);
       }
     },
-    [config.initialLoadMaxCount, fetchNotifications]
+    [config.initialLoadMaxCount, config.connectionMode, fetchNotifications]
   );
 
   const markAsClicked = async (_ids: string[]) => {
