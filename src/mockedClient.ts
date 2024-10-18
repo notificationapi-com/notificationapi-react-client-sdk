@@ -66,27 +66,35 @@ export const mockedClient = {
     // Create a mock WebSocket object
     const mockWebSocket = {
       send: (data: string | ArrayBufferLike | Blob | ArrayBufferView) => {
-        console.log(data);
+        console.log('WebSocket message sent:', data);
       },
       close: (code?: number, reason?: string) => {
-        console.log(code, reason);
+        console.log('WebSocket closed with code:', code, 'and reason:', reason);
       },
       addEventListener: (
         type: string,
         listener: EventListenerOrEventListenerObject,
         options?: boolean | AddEventListenerOptions
       ) => {
-        console.log(type, listener, options);
+        console.log(
+          `Event listener added for type: ${type}`,
+          listener,
+          options
+        );
       },
       removeEventListener: (
         type: string,
         listener: EventListenerOrEventListenerObject,
         options?: boolean | EventListenerOptions
       ) => {
-        console.log(type, listener, options);
+        console.log(
+          `Event listener removed for type: ${type}`,
+          listener,
+          options
+        );
       },
       dispatchEvent: (event: Event) => {
-        console.log(event);
+        console.log('WebSocket event dispatched:', event);
         return true;
       },
       readyState: WebSocket.CONNECTING,
@@ -112,6 +120,7 @@ export const mockedClient = {
       hasMore: false, // Set the actual value here
       oldestReceived: '' // Set the actual value here
     };
+
     return Promise.resolve(response);
   },
   updateInAppNotifications: function () {
