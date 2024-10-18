@@ -1,81 +1,19 @@
 import React from 'react';
-import { Button, Divider } from 'antd';
-import {
-  NotificationFeed,
-  NotificationPopup,
-  NotificationLauncher,
-  NotificationCounter,
-  NotificationAPIProvider,
-  NotificationPreferencesPopup,
-  NotificationPreferencesInline
-} from '../lib/main';
-import { MyButton } from './MyButton';
+import { Button } from 'antd';
+import LiveConnections from './LiveComponents';
+import MockedComponents from './MockedComponents';
 
 function App() {
-  const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
-    React.useState(false);
+  const [isLiveMode, setIsLiveMode] = React.useState(true);
 
   return (
-    <div
-      style={{
-        height: '200vh',
-        background: '#f0f2f5',
-        padding: 24
-      }}
-    >
-      <NotificationAPIProvider
-        clientId="24nojpnrsdc53fkslha0roov05"
-        user={{
-          id: 'sahand',
-          email: 'sahand.seifi@gmail.com'
-        }}
-      >
-        <h2>Popup:</h2>
-        <NotificationPopup />
-
-        <Divider />
-
-        <h2>Launcher:</h2>
-        <p>Look at the bottom right :)</p>
-        <NotificationLauncher />
-
-        <Divider />
-
-        <h2>Counter (Standalone)</h2>
-        <NotificationCounter />
-
-        <Divider />
-
-        <h2>Counter on an element</h2>
-        <NotificationCounter
-          count={(n) => {
-            return n.notificationId === 'conversion_failure' && !n.archived;
-          }}
-        >
-          <MyButton />
-        </NotificationCounter>
-
-        <Divider />
-
-        <h2>Feed:</h2>
-        <NotificationFeed infiniteScrollHeight={300} />
-
-        <Divider />
-        <h2>Preferences Popup:</h2>
-        <Button onClick={() => setPreferencesPopupVisiblity(true)}>
-          Preferences Popup
-        </Button>
-        <NotificationPreferencesPopup
-          open={preferencesPopupVisibility}
-          onClose={() => {
-            setPreferencesPopupVisiblity(false);
-          }}
-        />
-
-        <h2>Preferences Inline:</h2>
-        <NotificationPreferencesInline />
-      </NotificationAPIProvider>
-    </div>
+    <>
+      <Button onClick={() => setIsLiveMode(!isLiveMode)}>
+        {isLiveMode ? '🔴' : '🟢'} Switch to {isLiveMode ? 'Mocked' : 'Live'}{' '}
+        Mode
+      </Button>
+      {isLiveMode ? <LiveConnections /> : <MockedComponents />}
+    </>
   );
 }
 
