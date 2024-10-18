@@ -50,6 +50,7 @@ export type Context = {
     }[]
   ) => void;
   getClient: () => typeof NotificationAPIClientSDK;
+  addNotificationsToState: (notis: InAppNotification[]) => void;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -72,6 +73,7 @@ type Props = (
   initialLoadMaxAge?: Date;
   playSoundOnNewNotification?: boolean;
   newNotificationSoundPath?: string;
+  client?: typeof NotificationAPIClientSDK;
 };
 
 export const NotificationAPIProvider: React.FunctionComponent<
@@ -132,15 +134,17 @@ export const NotificationAPIProvider: React.FunctionComponent<
   }, []);
 
   const client = useMemo(() => {
-    const client = NotificationAPIClientSDK.init({
-      clientId: config.clientId,
-      userId: config.user.id,
-      hashedUserId: config.hashedUserId,
-      onNewInAppNotifications: (notifications) => {
-        playSound();
-        addNotificationsToState(notifications);
-      }
-    });
+    const client = props.client
+      ? props.client
+      : NotificationAPIClientSDK.init({
+          clientId: config.clientId,
+          userId: config.user.id,
+          hashedUserId: config.hashedUserId,
+          onNewInAppNotifications: (notifications) => {
+            playSound();
+            addNotificationsToState(notifications);
+          }
+        });
 
     //  identify user
     client.identify({
@@ -156,7 +160,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
     config.user.number,
     config.hashedUserId,
     addNotificationsToState,
-    playSound
+    playSound,
+    props.client
   ]);
 
   // Notificaiton loading and state updates
@@ -365,7 +370,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsClicked,
     updateDelivery,
     updateDeliveries,
-    getClient: () => client
+    getClient: () => client,
+    addNotificationsToState
   };
 
   return (
