@@ -50,7 +50,6 @@ export type Context = {
     }[]
   ) => void;
   getClient: () => typeof NotificationAPIClientSDK;
-  addNotificationsToState: (notis: InAppNotification[]) => void;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -370,8 +369,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsClicked,
     updateDelivery,
     updateDeliveries,
-    getClient: () => client,
-    addNotificationsToState
+    getClient: () => client
   };
 
   return (

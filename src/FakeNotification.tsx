@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button, Form, Input } from 'antd';
-import { NotificationAPIProvider } from '../lib/main';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 
-export const FakeNotification: React.FC = () => {
-  const notificationapi = NotificationAPIProvider.useNotificationAPIContext();
+export const FakeNotification: React.FC<{
+  setNotification: React.Dispatch<React.SetStateAction<InAppNotification[]>>;
+}> = ({ setNotification }) => {
   const [form] = Form.useForm();
   const onFinish = (
     values: Omit<InAppNotification, 'id' | 'notificationId' | 'seen' | 'date'>
@@ -29,7 +29,7 @@ export const FakeNotification: React.FC = () => {
       }
     };
     notification.title = values.title ?? 'My fake notification';
-    notificationapi.addNotificationsToState([notification]);
+    setNotification([notification]);
   };
 
   return (
@@ -42,7 +42,7 @@ export const FakeNotification: React.FC = () => {
       <Form.Item
         name="title"
         label="Title"
-        // rules={[{ required: true, message: 'Please input the title!' }]}
+        rules={[{ required: true, message: 'Please input the title!' }]}
       >
         <Input placeholder="My fake notification" />
       </Form.Item>
