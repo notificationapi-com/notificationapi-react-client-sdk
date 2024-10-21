@@ -4,15 +4,14 @@ import LiveConnections from './LiveComponents';
 import MockedComponents from './MockedComponents';
 
 function App() {
-  const [isLiveMode, setIsLiveMode] = React.useState(true);
+  const [isMocked, setIsMocked] = React.useState(true);
 
   return (
     <>
-      <Button onClick={() => setIsLiveMode(!isLiveMode)}>
-        {isLiveMode ? '🔴' : '🟢'} Switch to {isLiveMode ? 'Mocked' : 'Live'}{' '}
-        Mode
+      <Button onClick={() => setIsMocked(!isMocked)}>
+        {isMocked ? '🟢' : '🔴'} Switch to {isMocked ? 'Live' : 'Mocked'} Mode
       </Button>
-      {isLiveMode ? <LiveConnections /> : <MockedComponents />}
+      {isMocked ? <MockedComponents /> : <LiveConnections />}
     </>
   );
 }
