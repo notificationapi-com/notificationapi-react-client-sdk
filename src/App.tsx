@@ -4,7 +4,7 @@ import LiveConnections from './LiveComponents';
 import MockedComponents from './MockedComponents';
 
 function App() {
-  const [isMocked, setIsMocked] = React.useState(true);
+  const [isMocked, setIsMocked] = React.useState(false);
 
   return (
     <>
