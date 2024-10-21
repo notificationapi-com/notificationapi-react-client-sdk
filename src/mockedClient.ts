@@ -1,35 +1,37 @@
+import { NotificationAPIClientSDK } from '@notificationapi/core';
 import {
   GetPreferencesResponse,
   InAppNotification
 } from '@notificationapi/core/dist/interfaces';
 
-export const mockedClient = {
-  config: {
-    host: 'sdfsdddd',
-    websocketHost: 'websocketHost',
-    userId: 'b',
-    clientId: 'a',
-    hashedUserId: '',
-    getInAppDefaultCount: 100,
-    getInAppDefaultOldest: '2024-09-17T23:38:53.878Z',
-    keepWebSocketAliveForSeconds: 86400
-  },
-  rest: {
-    generic: async () => {
-      // Implement the generic method logic here
-      return Promise.resolve({});
+export const getMarkedClient = (
+  clientId: string,
+  userId: string,
+  inAppNotification: InAppNotification[]
+): typeof NotificationAPIClientSDK => {
+  const client: typeof NotificationAPIClientSDK = NotificationAPIClientSDK.init(
+    {
+      clientId,
+      userId
+    }
+  );
+  const mockedClient: typeof NotificationAPIClientSDK = {
+    ...client,
+    websocket: {
+      object: undefined,
+      connect: function (): WebSocket {
+        console.log('connect method called');
+        throw new Error('Function not implemented.');
+      },
+      disconnect: function (): void {
+        console.log('disconnect method called');
+        throw new Error('Function not implemented.');
+      }
     },
-    getNotifications: async () => {
-      const inAppNotification: InAppNotification[] = [];
-      const response = {
-        notifications: inAppNotification, // Add actual items data here
-        hasMore: false, // Set the actual value here
-        oldestReceived: '' // Set the actual value here
-      };
-      return Promise.resolve(response);
+    openWebSocket: function (): WebSocket {
+      return {} as WebSocket;
     },
-    patchNotifications: async () => {
-      // Implement the patchNotifications method logic here
+    updateInAppNotifications: function () {
       return Promise.resolve({});
     },
     getPreferences: async () => {
@@ -41,95 +43,19 @@ export const mockedClient = {
       };
       return Promise.resolve(response);
     },
-    postPreferences: async () => {
-      // Implement the postPreferences method logic here
-      return Promise.resolve({});
-    },
-    postUser: async () => {
-      // Implement the postUser method logic here
-      return Promise.resolve({});
+    identify: function (): Promise<void> {
+      return Promise.resolve();
     }
-  },
-  init: function () {
-    throw new Error('Function not implemented.');
-  },
-  websocket: {
-    object: undefined,
-    connect: function (): WebSocket {
-      throw new Error('Function not implemented.');
-    },
-    disconnect: function (): void {
-      throw new Error('Function not implemented.');
-    }
-  },
-  openWebSocket: function (): WebSocket {
-    // Create a mock WebSocket object
-    const mockWebSocket = {
-      send: (data: string | ArrayBufferLike | Blob | ArrayBufferView) => {
-        console.log('WebSocket message sent:', data);
-      },
-      close: (code?: number, reason?: string) => {
-        console.log('WebSocket closed with code:', code, 'and reason:', reason);
-      },
-      addEventListener: (
-        type: string,
-        listener: EventListenerOrEventListenerObject,
-        options?: boolean | AddEventListenerOptions
-      ) => {
-        console.log(
-          `Event listener added for type: ${type}`,
-          listener,
-          options
-        );
-      },
-      removeEventListener: (
-        type: string,
-        listener: EventListenerOrEventListenerObject,
-        options?: boolean | EventListenerOptions
-      ) => {
-        console.log(
-          `Event listener removed for type: ${type}`,
-          listener,
-          options
-        );
-      },
-      dispatchEvent: (event: Event) => {
-        console.log('WebSocket event dispatched:', event);
-        return true;
-      },
-      readyState: WebSocket.CONNECTING,
-      bufferedAmount: 0,
-      extensions: '',
-      protocol: '',
-      binaryType: 'blob',
-      onopen: null,
-      onerror: null,
-      onclose: null,
-      onmessage: null
-    } as WebSocket;
-
-    return mockWebSocket;
-  },
-  getInAppNotifications: function (): Promise<{
-    items: InAppNotification[];
-    hasMore: boolean;
-    oldestReceived: string;
-  }> {
+  };
+  mockedClient.rest.getNotifications = async () => {
     const response = {
-      items: [], // Add actual items data here
+      notifications: inAppNotification, // Add actual items data here
       hasMore: false, // Set the actual value here
       oldestReceived: '' // Set the actual value here
     };
-
     return Promise.resolve(response);
-  },
-  updateInAppNotifications: function () {
-    return Promise.resolve({});
-  },
-  updateDeliveryOption: function (): Promise<void> {
-    throw new Error('Function not implemented.');
-  },
-  getPreferences: async () => {
+  };
+  mockedClient.rest.getPreferences = async () => {
     // Implement the getPreferences method logic here
     const response: GetPreferencesResponse = {
       preferences: [], // Add actual preferences data here
@@ -137,8 +63,6 @@ export const mockedClient = {
       subNotifications: [] // Add actual subNotifications data here
     };
     return Promise.resolve(response);
-  },
-  identify: function (): Promise<void> {
-    return Promise.resolve();
-  }
+  };
+  return mockedClient;
 };

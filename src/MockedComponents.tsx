@@ -11,12 +11,13 @@ import {
 import { Divider, Button } from 'antd';
 import { MyButton } from './MyButton';
 import { FakeNotification } from './FakeNotification';
-import { mockedClient } from './mockedClient';
+import { InAppNotification } from '@notificationapi/core/dist/interfaces';
+import { getMarkedClient } from './mockedClient';
 
 const LiveComponents: React.FC = () => {
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
     useState(false);
-
+  const [notification, setNotification] = useState<InAppNotification[]>([]);
   return (
     <>
       <h1 style={{ textAlign: 'center' }}>Mocked:</h1>
@@ -31,18 +32,22 @@ const LiveComponents: React.FC = () => {
         }}
       >
         <NotificationAPIProvider
-          clientId="24nojpnrsdc53fkslha0roov05"
+          clientId="24nojpnrc53fkslha0roov05"
           user={{
             id: 'mockedUser',
             email: 'mockedUser@gmail.com'
           }}
-          client={mockedClient}
+          client={getMarkedClient(
+            '24nojpnrsdc53fha0roov05',
+            'mockedUser',
+            notification
+          )}
         >
           <h3 style={{ textAlign: 'center' }}>
             Fill out the form below to generate a fake notification and see it
             in action!
           </h3>
-          <FakeNotification />
+          <FakeNotification setNotification={setNotification} />
           <Divider />
           <h2>Popup:</h2>
           <NotificationPopup
