@@ -1,10 +1,10 @@
-import React from 'react';
+import { useState } from 'react';
 import { Button } from 'antd';
 import LiveConnections from './LiveComponents';
 import MockedComponents from './MockedComponents';
 
 function App() {
-  const [isMocked, setIsMocked] = React.useState(false);
+  const [isMocked, setIsMocked] = useState(false);
 
   return (
     <>
