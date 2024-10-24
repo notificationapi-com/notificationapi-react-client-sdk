@@ -6,6 +6,8 @@ import { InboxHeaderProps } from './InboxHeader';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { Filter, ImageShape, Pagination } from './interface';
+import { Divider } from 'antd';
+import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;
@@ -82,6 +84,12 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         notificationRenderer={config.renderers.notification}
         header={config.header}
       />
+      {!context.hideWebPushOptInMessage && (
+        <div>
+          <Divider style={{ margin: '10px 0' }} />
+          <WebPushOptInMessage hideAfterInteraction={true} />
+        </div>
+      )}
       <NotificationPreferencesPopup
         open={openPreferences}
         onClose={() => setOpenPreferences(false)}

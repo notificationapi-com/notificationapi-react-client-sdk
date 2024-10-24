@@ -1,4 +1,4 @@
-import { Button, Popover } from 'antd';
+import { Button, Divider, Popover } from 'antd';
 import { Inbox } from './Inbox';
 import { BellOutlined } from '@ant-design/icons';
 import { UnreadBadge } from './UnreadBadge';
@@ -7,6 +7,7 @@ import { useContext, useState } from 'react';
 import { NotificationAPIContext } from '../Provider';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { Position } from './interface';
+import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 type NotificationLaucherProps = NotificationPopupProps & {
   position?: keyof typeof Position;
@@ -78,16 +79,27 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
         autoAdjustOverflow
         trigger="click"
         content={
-          <Inbox
-            maxHeight={500}
-            pagination={config.pagination}
-            filter={config.filter}
-            imageShape={config.imageShape}
-            pageSize={config.pageSize}
-            pagePosition={config.pagePosition}
-            notificationRenderer={config.renderers.notification}
-            header={config.header}
-          />
+          <>
+            <Inbox
+              maxHeight={500}
+              pagination={config.pagination}
+              filter={config.filter}
+              imageShape={config.imageShape}
+              pageSize={config.pageSize}
+              pagePosition={config.pagePosition}
+              notificationRenderer={config.renderers.notification}
+              header={config.header}
+            />
+            {!context.hideWebPushOptInMessage && (
+              <div>
+                <Divider style={{ margin: '10px 0' }} />
+                <WebPushOptInMessage
+                  hideAfterInteraction={true}
+                  alertStyle={{ maxWidth: '320px' }}
+                />
+              </div>
+            )}
+          </>
         }
         arrow={false}
         overlayStyle={{
