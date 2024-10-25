@@ -466,17 +466,17 @@ export const NotificationAPIProvider: React.FunctionComponent<
         !res.userAccountMetadata.hasWebPushEnabled; // Adjust this line if necessary based on the structure
       setHideWebPushOptInMessage(hideWebPushOptInMessage);
     });
-    if (webPushOptIn) {
-      askForWebPushPermission();
-    }
   }, [
     client,
     config.hideWebPushOptInMessage,
-    webPushOptIn,
     loadNotifications,
     askForWebPushPermission
   ]);
-
+  useEffect(() => {
+    if (webPushOptIn) {
+      askForWebPushPermission();
+    }
+  }, [webPushOptIn, askForWebPushPermission]);
   const value: Context = {
     notifications,
     preferences,
