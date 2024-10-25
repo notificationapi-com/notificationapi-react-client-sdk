@@ -8,6 +8,7 @@ import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { Filter, ImageShape, Pagination } from './interface';
 import { Divider } from 'antd';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
+import { GlobalOutlined } from '@ant-design/icons';
 
 export type NotificationFeedProps = {
   imageShape?: keyof typeof ImageShape;
@@ -87,7 +88,21 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
       {!context.hideWebPushOptInMessage && (
         <div>
           <Divider style={{ margin: '10px 0' }} />
-          <WebPushOptInMessage hideAfterInteraction={true} />
+          <WebPushOptInMessage
+            hideAfterInteraction={true}
+            icon={<GlobalOutlined type="text" style={{ marginLeft: '9px' }} />}
+            descriptionStyle={{
+              flexDirection: 'column', // Stack the elements vertically
+              justifyContent: 'flex-start', // Align items to the left
+              alignItems: 'flex-start' // Align items to the left
+            }}
+            buttonContainerStyle={{
+              justifyContent: 'flex-start', // Align buttons to the left
+              alignItems: 'flex-start', // Align buttons to the left
+              marginTop: '10px' // Add some space between message and buttons
+            }}
+            spanStyle={{ fontSize: '14px' }}
+          />
         </div>
       )}
       <NotificationPreferencesPopup

@@ -1,6 +1,6 @@
 import { Button, Divider, Popover } from 'antd';
 import { Inbox } from './Inbox';
-import { BellOutlined } from '@ant-design/icons';
+import { BellOutlined, GlobalOutlined } from '@ant-design/icons';
 import { UnreadBadge } from './UnreadBadge';
 import { NotificationPopupProps } from './NotificationPopup';
 import { useContext, useState } from 'react';
@@ -95,7 +95,10 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
                 <Divider style={{ margin: '10px 0' }} />
                 <WebPushOptInMessage
                   hideAfterInteraction={true}
-                  alertStyle={{ maxWidth: '320px' }}
+                  icon={
+                    <GlobalOutlined type="text" style={{ marginLeft: '9px' }} />
+                  }
+                  alertStyle={{ maxWidth: '345px' }}
                 />
               </div>
             )}

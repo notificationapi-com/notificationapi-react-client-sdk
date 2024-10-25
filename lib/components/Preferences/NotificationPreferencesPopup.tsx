@@ -37,7 +37,10 @@ export function NotificationPreferencesPopup(
       {!context.hideWebPushOptInMessage && (
         <div>
           <Divider style={{ margin: '10px 0' }} />
-          <WebPushOptInMessage hideAfterInteraction={false} />
+          <WebPushOptInMessage
+            hideAfterInteraction={false}
+            spanStyle={{ fontSize: 12 }}
+          />
         </div>
       )}
     </Modal>
