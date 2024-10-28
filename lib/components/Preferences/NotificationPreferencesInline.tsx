@@ -25,6 +25,7 @@ export function NotificationPreferencesInline(
             descriptionStyle={{
               flexDirection: 'column', // Stack the elements vertically
               justifyContent: 'flex-start', // Align items to the left
+              fontSize: '14px',
               alignItems: 'flex-start' // Align items to the left
             }}
             buttonContainerStyle={{
@@ -32,7 +33,6 @@ export function NotificationPreferencesInline(
               alignItems: 'flex-start', // Align buttons to the left
               marginTop: '10px' // Add some space between message and buttons
             }}
-            spanStyle={{ fontSize: '14px' }}
           />
         </div>
       )}

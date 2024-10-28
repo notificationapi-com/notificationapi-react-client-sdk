@@ -7,7 +7,6 @@ interface WebPushOptInMessageProps {
   hideAfterInteraction?: boolean;
   alertContainerStyle?: React.CSSProperties;
   descriptionStyle?: React.CSSProperties;
-  spanStyle?: React.CSSProperties;
   buttonContainerStyle?: React.CSSProperties;
   yesButtonStyle?: React.CSSProperties;
   cancelButtonStyle?: React.CSSProperties;
@@ -18,7 +17,6 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
   hideAfterInteraction: hideAfterInteraction,
   alertContainerStyle: customAlertContainerStyle,
   descriptionStyle: customDescriptionStyle,
-  spanStyle: customSpanStyle,
   buttonContainerStyle: customButtonContainerStyle,
   yesButtonStyle: customYesButtonStyle,
   cancelButtonStyle: customCancelButtonStyle,
@@ -50,13 +48,6 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
     ...customDescriptionStyle
   };
 
-  const spanStyle = {
-    fontSize: '12px',
-    display: 'flex',
-    alignItems: 'center',
-    ...customSpanStyle
-  };
-
   const buttonContainerStyle = {
     display: 'flex',
     alignItems: 'center',
@@ -83,7 +74,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
       style={alertContainerStyle}
       description={
         <div style={descriptionStyle}>
-          <span style={spanStyle}>
+          <span>
             {customDescription ??
               `Would you like to enable web push notifications to stay updated?`}
           </span>
