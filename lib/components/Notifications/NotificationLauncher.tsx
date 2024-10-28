@@ -90,18 +90,22 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
               notificationRenderer={config.renderers.notification}
               header={config.header}
             />
-            {!context.hideWebPushOptInMessage && (
-              <div>
-                <Divider style={{ margin: '10px 0' }} />
-                <WebPushOptInMessage
-                  hideAfterInteraction={true}
-                  icon={
-                    <GlobalOutlined type="text" style={{ marginLeft: '9px' }} />
-                  }
-                  alertStyle={{ maxWidth: '345px' }}
-                />
-              </div>
-            )}
+            {context.webPushOptInMessage &&
+              localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
+                <div>
+                  <Divider style={{ margin: '10px 0' }} />
+                  <WebPushOptInMessage
+                    hideAfterInteraction={true}
+                    icon={
+                      <GlobalOutlined
+                        type="text"
+                        style={{ marginLeft: '9px' }}
+                      />
+                    }
+                    alertStyle={{ maxWidth: '345px' }}
+                  />
+                </div>
+              )}
           </>
         }
         arrow={false}

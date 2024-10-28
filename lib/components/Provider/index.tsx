@@ -27,7 +27,7 @@ export type Context = {
   notifications?: InAppNotification[];
   preferences?: GetPreferencesResponse;
   userAccountMetaData?: { userAccountMetadata: UserAccountMetadata };
-  hideWebPushOptInMessage?: boolean;
+  webPushOptInMessage?: 'AUTOMATIC' | boolean;
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
   markAsArchived: (ids: string[] | 'ALL') => void;
@@ -54,7 +54,9 @@ export type Context = {
     }[]
   ) => void;
   getClient: () => typeof NotificationAPIClientSDK;
-  setHideWebPushOptInMessage: React.Dispatch<React.SetStateAction<boolean>>;
+  setWebPushOptInMessage: React.Dispatch<
+    React.SetStateAction<'AUTOMATIC' | boolean>
+  >;
   setWebPushOptIn: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -79,7 +81,7 @@ type Props = (
   playSoundOnNewNotification?: boolean;
   newNotificationSoundPath?: string;
   client?: typeof NotificationAPIClientSDK;
-  hideWebPushOptInMessage?: boolean;
+  webPushOptInMessage?: 'AUTOMATIC' | boolean;
   customServiceWorkerPath?: string;
 };
 
@@ -96,7 +98,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     playSoundOnNewNotification: false,
     newNotificationSoundPath:
       'https://proxy.notificationsounds.com/notification-sounds/elegant-notification-sound/download/file-sounds-1233-elegant.mp3',
-    hideWebPushOptInMessage: false,
+    webPushOptInMessage: 'AUTOMATIC' as 'AUTOMATIC' | boolean,
     customServiceWorkerPath: '/notificationapi-service-worker.js'
   };
 
@@ -114,8 +116,9 @@ export const NotificationAPIProvider: React.FunctionComponent<
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
-  const [hideWebPushOptInMessage, setHideWebPushOptInMessage] =
-    useState<boolean>(true);
+  const [webPushOptInMessage, setWebPushOptInMessage] = useState<
+    'AUTOMATIC' | boolean
+  >(config.webPushOptInMessage);
   const [webPushOptIn, setWebPushOptIn] = useState<boolean>(false);
 
   const playSound = useCallback(() => {
@@ -382,7 +385,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
       navigator.serviceWorker
         .register(config.customServiceWorkerPath)
         .then(async (registration) => {
-          setHideWebPushOptInMessage(true);
+          setWebPushOptInMessage(false);
           Notification.requestPermission().then(async (permission) => {
             if (permission === 'granted') {
               await registration.pushManager
@@ -404,6 +407,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
                     ]
                   };
                   await client.identify(body);
+                  console.log('index');
                   localStorage.setItem('hideWebPushOptInMessage', 'true');
                 });
             } else if (permission === 'denied') {
@@ -458,20 +462,24 @@ export const NotificationAPIProvider: React.FunctionComponent<
     client.getPreferences().then((res) => {
       setPreferences(res);
     });
-    client.getUserAccountMetadata().then((res) => {
-      setUserAccountMetaData(res);
-      const hideWebPushOptInMessage =
-        config.hideWebPushOptInMessage ||
-        localStorage.getItem('hideWebPushOptInMessage') === 'true' ||
-        !res.userAccountMetadata.hasWebPushEnabled; // Adjust this line if necessary based on the structure
-      setHideWebPushOptInMessage(hideWebPushOptInMessage);
-    });
-  }, [
-    client,
-    config.hideWebPushOptInMessage,
-    loadNotifications,
-    askForWebPushPermission
-  ]);
+  }, [client, loadNotifications, askForWebPushPermission]);
+
+  useEffect(() => {
+    if (Notification.permission !== 'default') {
+      setWebPushOptInMessage(false);
+    }
+
+    if (webPushOptInMessage === 'AUTOMATIC') {
+      setWebPushOptInMessage(
+        localStorage.getItem('hideWebPushOptInMessage') !== 'true'
+      );
+      client.getUserAccountMetadata().then((res) => {
+        setUserAccountMetaData(res);
+
+        setWebPushOptInMessage(res.userAccountMetadata.hasWebPushEnabled);
+      });
+    }
+  }, [client, webPushOptInMessage]);
   useEffect(() => {
     if (webPushOptIn) {
       askForWebPushPermission();
@@ -481,7 +489,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     notifications,
     preferences,
     userAccountMetaData,
-    hideWebPushOptInMessage,
+    webPushOptInMessage,
     loadNotifications,
     markAsOpened,
     markAsArchived,
@@ -490,7 +498,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     updateDelivery,
     updateDeliveries,
     getClient: () => client,
-    setHideWebPushOptInMessage,
+    setWebPushOptInMessage,
     setWebPushOptIn
   };
 

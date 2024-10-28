@@ -34,7 +34,7 @@ export function NotificationPreferencesPopup(
       zIndex={9999}
     >
       <Preferences />
-      {!context.hideWebPushOptInMessage && (
+      {context.webPushOptInMessage && (
         <div>
           <Divider style={{ margin: '10px 0' }} />
           <WebPushOptInMessage

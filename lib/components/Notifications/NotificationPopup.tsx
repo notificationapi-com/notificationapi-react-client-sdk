@@ -96,12 +96,13 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
               notificationRenderer={config.renderers.notification}
               header={config.header}
             />
-            {!context.hideWebPushOptInMessage && (
-              <div>
-                <Divider style={{ margin: '10px 0' }} />
-                <WebPushOptInMessage hideAfterInteraction={true} />
-              </div>
-            )}
+            {context.webPushOptInMessage &&
+              localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
+                <div>
+                  <Divider style={{ margin: '10px 0' }} />
+                  <WebPushOptInMessage hideAfterInteraction={true} />
+                </div>
+              )}
           </>
         }
         onOpenChange={(visible) => {

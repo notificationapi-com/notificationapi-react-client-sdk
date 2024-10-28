@@ -96,7 +96,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
                   localStorage.setItem('hideWebPushOptInMessage', 'true');
                 }
                 context.setWebPushOptIn(true);
-                context.setHideWebPushOptInMessage(true);
+                context.setWebPushOptInMessage(false);
               }}
             >
               Yes
@@ -107,7 +107,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
                 if (hideAfterInteraction) {
                   localStorage.setItem('hideWebPushOptInMessage', 'true');
                 }
-                context.setHideWebPushOptInMessage(true);
+                context.setWebPushOptInMessage(false);
               }}
             >
               No

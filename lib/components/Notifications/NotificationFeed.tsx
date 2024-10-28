@@ -85,26 +85,29 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         notificationRenderer={config.renderers.notification}
         header={config.header}
       />
-      {!context.hideWebPushOptInMessage && (
-        <div>
-          <Divider style={{ margin: '10px 0' }} />
-          <WebPushOptInMessage
-            hideAfterInteraction={true}
-            icon={<GlobalOutlined type="text" style={{ marginLeft: '9px' }} />}
-            descriptionStyle={{
-              flexDirection: 'column', // Stack the elements vertically
-              justifyContent: 'flex-start', // Align items to the left
-              alignItems: 'flex-start' // Align items to the left
-            }}
-            buttonContainerStyle={{
-              justifyContent: 'flex-start', // Align buttons to the left
-              alignItems: 'flex-start', // Align buttons to the left
-              marginTop: '10px' // Add some space between message and buttons
-            }}
-            spanStyle={{ fontSize: '14px' }}
-          />
-        </div>
-      )}
+      {context.webPushOptInMessage &&
+        localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
+          <div>
+            <Divider style={{ margin: '10px 0' }} />
+            <WebPushOptInMessage
+              hideAfterInteraction={true}
+              icon={
+                <GlobalOutlined type="text" style={{ marginLeft: '9px' }} />
+              }
+              descriptionStyle={{
+                flexDirection: 'column', // Stack the elements vertically
+                justifyContent: 'flex-start', // Align items to the left
+                alignItems: 'flex-start' // Align items to the left
+              }}
+              buttonContainerStyle={{
+                justifyContent: 'flex-start', // Align buttons to the left
+                alignItems: 'flex-start', // Align buttons to the left
+                marginTop: '10px' // Add some space between message and buttons
+              }}
+              spanStyle={{ fontSize: '14px' }}
+            />
+          </div>
+        )}
       <NotificationPreferencesPopup
         open={openPreferences}
         onClose={() => setOpenPreferences(false)}

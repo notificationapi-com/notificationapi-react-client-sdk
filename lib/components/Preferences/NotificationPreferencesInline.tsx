@@ -17,7 +17,7 @@ export function NotificationPreferencesInline(
   return (
     <>
       <Preferences />{' '}
-      {!context.hideWebPushOptInMessage && (
+      {context.webPushOptInMessage && (
         <div>
           <Divider style={{ margin: '10px 0' }} />
           <WebPushOptInMessage

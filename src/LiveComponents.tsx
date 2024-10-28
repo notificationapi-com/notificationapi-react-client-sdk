@@ -29,7 +29,6 @@ const LiveComponents: React.FC = () => {
         <NotificationAPIProvider
           clientId="arbfcddhxmx07ncpja31859r6i"
           userId="sahand"
-          hideWebPushOptInMessage={false}
           user={{
             id: 'sahand',
             email: 'sahand.seifi@gmail.com'
