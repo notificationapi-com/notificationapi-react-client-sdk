@@ -11,7 +11,7 @@ interface WebPushOptInMessageProps {
   buttonContainerStyle?: React.CSSProperties;
   yesButtonStyle?: React.CSSProperties;
   cancelButtonStyle?: React.CSSProperties;
-  message?: string; // Optional prop to override the alert message
+  description?: string; // Optional prop to override the alert description
   icon?: React.ReactNode; // Optional prop to override the alert icon
 }
 const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
@@ -22,7 +22,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
   buttonContainerStyle: customButtonContainerStyle,
   yesButtonStyle: customYesButtonStyle,
   cancelButtonStyle: customCancelButtonStyle,
-  message: customMessage,
+  description: customDescription,
   icon: customIcons
 }) => {
   const context = useContext(NotificationAPIContext);
@@ -84,7 +84,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
       description={
         <div style={descriptionStyle}>
           <span style={spanStyle}>
-            {customMessage ??
+            {customDescription ??
               `Would you like to enable web push notifications to stay updated?`}
           </span>
           <div style={buttonContainerStyle}>
