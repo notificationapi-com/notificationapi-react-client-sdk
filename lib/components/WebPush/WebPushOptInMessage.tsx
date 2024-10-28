@@ -10,7 +10,7 @@ interface WebPushOptInMessageProps {
   spanStyle?: React.CSSProperties;
   buttonContainerStyle?: React.CSSProperties;
   yesButtonStyle?: React.CSSProperties;
-  secondaryButtonStyle?: React.CSSProperties;
+  cancelButtonStyle?: React.CSSProperties;
   message?: string; // Optional prop to override the alert message
   icon?: React.ReactNode; // Optional prop to override the alert icon
 }
@@ -21,7 +21,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
   spanStyle: customSpanStyle,
   buttonContainerStyle: customButtonContainerStyle,
   yesButtonStyle: customYesButtonStyle,
-  secondaryButtonStyle: customSecondaryButtonStyle,
+  cancelButtonStyle: customCancelButtonStyle,
   message: customMessage,
   icon: customIcons
 }) => {
@@ -70,9 +70,9 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
     ...customYesButtonStyle
   };
 
-  const secondaryButtonStyle = {
+  const cancelButtonStyle = {
     fontSize: '10px',
-    ...customSecondaryButtonStyle
+    ...customCancelButtonStyle
   };
 
   return (
@@ -102,7 +102,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
               Yes
             </Button>
             <Button
-              style={secondaryButtonStyle}
+              style={cancelButtonStyle}
               onClick={() => {
                 if (hideAfterInteraction) {
                   localStorage.setItem('hideWebPushOptInMessage', 'true');
