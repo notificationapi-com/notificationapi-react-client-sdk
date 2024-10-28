@@ -33,6 +33,7 @@ const LiveComponents: React.FC = () => {
             id: 'sahand',
             email: 'sahand.seifi@gmail.com'
           }}
+          playSoundOnNewNotification={true}
         >
           <h2>Popup:</h2>
           <NotificationPopup />
@@ -65,6 +66,7 @@ const LiveComponents: React.FC = () => {
           <NotificationFeed infiniteScrollHeight={300} />
 
           <Divider />
+
           <h2>Preferences Popup:</h2>
           <Button onClick={() => setPreferencesPopupVisiblity(true)}>
             Preferences Popup
