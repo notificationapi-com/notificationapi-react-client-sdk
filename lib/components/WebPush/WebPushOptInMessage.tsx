@@ -5,7 +5,7 @@ import { NotificationAPIContext } from '../Provider';
 
 interface WebPushOptInMessageProps {
   hideAfterInteraction?: boolean;
-  alertStyle?: React.CSSProperties;
+  alertContainerStyle?: React.CSSProperties;
   descriptionStyle?: React.CSSProperties;
   spanStyle?: React.CSSProperties;
   buttonContainerStyle?: React.CSSProperties;
@@ -16,7 +16,7 @@ interface WebPushOptInMessageProps {
 }
 const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
   hideAfterInteraction: hideAfterInteraction,
-  alertStyle: customAlertStyle,
+  alertContainerStyle: customAlertContainerStyle,
   descriptionStyle: customDescriptionStyle,
   spanStyle: customSpanStyle,
   buttonContainerStyle: customButtonContainerStyle,
@@ -30,7 +30,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
     return null;
   }
 
-  const alertStyle = {
+  const alertContainerStyle = {
     marginBottom: '10px',
     borderRadius: '5px',
     padding: '10px',
@@ -38,7 +38,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
     margin: '10px auto', // Center if width is more than 500px
     display: 'flex',
     alignItems: 'center', // Align items vertically
-    ...customAlertStyle
+    ...customAlertContainerStyle
   };
 
   const descriptionStyle = {
@@ -80,7 +80,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
       type="info"
       showIcon
       icon={customIcons ?? <GlobalOutlined type="text" />}
-      style={alertStyle}
+      style={alertContainerStyle}
       description={
         <div style={descriptionStyle}>
           <span style={spanStyle}>

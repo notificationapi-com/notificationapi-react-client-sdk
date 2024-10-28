@@ -102,7 +102,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
                         style={{ marginLeft: '9px' }}
                       />
                     }
-                    alertStyle={{ maxWidth: '345px' }}
+                    alertContainerStyle={{ maxWidth: '345px' }}
                   />
                 </div>
               )}
