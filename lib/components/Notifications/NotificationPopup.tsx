@@ -1,4 +1,4 @@
-import { Button, Popover } from 'antd';
+import { Button, Divider, Popover } from 'antd';
 import { Inbox } from './Inbox';
 import { BellOutlined } from '@ant-design/icons';
 import { UnreadBadge, UnreadBadgeProps } from './UnreadBadge';
@@ -9,6 +9,7 @@ import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { InboxHeaderProps } from './InboxHeader';
 import { Filter, ImageShape, Pagination } from './interface';
+import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 export type NotificationPopupProps = {
   buttonIcon?: React.ReactNode;
@@ -84,16 +85,25 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         autoAdjustOverflow
         trigger="click"
         content={
-          <Inbox
-            maxHeight={config.popupHeight - 73}
-            pagination={config.pagination}
-            filter={config.filter}
-            imageShape={config.imageShape}
-            pageSize={config.pageSize}
-            pagePosition={config.pagePosition}
-            notificationRenderer={config.renderers.notification}
-            header={config.header}
-          />
+          <>
+            <Inbox
+              maxHeight={config.popupHeight - 73}
+              pagination={config.pagination}
+              filter={config.filter}
+              imageShape={config.imageShape}
+              pageSize={config.pageSize}
+              pagePosition={config.pagePosition}
+              notificationRenderer={config.renderers.notification}
+              header={config.header}
+            />
+            {context.webPushOptInMessage &&
+              localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
+                <div>
+                  <Divider style={{ margin: '10px 0' }} />
+                  <WebPushOptInMessage hideAfterInteraction={true} />
+                </div>
+              )}
+          </>
         }
         onOpenChange={(visible) => {
           if (visible) {

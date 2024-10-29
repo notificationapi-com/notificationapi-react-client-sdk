@@ -1,5 +1,8 @@
-import { Modal } from 'antd';
+import { Divider, Modal } from 'antd';
 import { Preferences } from './Preferences';
+import { useContext } from 'react';
+import { NotificationAPIContext } from '../Provider';
+import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 type NotificationPreferencesPopupProps = {
   open?: boolean;
@@ -10,6 +13,10 @@ type NotificationPreferencesPopupProps = {
 export function NotificationPreferencesPopup(
   props: NotificationPreferencesPopupProps
 ) {
+  const context = useContext(NotificationAPIContext);
+  if (!context) {
+    return null;
+  }
   const config: Required<NotificationPreferencesPopupProps> = {
     open: props.open === undefined ? true : props.open,
     onClose: props.onClose || (() => {}),
@@ -27,6 +34,15 @@ export function NotificationPreferencesPopup(
       zIndex={9999}
     >
       <Preferences />
+      {context.webPushOptInMessage && (
+        <div>
+          <Divider style={{ margin: '10px 0' }} />
+          <WebPushOptInMessage
+            hideAfterInteraction={false}
+            descriptionStyle={{ fontSize: 12 }}
+          />
+        </div>
+      )}
     </Modal>
   );
 }

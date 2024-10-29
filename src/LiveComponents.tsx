@@ -27,7 +27,8 @@ const LiveComponents: React.FC = () => {
         }}
       >
         <NotificationAPIProvider
-          clientId="24nojpnrsdc53fkslha0roov05"
+          clientId="arbfcddhxmx07ncpja31859r6i"
+          userId="sahand"
           user={{
             id: 'sahand',
             email: 'sahand.seifi@gmail.com'

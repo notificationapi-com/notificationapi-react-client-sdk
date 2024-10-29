@@ -1,6 +1,6 @@
 [![NotificationAPI](./ReadmeLogo.svg)](https://notificationapi.com)
 
-The React SDK is mainly used for displaying In-App Notifications and allowing users to see and change their Notification Preferences.
+The React SDK is mainly used for displaying In-App Notifications, allowing users to see and change their Notification Preferences and enabling web push notification .
 
 # Docs
 

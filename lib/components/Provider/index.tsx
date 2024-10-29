@@ -12,7 +12,9 @@ import { NotificationAPIClientSDK } from '@notificationapi/core';
 import {
   GetPreferencesResponse,
   InAppNotification,
-  User
+  User,
+  UserAccountMetadata,
+  PushSubscription
 } from '@notificationapi/core/dist/interfaces';
 import {
   BaseDeliveryOptions,
@@ -24,6 +26,8 @@ import {
 export type Context = {
   notifications?: InAppNotification[];
   preferences?: GetPreferencesResponse;
+  userAccountMetaData?: { userAccountMetadata: UserAccountMetadata };
+  webPushOptInMessage?: 'AUTOMATIC' | boolean;
   loadNotifications: (initial?: boolean) => void;
   markAsOpened: () => void;
   markAsArchived: (ids: string[] | 'ALL') => void;
@@ -50,6 +54,10 @@ export type Context = {
     }[]
   ) => void;
   getClient: () => typeof NotificationAPIClientSDK;
+  setWebPushOptInMessage: React.Dispatch<
+    React.SetStateAction<'AUTOMATIC' | boolean>
+  >;
+  setWebPushOptIn: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const NotificationAPIContext = createContext<Context | undefined>(
@@ -73,6 +81,8 @@ type Props = (
   playSoundOnNewNotification?: boolean;
   newNotificationSoundPath?: string;
   client?: typeof NotificationAPIClientSDK;
+  webPushOptInMessage?: 'AUTOMATIC' | boolean;
+  customServiceWorkerPath?: string;
 };
 
 export const NotificationAPIProvider: React.FunctionComponent<
@@ -87,7 +97,9 @@ export const NotificationAPIProvider: React.FunctionComponent<
     initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
     playSoundOnNewNotification: false,
     newNotificationSoundPath:
-      'https://proxy.notificationsounds.com/notification-sounds/elegant-notification-sound/download/file-sounds-1233-elegant.mp3'
+      'https://proxy.notificationsounds.com/notification-sounds/elegant-notification-sound/download/file-sounds-1233-elegant.mp3',
+    webPushOptInMessage: 'AUTOMATIC' as 'AUTOMATIC' | boolean,
+    customServiceWorkerPath: '/notificationapi-service-worker.js'
   };
 
   const config = {
@@ -98,9 +110,16 @@ export const NotificationAPIProvider: React.FunctionComponent<
 
   const [notifications, setNotifications] = useState<InAppNotification[]>();
   const [preferences, setPreferences] = useState<GetPreferencesResponse>();
+  const [userAccountMetaData, setUserAccountMetaData] = useState<{
+    userAccountMetadata: UserAccountMetadata;
+  }>();
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [oldestLoaded, setOldestLoaded] = useState(new Date().toISOString());
   const [hasMore, setHasMore] = useState(true);
+  const [webPushOptInMessage, setWebPushOptInMessage] = useState<
+    'AUTOMATIC' | boolean
+  >(config.webPushOptInMessage);
+  const [webPushOptIn, setWebPushOptIn] = useState<boolean>(false);
 
   const playSound = useCallback(() => {
     if (config.playSoundOnNewNotification) {
@@ -346,6 +365,92 @@ export const NotificationAPIProvider: React.FunctionComponent<
     });
   };
 
+  /**
+   * Asks the user for permission to send web push notifications and subscribes to the push service if granted.
+   *
+   * @callback askForWebPushPermission
+   *
+   * @throws Will log an error code if the service worker registration or push subscription fails.
+   *
+   * Possible error codes:
+   * - `18`: The operation is insecure. This typically occurs if the code is run in an insecure context (e.g., not over HTTPS).
+   * - `19`: The operation is aborted. This can happen if the user denies the permission request.
+   * - `20`: The operation is invalid. This can occur if the provided application server key is invalid.
+   * - `21`: The operation is not allowed. This can happen if the user has blocked notifications for the site.
+   * - `22`: The operation is not supported. This can occur if the browser does not support the required features.
+   *
+   * @dependencies
+   * - `client`: The client instance used to identify the user with the web push tokens.
+   * - `config.customServiceWorkerPath`: The path to the custom service worker script.
+   * - `userAccountMetaData?.userAccountMetadata.environmentVapidPublicKey`: The VAPID public key for the environment.
+   */
+  const askForWebPushPermission = useCallback((): void => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register(config.customServiceWorkerPath)
+        .then(async (registration) => {
+          setWebPushOptInMessage(false);
+          Notification.requestPermission().then(async (permission) => {
+            if (permission === 'granted') {
+              await registration.pushManager
+                .subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey:
+                    userAccountMetaData?.userAccountMetadata
+                      .environmentVapidPublicKey
+                })
+                .then(async (res) => {
+                  const body = {
+                    webPushTokens: [
+                      {
+                        sub: {
+                          endpoint: res.toJSON().endpoint as string,
+                          keys: res.toJSON().keys as PushSubscription['keys']
+                        }
+                      }
+                    ]
+                  };
+                  await client.identify(body);
+                  console.log('index');
+                  localStorage.setItem('hideWebPushOptInMessage', 'true');
+                });
+            } else if (permission === 'denied') {
+              console.log('Permission for notifications was denied');
+            }
+          });
+        })
+        .catch((e) => {
+          if (e.code === 18) {
+            console.error(
+              'NotificationAPI guide: Probably you are not setup the service worker correctly. Please check the documentation at https://docs.notificationapi.com/guides/web-push#step-by-step-implementation Step 3: Service Worker Setup.'
+            );
+          } else if (e.code === 19) {
+            console.error(
+              'The operation is aborted. This can happen if the user denies the permission request.'
+            );
+          } else if (e.code === 20) {
+            console.error(
+              'The operation is invalid. This can occur if the provided application server key is invalid. Please contact NotificationAPI support.'
+            );
+          } else if (e.code === 21) {
+            console.error(
+              'The operation is not allowed. This can happen if the user has blocked notifications for the site. Please check your browser site settings Notifications part.'
+            );
+          } else if (e.code === 22) {
+            console.error(
+              'The operation is not supported. This can occur if the browser does not support the required features.'
+            );
+          } else {
+            console.error(e);
+          }
+        });
+    }
+  }, [
+    client,
+    config.customServiceWorkerPath,
+    userAccountMetaData?.userAccountMetadata.environmentVapidPublicKey
+  ]);
+
   useEffect(() => {
     // reset state
     setNotifications([]);
@@ -361,11 +466,34 @@ export const NotificationAPIProvider: React.FunctionComponent<
     client.getPreferences().then((res) => {
       setPreferences(res);
     });
-  }, [client, loadNotifications]);
+  }, [client, loadNotifications, askForWebPushPermission]);
 
+  useEffect(() => {
+    if (Notification.permission !== 'default') {
+      setWebPushOptInMessage(false);
+    }
+
+    if (webPushOptInMessage === 'AUTOMATIC') {
+      setWebPushOptInMessage(
+        localStorage.getItem('hideWebPushOptInMessage') !== 'true'
+      );
+      client.getUserAccountMetadata().then((res) => {
+        setUserAccountMetaData(res);
+
+        setWebPushOptInMessage(res.userAccountMetadata.hasWebPushEnabled);
+      });
+    }
+  }, [client, webPushOptInMessage]);
+  useEffect(() => {
+    if (webPushOptIn) {
+      askForWebPushPermission();
+    }
+  }, [webPushOptIn, askForWebPushPermission]);
   const value: Context = {
     notifications,
     preferences,
+    userAccountMetaData,
+    webPushOptInMessage,
     loadNotifications,
     markAsOpened,
     markAsArchived,
@@ -373,7 +501,9 @@ export const NotificationAPIProvider: React.FunctionComponent<
     markAsClicked,
     updateDelivery,
     updateDeliveries,
-    getClient: () => client
+    getClient: () => client,
+    setWebPushOptInMessage,
+    setWebPushOptIn
   };
 
   return (
