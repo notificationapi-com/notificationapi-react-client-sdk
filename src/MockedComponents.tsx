@@ -33,6 +33,7 @@ const LiveComponents: React.FC = () => {
       >
         <NotificationAPIProvider
           clientId="24nojpnrc53fkslha0roov05"
+          webPushOptInMessage={false}
           user={{
             id: 'mockedUser',
             email: 'mockedUser@gmail.com'
