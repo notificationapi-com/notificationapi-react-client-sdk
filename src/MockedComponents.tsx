@@ -14,7 +14,7 @@ import { FakeNotification } from './FakeNotification';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { getMarkedClient } from './mockedClient';
 
-const LiveComponents: React.FC = () => {
+const MockedComponents: React.FC = () => {
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
     useState(false);
   const [notification, setNotification] = useState<InAppNotification[]>([]);
@@ -33,6 +33,7 @@ const LiveComponents: React.FC = () => {
       >
         <NotificationAPIProvider
           clientId="24nojpnrc53fkslha0roov05"
+          webPushOptInMessage={false}
           user={{
             id: 'mockedUser',
             email: 'mockedUser@gmail.com'
@@ -109,4 +110,4 @@ const LiveComponents: React.FC = () => {
   );
 };
 
-export default LiveComponents;
+export default MockedComponents;
