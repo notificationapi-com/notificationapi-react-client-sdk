@@ -133,25 +133,25 @@ export const NotificationAPIProvider: React.FunctionComponent<
   const addNotificationsToState = useCallback((notis: InAppNotification[]) => {
     const now = new Date().toISOString();
     setNotifications((prev) => {
+      // Ensure the notifications are an array
+      notis = Array.isArray(notis) ? notis : [];
+
       notis = notis.filter((n) => {
-        const isExpired =
-          n.expDate && new Date(n.expDate * 1000).toISOString() < now;
-        const isFuture =
-          new Date(n.date).getTime() > new Date(now).getTime() + 1000; // Allow for 1 second margin
-        return !isExpired && !isFuture;
+        if (n.expDate && new Date(n.expDate * 1000).toISOString() > now)
+          return false;
+        if (n.date > now) return false;
+        return true;
       });
 
-      if (!prev) return notis; // if no existing notifications in state, just return the new ones
+      // If no existing notifications in state, just return the new ones
+      if (!Array.isArray(prev)) return notis;
 
-      const updatedNotifications = [
+      return [
         ...notis.filter((n) => {
-          const isDuplicate = prev.find((p) => p.id === n.id);
-          return !isDuplicate;
+          return !prev.find((p) => p.id === n.id);
         }),
         ...prev
       ];
-
-      return updatedNotifications;
     });
   }, []);
 
