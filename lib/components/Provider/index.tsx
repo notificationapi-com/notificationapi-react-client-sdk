@@ -144,8 +144,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
         return !isExpired && !isFuture;
       });
 
-      // If no existing notifications in state, just return the new ones
-      if (!Array.isArray(prev)) return notis;
+      // This also ensures that the prev is always an array to avoid errors
+      prev = Array.isArray(prev) ? prev : [];
 
       const updatedNotifications = [
         ...notis.filter((n) => {
