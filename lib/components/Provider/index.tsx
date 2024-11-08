@@ -390,34 +390,36 @@ export const NotificationAPIProvider: React.FunctionComponent<
         .register(config.customServiceWorkerPath)
         .then(async (registration) => {
           setWebPushOptInMessage(false);
-          Notification.requestPermission().then(async (permission) => {
-            if (permission === 'granted') {
-              await registration.pushManager
-                .subscribe({
-                  userVisibleOnly: true,
-                  applicationServerKey:
-                    userAccountMetaData?.userAccountMetadata
-                      .environmentVapidPublicKey
-                })
-                .then(async (res) => {
-                  const body = {
-                    webPushTokens: [
-                      {
-                        sub: {
-                          endpoint: res.toJSON().endpoint as string,
-                          keys: res.toJSON().keys as PushSubscription['keys']
+          if ('Notification' in window) {
+            Notification.requestPermission().then(async (permission) => {
+              if (permission === 'granted') {
+                await registration.pushManager
+                  .subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey:
+                      userAccountMetaData?.userAccountMetadata
+                        .environmentVapidPublicKey
+                  })
+                  .then(async (res) => {
+                    const body = {
+                      webPushTokens: [
+                        {
+                          sub: {
+                            endpoint: res.toJSON().endpoint as string,
+                            keys: res.toJSON().keys as PushSubscription['keys']
+                          }
                         }
-                      }
-                    ]
-                  };
-                  await client.identify(body);
-                  console.log('index');
-                  localStorage.setItem('hideWebPushOptInMessage', 'true');
-                });
-            } else if (permission === 'denied') {
-              console.log('Permission for notifications was denied');
-            }
-          });
+                      ]
+                    };
+                    await client.identify(body);
+                    console.log('index');
+                    localStorage.setItem('hideWebPushOptInMessage', 'true');
+                  });
+              } else if (permission === 'denied') {
+                console.log('Permission for notifications was denied');
+              }
+            });
+          }
         })
         .catch((e) => {
           if (e.code === 18) {
