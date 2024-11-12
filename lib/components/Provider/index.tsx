@@ -476,8 +476,14 @@ export const NotificationAPIProvider: React.FunctionComponent<
   }, [client, loadNotifications, askForWebPushPermission]);
 
   useEffect(() => {
-    if (Notification.permission !== 'default') {
-      setWebPushOptInMessage(false);
+    if (
+      isClient &&
+      'Notification' in window &&
+      typeof Notification.requestPermission === 'function'
+    ) {
+      if (Notification.permission !== 'default') {
+        setWebPushOptInMessage(false);
+      }
     }
 
     if (webPushOptInMessage === 'AUTOMATIC') {
