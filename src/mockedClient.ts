@@ -32,7 +32,6 @@ export const getMarkedClient = (
       return {} as WebSocket;
     },
     updateInAppNotifications: function () {
-      // eslint-disable-next-line compat/compat
       return Promise.resolve({});
     },
     getPreferences: async () => {
@@ -42,11 +41,9 @@ export const getMarkedClient = (
         notifications: [], // Add actual notifications data here
         subNotifications: [] // Add actual subNotifications data here
       };
-      // eslint-disable-next-line compat/compat
       return Promise.resolve(response);
     },
     identify: function (): Promise<void> {
-      // eslint-disable-next-line compat/compat
       return Promise.resolve();
     }
   };
@@ -56,7 +53,6 @@ export const getMarkedClient = (
       hasMore: false, // Set the actual value here
       oldestReceived: '' // Set the actual value here
     };
-    // eslint-disable-next-line compat/compat
     return Promise.resolve(response);
   };
   mockedClient.rest.getPreferences = async () => {
@@ -66,7 +62,6 @@ export const getMarkedClient = (
       notifications: [], // Add actual notifications data here
       subNotifications: [] // Add actual subNotifications data here
     };
-    // eslint-disable-next-line compat/compat
     return Promise.resolve(response);
   };
   return mockedClient;

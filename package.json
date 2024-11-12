@@ -9,9 +9,9 @@
     "last 2 FirefoxAndroid versions",
     "last 2 Safari versions",
     "last 2 iOS versions",
-    "not IE",
-    "not bb",
-    "not IE_Mob",
+    "not IE >= 1",
+    "not bb >=1",
+    "not IE_Mob >=1",
     "not op_mini all"
   ],
   "scripts": {
