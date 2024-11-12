@@ -85,6 +85,9 @@ type Props = (
   customServiceWorkerPath?: string;
 };
 
+// Ensure that the code runs only in the browser
+const isClient = typeof window !== 'undefined';
+
 export const NotificationAPIProvider: React.FunctionComponent<
   PropsWithChildren<Props>
 > & {
@@ -390,7 +393,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
         .register(config.customServiceWorkerPath)
         .then(async (registration) => {
           setWebPushOptInMessage(false);
-          Notification.requestPermission().then(async (permission) => {
+          requestNotificationPermission().then(async (permission) => {
             if (permission === 'granted') {
               await registration.pushManager
                 .subscribe({
@@ -521,3 +524,23 @@ const useNotificationAPIContext = (): Context => {
   return context;
 };
 NotificationAPIProvider.useNotificationAPIContext = useNotificationAPIContext;
+
+const requestNotificationPermission =
+  async (): Promise<NotificationPermission> => {
+    if (
+      isClient &&
+      'Notification' in window &&
+      typeof Notification.requestPermission === 'function'
+    ) {
+      try {
+        const permission = await Notification.requestPermission();
+        return permission;
+      } catch (error) {
+        console.error('Error requesting notification permission:', error);
+        return 'default';
+      }
+    } else {
+      console.warn('Web Push Notifications are not supported in this browser.');
+      return 'default';
+    }
+  };
