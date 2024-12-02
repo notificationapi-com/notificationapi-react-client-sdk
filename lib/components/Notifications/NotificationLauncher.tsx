@@ -9,13 +9,14 @@ import { NotificationPreferencesPopup } from '../Preferences';
 import { Position } from './interface';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
-type NotificationLaucherProps = NotificationPopupProps & {
+type NotificationLauncherProps = NotificationPopupProps & {
   position?: keyof typeof Position;
   offsetX?: number | string;
   offsetY?: number | string;
+  customStyle?: React.CSSProperties;
 };
 
-export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
+export const NotificationLauncher: React.FC<NotificationLauncherProps> = (
   props
 ) => {
   const [openPreferences, setOpenPreferences] = useState(false);
@@ -25,7 +26,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     return null;
   }
 
-  const config: Required<NotificationLaucherProps> = {
+  const config: Required<NotificationLauncherProps> = {
     buttonIcon: props.buttonIcon || (
       <BellOutlined
         style={{
@@ -63,7 +64,8 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     },
     renderers: {
       notification: props.renderers?.notification
-    }
+    },
+    customStyle: props.customStyle || {}
   };
 
   return (
