@@ -17,17 +17,12 @@ import { getMarkedClient } from './mockedClient';
 const MockedComponents: React.FC = () => {
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
     useState(false);
-  const [notification, setNotification] = useState<InAppNotification[]>([]);
+  const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   return (
     <>
-      <h1 style={{ textAlign: 'center' }}>Mocked:</h1>
-      <h2 style={{ textAlign: 'center' }}>
-        Experience the magic of notifications!
-      </h2>
       <div
         style={{
-          height: '210vh',
-          background: '#f0f2f5',
+          background: '#f5f5f5',
           padding: 24
         }}
       >
@@ -41,14 +36,14 @@ const MockedComponents: React.FC = () => {
           client={getMarkedClient(
             '24nojpnrsdc53fha0roov05',
             'mockedUser',
-            notification
+            notifications
           )}
         >
-          <h3 style={{ textAlign: 'center' }}>
-            Fill out the form below to generate a fake notification and see it
-            in action!
-          </h3>
-          <FakeNotification setNotification={setNotification} />
+          <FakeNotification
+            addToState={(notification: InAppNotification) => {
+              setNotifications([...notifications, notification]);
+            }}
+          />
           <Divider />
           <h2>Popup:</h2>
           <NotificationPopup

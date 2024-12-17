@@ -12,27 +12,38 @@ import { Divider, Button } from 'antd';
 import { MyButton } from './MyButton';
 
 const LiveComponents: React.FC = () => {
+  const [clientId, setClientId] = useState('24nojpnrsdc53fkslha0roov05');
+  const [userId, setUserId] = useState('sahand');
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
     useState(false);
 
   return (
     <>
-      <h1 style={{ textAlign: 'center' }}>Live Mode</h1>
-      <h2 style={{ textAlign: 'center' }}>live connection to the server</h2>
+      <div>
+        <label>Client ID:</label>
+        <input
+          type="text"
+          value={clientId}
+          onChange={(e) => setClientId(e.target.value)}
+        />
+      </div>
+      <div>
+        <label>User ID:</label>
+        <input
+          type="text"
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+        />
+      </div>
       <div
         style={{
-          height: '210vh',
-          background: '#e6fffb', // Changed background color to indicate live connection
+          background: '#f5f5f5',
           padding: 24
         }}
       >
         <NotificationAPIProvider
-          clientId="arbfcddhxmx07ncpja31859r6i"
-          userId="sahand"
-          user={{
-            id: 'sahand',
-            email: 'sahand.seifi@gmail.com'
-          }}
+          clientId={clientId}
+          userId={userId}
           playSoundOnNewNotification={true}
         >
           <h2>Popup:</h2>
