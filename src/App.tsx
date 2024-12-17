@@ -8,8 +8,16 @@ function App() {
 
   return (
     <>
-      <Button onClick={() => setIsMocked(!isMocked)}>
-        {isMocked ? '🟢' : '🔴'} Switch to {isMocked ? 'Live' : 'Mocked'} Mode
+      <Button
+        onClick={() => setIsMocked(!isMocked)}
+        style={{
+          position: 'absolute',
+          right: 20,
+          top: 20
+        }}
+      >
+        {isMocked ? '🔴 Mocked' : '🟢 Live'} - Switch to{' '}
+        {isMocked ? 'Live' : 'Mocked'} Mode
       </Button>
       {isMocked ? <MockedComponents /> : <LiveConnections />}
     </>
