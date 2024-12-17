@@ -91,6 +91,10 @@ const LiveComponents: React.FC = () => {
 
           <h2>Preferences Inline:</h2>
           <NotificationPreferencesInline />
+
+          <Divider />
+
+          <MyButton />
         </NotificationAPIProvider>
       </div>
     </>

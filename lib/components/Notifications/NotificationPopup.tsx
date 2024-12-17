@@ -3,7 +3,7 @@ import { Inbox } from './Inbox';
 import { BellOutlined } from '@ant-design/icons';
 import { UnreadBadge, UnreadBadgeProps } from './UnreadBadge';
 import { NotificationProps } from './Notification';
-import { NotificationAPIContext } from '../Provider';
+import { NotificationAPIContext } from '../Provider/context';
 import { useContext, useState } from 'react';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { NotificationPreferencesPopup } from '../Preferences';

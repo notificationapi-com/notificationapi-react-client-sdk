@@ -1,7 +1,7 @@
 import { Divider, Modal } from 'antd';
 import { Preferences } from './Preferences';
 import { useContext } from 'react';
-import { NotificationAPIContext } from '../Provider';
+import { NotificationAPIContext } from '../Provider/context';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 type NotificationPreferencesPopupProps = {

@@ -1,5 +1,5 @@
 import { Collapse, CollapseProps } from 'antd';
-import { NotificationAPIContext } from '../Provider';
+import { NotificationAPIContext } from '../Provider/context';
 import { useContext } from 'react';
 import { PreferenceInput } from './PreferenceInput';
 
