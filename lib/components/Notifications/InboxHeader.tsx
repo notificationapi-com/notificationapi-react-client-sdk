@@ -2,7 +2,7 @@ import { CheckOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Popover, Typography } from 'antd';
 
 export type InboxHeaderProps = {
-  title?: JSX.Element;
+  title?: React.ReactNode;
   button1ClickHandler?: (ids: string[] | 'ALL') => void;
   button2ClickHandler?: () => void;
 };

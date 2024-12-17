@@ -17,7 +17,7 @@ export type InboxProps = {
   pageSize: number;
   pagePosition: NotificationPopupProps['pagePosition'];
   notificationRenderer:
-    | ((notification: InAppNotification[]) => JSX.Element)
+    | ((notification: InAppNotification[]) => React.ReactNode)
     | undefined;
   header?: InboxHeaderProps;
 };
