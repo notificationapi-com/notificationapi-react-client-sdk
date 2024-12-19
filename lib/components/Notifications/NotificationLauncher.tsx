@@ -4,7 +4,7 @@ import { BellOutlined, GlobalOutlined } from '@ant-design/icons';
 import { UnreadBadge } from './UnreadBadge';
 import { NotificationPopupProps } from './NotificationPopup';
 import { useContext, useState } from 'react';
-import { NotificationAPIContext } from '../Provider';
+import { NotificationAPIContext } from '../Provider/context';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { Position } from './interface';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';

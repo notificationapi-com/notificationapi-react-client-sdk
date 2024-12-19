@@ -2,12 +2,13 @@ import { Empty, List } from 'antd';
 import { InboxHeader, InboxHeaderProps } from './InboxHeader';
 import VirtualList from 'rc-virtual-list';
 import { Notification } from './Notification';
-import { NotificationAPIContext } from '../Provider';
+
 import { useContext } from 'react';
 import { NotificationPopupProps } from './NotificationPopup';
 import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { Filter, ImageShape, Pagination } from './interface';
+import { NotificationAPIContext } from '../Provider/context';
 
 export type InboxProps = {
   pagination: keyof typeof Pagination;
@@ -17,7 +18,7 @@ export type InboxProps = {
   pageSize: number;
   pagePosition: NotificationPopupProps['pagePosition'];
   notificationRenderer:
-    | ((notification: InAppNotification[]) => JSX.Element)
+    | ((notification: InAppNotification[]) => React.ReactNode)
     | undefined;
   header?: InboxHeaderProps;
 };

@@ -1,6 +1,6 @@
 import { Badge } from 'antd';
 import { PropsWithChildren, useContext } from 'react';
-import { NotificationAPIContext } from '../Provider';
+import { NotificationAPIContext } from '../Provider/context';
 import { NotificationPopupProps } from './NotificationPopup';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { COUNT_TYPE } from './interface';

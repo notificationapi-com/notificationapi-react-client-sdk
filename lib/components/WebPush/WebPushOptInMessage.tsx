@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Alert, Button } from 'antd';
 import { GlobalOutlined } from '@ant-design/icons';
-import { NotificationAPIContext } from '../Provider';
+import { NotificationAPIContext } from '../Provider/context';
 
 interface WebPushOptInMessageProps {
   hideAfterInteraction?: boolean;

@@ -2,7 +2,7 @@ import { Divider } from 'antd';
 import { Preferences } from './Preferences';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 import { useContext } from 'react';
-import { NotificationAPIContext } from '../Provider';
+import { NotificationAPIContext } from '../Provider/context';
 
 type NotificationPreferencesInlineProps = object;
 

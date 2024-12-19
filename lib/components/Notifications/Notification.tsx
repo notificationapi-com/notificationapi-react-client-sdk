@@ -7,6 +7,7 @@ import ReactTimeAgo from 'react-time-ago';
 import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { ImageShape } from './interface';
+import { ReactElement, ReactNode } from 'react';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
@@ -37,12 +38,12 @@ export type NotificationProps = {
   markAsArchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (ids: string[]) => void;
   imageShape: keyof typeof ImageShape;
-  renderer?: (notification: InAppNotification[]) => JSX.Element;
+  renderer?: (notification: InAppNotification[]) => ReactNode;
 };
 
 export const Notification = (props: NotificationProps) => {
   if (props.renderer) {
-    return props.renderer(props.notifications);
+    return props.renderer(props.notifications) as ReactElement;
   }
 
   const liquid = new Liquid();

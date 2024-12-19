@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { Inbox } from './Inbox';
 import { NotificationProps } from './Notification';
-import { NotificationAPIContext } from '../Provider';
+import { NotificationAPIContext } from '../Provider/context';
 import { InboxHeaderProps } from './InboxHeader';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
