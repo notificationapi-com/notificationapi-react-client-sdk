@@ -10,7 +10,7 @@ import {
 } from '../lib/main';
 import { FakeNotification } from './FakeNotification';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
-import { getMarkedClient } from './mockedClient';
+import { getMockedClient } from './mockedClient';
 import { Button, Divider } from '@mui/material';
 
 const MockedComponents: React.FC = () => {
@@ -32,7 +32,7 @@ const MockedComponents: React.FC = () => {
             id: 'mockedUser',
             email: 'mockedUser@gmail.com'
           }}
-          client={getMarkedClient(
+          client={getMockedClient(
             '24nojpnrsdc53fha0roov05',
             'mockedUser',
             notifications
@@ -49,6 +49,7 @@ const MockedComponents: React.FC = () => {
             count={(n) => {
               return !n.archived;
             }}
+            pagination="PAGINATED"
           />
 
           <Divider />
@@ -82,7 +83,7 @@ const MockedComponents: React.FC = () => {
           </NotificationCounter>
           <Divider />
           <h2>Feed:</h2>
-          <NotificationFeed infiniteScrollHeight={300} />
+          <NotificationFeed infiniteScrollHeight={300} pagination="PAGINATED" />
 
           <Divider />
           <h2>Preferences Popup:</h2>

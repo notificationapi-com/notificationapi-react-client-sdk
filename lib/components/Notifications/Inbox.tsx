@@ -143,19 +143,29 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             />
           }
         >
-          {orderedNotifications.map((n) => (
-            <ListItem key={n[0].id} style={{ padding: 0 }}>
-              <Notification
-                markAsArchived={context.markAsArchived}
-                notifications={n}
-                markAsClicked={context.markAsClicked}
-                renderer={props.notificationRenderer}
-              />
-            </ListItem>
-          ))}
+          {orderedNotifications
+            .filter((_n, i) => {
+              if (props.pagination === 'PAGINATED') {
+                return (
+                  i >= (page - 1) * props.pageSize && i < page * props.pageSize
+                );
+              } else {
+                return true;
+              }
+            })
+            .map((n) => (
+              <ListItem key={n[0].id} style={{ padding: 0 }}>
+                <Notification
+                  markAsArchived={context.markAsArchived}
+                  notifications={n}
+                  markAsClicked={context.markAsClicked}
+                  renderer={props.notificationRenderer}
+                />
+              </ListItem>
+            ))}
           {orderedNotifications.length > 0 && (
             <Pagination
-              count={orderedNotifications.length / props.pageSize}
+              count={Math.ceil(orderedNotifications.length / props.pageSize)}
               page={page}
               onChange={handlePageChange}
             />

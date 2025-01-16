@@ -45,7 +45,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
 
   const config: Required<NotificationFeedProps> = {
     pagination: props.pagination || 'INFINITE_SCROLL',
-    pageSize: props.pageSize || 10,
+    pageSize: props.pageSize || 5,
     pagePosition: props.pagePosition || 'top',
     style: props.style || {},
     filter: props.filter || Filter.ALL,
