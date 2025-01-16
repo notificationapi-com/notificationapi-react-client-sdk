@@ -1,8 +1,8 @@
-import { Divider, Modal } from 'antd';
 import { Preferences } from './Preferences';
 import { useContext } from 'react';
 import { NotificationAPIContext } from '../Provider/context';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
+import { Dialog } from '@mui/material';
 
 type NotificationPreferencesPopupProps = {
   open?: boolean;
@@ -24,25 +24,16 @@ export function NotificationPreferencesPopup(
   };
 
   return (
-    <Modal
-      title="Notification Preferences"
-      open={config.open}
-      onCancel={() => {
-        config.onClose();
-      }}
-      footer={null}
-      zIndex={9999}
-    >
+    <Dialog open={config.open} onClose={config.onClose} maxWidth="md" fullWidth>
       <Preferences />
       {context.webPushOptInMessage && (
         <div>
-          <Divider style={{ margin: '10px 0' }} />
           <WebPushOptInMessage
             hideAfterInteraction={false}
             descriptionStyle={{ fontSize: 12 }}
           />
         </div>
       )}
-    </Modal>
+    </Dialog>
   );
 }

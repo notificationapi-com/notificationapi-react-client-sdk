@@ -1,35 +1,24 @@
-import { Badge } from 'antd';
 import { PropsWithChildren, useContext } from 'react';
 import { NotificationAPIContext } from '../Provider/context';
 import { NotificationPopupProps } from './NotificationPopup';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { COUNT_TYPE } from './interface';
+import { Badge } from '@mui/material';
 
 export type UnreadBadgeProps = {
-  color?:
-    | 'blue'
-    | 'purple'
-    | 'cyan'
-    | 'green'
-    | 'magenta'
-    | 'pink'
-    | 'red'
-    | 'orange'
-    | 'yellow'
-    | 'volcano'
-    | 'geekblue'
-    | 'lime'
-    | 'gold'
-    | undefined;
-  overflowCount?: number;
   dot?: boolean;
   showZero?: boolean;
-  size?: 'default' | 'small';
-  style?: React.CSSProperties;
+  max?: number;
   count?:
     | keyof typeof COUNT_TYPE
     | ((notification: InAppNotification) => boolean);
   filter?: NotificationPopupProps['filter'];
+  offset?: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  };
 };
 
 export const UnreadBadge: React.FunctionComponent<
@@ -59,14 +48,21 @@ export const UnreadBadge: React.FunctionComponent<
 
   return (
     <Badge
-      count={countingFunction(context?.notifications || [])}
-      color={props.color}
-      overflowCount={props.overflowCount}
-      dot={props.dot}
+      overlap="circular"
+      badgeContent={countingFunction(context?.notifications || [])}
+      max={props.max}
+      variant={props.dot ? 'dot' : 'standard'}
       showZero={props.showZero}
-      size={props.size}
-      style={{
-        ...props.style
+      color="error"
+      slotProps={{
+        badge: {
+          style: {
+            top: props.offset?.top,
+            right: props.offset?.right,
+            bottom: props.offset?.bottom,
+            left: props.offset?.left
+          }
+        }
       }}
     >
       {props.children}

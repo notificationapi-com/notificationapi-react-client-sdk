@@ -1,7 +1,7 @@
-import { Button } from 'antd';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 
 import { faker } from '@faker-js/faker';
+import { Button } from '@mui/material';
 
 const generateFakeNotifications = (params: {
   title?: string;
@@ -38,10 +38,7 @@ export const FakeNotification: React.FC<{
   addToState: (notification: InAppNotification) => void;
 }> = ({ addToState }) => {
   return (
-    <Button
-      type="primary"
-      onClick={() => addToState(generateFakeNotifications({}))}
-    >
+    <Button onClick={() => addToState(generateFakeNotifications({}))}>
       Generate a Fake Notification
     </Button>
   );

@@ -8,8 +8,7 @@ import {
   NotificationPreferencesPopup,
   NotificationPreferencesInline
 } from '../lib/main';
-import { Divider, Button } from 'antd';
-import { MyButton } from './MyButton';
+import { Button, Divider } from '@mui/material';
 
 const LiveComponents: React.FC = () => {
   const [clientId, setClientId] = useState('24nojpnrsdc53fkslha0roov05');
@@ -68,7 +67,7 @@ const LiveComponents: React.FC = () => {
               return n.notificationId === 'conversion_failure' && !n.archived;
             }}
           >
-            <MyButton />
+            <Button>Button</Button>
           </NotificationCounter>
 
           <Divider />
@@ -91,10 +90,6 @@ const LiveComponents: React.FC = () => {
 
           <h2>Preferences Inline:</h2>
           <NotificationPreferencesInline />
-
-          <Divider />
-
-          <MyButton />
         </NotificationAPIProvider>
       </div>
     </>

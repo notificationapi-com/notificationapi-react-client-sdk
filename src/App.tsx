@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { Button } from 'antd';
 import LiveConnections from './LiveComponents';
 import MockedComponents from './MockedComponents';
+import { Button } from '@mui/material';
 
 function App() {
   const [isMocked, setIsMocked] = useState(false);
 
   return (
-    <>
+    <div>
       <Button
         onClick={() => setIsMocked(!isMocked)}
         style={{
@@ -20,7 +20,7 @@ function App() {
         {isMocked ? 'Live' : 'Mocked'} Mode
       </Button>
       {isMocked ? <MockedComponents /> : <LiveConnections />}
-    </>
+    </div>
   );
 }
 

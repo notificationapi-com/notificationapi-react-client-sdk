@@ -8,11 +8,10 @@ import {
   NotificationPreferencesPopup,
   NotificationPreferencesInline
 } from '../lib/main';
-import { Divider, Button } from 'antd';
-import { MyButton } from './MyButton';
 import { FakeNotification } from './FakeNotification';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { getMarkedClient } from './mockedClient';
+import { Button, Divider } from '@mui/material';
 
 const MockedComponents: React.FC = () => {
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
@@ -79,7 +78,7 @@ const MockedComponents: React.FC = () => {
               return !n.archived;
             }}
           >
-            <MyButton />
+            <Button>Button</Button>
           </NotificationCounter>
           <Divider />
           <h2>Feed:</h2>

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { Alert, Button } from 'antd';
-import { GlobalOutlined } from '@ant-design/icons';
+import LanguageOutlined from '@mui/icons-material/LanguageOutlined';
 import { NotificationAPIContext } from '../Provider/context';
+import { Alert, Button } from '@mui/material';
 
 interface WebPushOptInMessageProps {
   hideAfterInteraction?: boolean;
@@ -68,19 +68,18 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
 
   return (
     <Alert
-      type="info"
-      showIcon
-      icon={customIcons ?? <GlobalOutlined type="text" />}
+    severity='info'
+      icon={customIcons ?? <LanguageOutlined type="text" />}
       style={alertContainerStyle}
-      description={
-        <div style={descriptionStyle}>
+      
+    >
+      <div style={descriptionStyle}>
           <span>
             {customDescription ??
               `Would you like to enable web push notifications to stay updated?`}
           </span>
           <div style={buttonContainerStyle}>
             <Button
-              type="primary"
               style={yesButtonStyle}
               onClick={() => {
                 if (hideAfterInteraction) {
@@ -105,8 +104,7 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
             </Button>
           </div>
         </div>
-      }
-    />
+    </Alert>
   );
 };
 

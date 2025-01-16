@@ -3,11 +3,6 @@ export enum Pagination {
   PAGINATED = 'paginated'
 }
 
-export enum ImageShape {
-  square = 'square',
-  circle = 'circle'
-}
-
 export enum Filter {
   ALL = 'ALL',
   UNARCHIVED = 'UNARCHIVED'

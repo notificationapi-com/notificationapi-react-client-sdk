@@ -1,13 +1,15 @@
-import { CheckOutlined } from '@ant-design/icons';
-import { Avatar, Badge, Button, Typography } from 'antd';
-import { styled } from 'styled-components';
+import Avatar from '@mui/material/Avatar';
+import Badge from '@mui/material/Badge';
+import Typography from '@mui/material/Typography';
+import styled from '@emotion/styled';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ReactTimeAgo from 'react-time-ago';
 import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
-import { ImageShape } from './interface';
 import { ReactElement, ReactNode } from 'react';
+import { IconButton } from '@mui/material';
+import { Check } from '@mui/icons-material';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
@@ -37,7 +39,6 @@ export type NotificationProps = {
   notifications: InAppNotification[];
   markAsArchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (ids: string[]) => void;
-  imageShape: keyof typeof ImageShape;
   renderer?: (notification: InAppNotification[]) => ReactNode;
 };
 
@@ -106,12 +107,11 @@ export const Notification = (props: NotificationProps) => {
       <div>
         <Avatar
           src={imageURL}
-          size="large"
+          sizes="32"
           style={{
             marginRight: 8,
             marginLeft: 12
           }}
-          shape={props.imageShape}
         />
       </div>
 
@@ -121,51 +121,54 @@ export const Notification = (props: NotificationProps) => {
         }}
       >
         <div>
-          <Typography.Text
+          <Typography
+            variant="body2"
+            fontWeight={archived ? 300 : 400}
             style={{
               whiteSpace: 'pre-line'
             }}
           >
             <span dangerouslySetInnerHTML={{ __html: title as string }}></span>
-          </Typography.Text>
+          </Typography>
         </div>
         <div>
-          <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          <Typography variant="body2" fontWeight={300} style={{ fontSize: 12 }}>
             <ReactTimeAgo date={new Date(date).getTime()} locale="en-US" />
-          </Typography.Text>
+          </Typography>
         </div>
       </div>
 
       <div
         style={{
           position: 'relative',
-          width: 48,
+          width: 52,
           height: 32,
           display: 'flex',
           alignItems: 'center'
         }}
       >
-        <Button
+        <IconButton
           className="notification-archive-button"
-          icon={<CheckOutlined />}
           size="small"
-          type="text"
-          shape="circle"
           onClick={(e) => {
             props.markAsArchived(ids);
             e.preventDefault();
             e.stopPropagation();
             return false;
           }}
-        />
+        >
+          <Check fontSize="small" />
+        </IconButton>
         <Badge
-          dot
+          variant="dot"
+          color="error"
           className="notification-highlight"
           style={{
             visibility: archived ? 'hidden' : 'visible',
-            marginRight: 10,
-            marginLeft: 8,
+            marginRight: 0,
+            marginLeft: 12,
             marginTop: 6,
+            bottom: 2,
             right: 0
           }}
         />

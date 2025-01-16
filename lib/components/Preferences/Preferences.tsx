@@ -1,7 +1,13 @@
-import { Collapse, CollapseProps } from 'antd';
 import { NotificationAPIContext } from '../Provider/context';
 import { useContext } from 'react';
 import { PreferenceInput } from './PreferenceInput';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Typography
+} from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 
 export function Preferences() {
   const context = useContext(NotificationAPIContext);
@@ -10,7 +16,7 @@ export function Preferences() {
     return null;
   }
 
-  const items: CollapseProps['items'] = context.preferences.notifications
+  const items = context.preferences.notifications
     .sort((a, b) => a.title.localeCompare(b.title))
     .map((n) => {
       const mainPreferences = context.preferences?.preferences.filter(
@@ -28,50 +34,43 @@ export function Preferences() {
           )
       );
 
-      return {
-        label: n.title,
-        key: n.notificationId,
-        children: (
-          <>
-            <PreferenceInput
-              key={n.notificationId}
-              notification={n}
-              preferences={mainPreferences || []}
-              updateDelivery={context.updateDelivery}
-            />
+      return (
+        <Accordion key={n.notificationId}>
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Typography variant="body1">{n.title}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <>
+              <PreferenceInput
+                key={n.notificationId}
+                notification={n}
+                preferences={mainPreferences || []}
+                updateDelivery={context.updateDelivery}
+              />
 
-            {subNotifications?.map((sn) => {
-              return (
-                <Collapse
-                  key={sn.subNotificationId}
-                  bordered={false}
-                  items={[
-                    {
-                      label: sn.title,
-                      key: sn.subNotificationId,
-                      children: (
-                        <PreferenceInput
-                          key={sn.subNotificationId}
-                          notification={n}
-                          preferences={subPreferences || []}
-                          updateDelivery={context.updateDelivery}
-                          subNotificationId={sn.subNotificationId}
-                        />
-                      )
-                    }
-                  ]}
-                  defaultActiveKey={[]}
-                />
-              );
-            })}
-          </>
-        )
-      };
+              {subNotifications?.map((sn) => {
+                return (
+                  <Accordion key={sn.subNotificationId}>
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <Typography variant="body1">{sn.title}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <PreferenceInput
+                        key={sn.subNotificationId}
+                        notification={n}
+                        preferences={subPreferences || []}
+                        updateDelivery={context.updateDelivery}
+                        subNotificationId={sn.subNotificationId}
+                      />
+                    </AccordionDetails>
+                  </Accordion>
+                );
+              })}
+            </>
+          </AccordionDetails>
+        </Accordion>
+      );
     });
 
-  return (
-    <>
-      <Collapse items={items} defaultActiveKey={[]} />
-    </>
-  );
+  return <>{items}</>;
 }
