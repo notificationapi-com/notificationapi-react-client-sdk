@@ -199,13 +199,12 @@ export const PreferenceInput = ({
           return (
             <div key={channel}>
               <div
-                key={channel}
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   flexWrap: 'wrap',
-                  marginTop: i === 0 ? 12 : 0,
-                  marginBottom: i === notification.channels.length - 1 ? 12 : 0
+                  marginTop: i === 0 ? 0 : 12,
+                  marginBottom: i === notification.channels.length - 1 ? 0 : 12
                 }}
               >
                 <div

@@ -50,7 +50,12 @@ export function Preferences() {
 
               {subNotifications?.map((sn) => {
                 return (
-                  <Accordion key={sn.subNotificationId}>
+                  <Accordion
+                    key={`${sn.notificationId}-${sn.subNotificationId}`}
+                    style={{
+                      marginTop: 12
+                    }}
+                  >
                     <AccordionSummary expandIcon={<ExpandMore />}>
                       <Typography variant="body1">{sn.title}</Typography>
                     </AccordionSummary>
