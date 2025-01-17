@@ -102,8 +102,8 @@ export const PreferenceInput = ({
             selector = (
               <Switch
                 checked={preference.delivery !== 'off'}
-                onChange={(state) => {
-                  if (state) {
+                onChange={(_state, checked) => {
+                  if (checked) {
                     const delivery = deliveries.find((d) => d !== 'off')!;
                     updateDelivery(
                       notification.notificationId,
@@ -127,8 +127,8 @@ export const PreferenceInput = ({
               <>
                 <Switch
                   checked={preference.delivery !== 'off'}
-                  onChange={(state) => {
-                    if (state) {
+                  onChange={(_state, checked) => {
+                    if (checked) {
                       const delivery = deliveries
                         .sort(sortDeliveries)
                         .find((d) => d !== 'off')!;
