@@ -68,42 +68,41 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
 
   return (
     <Alert
-    severity='info'
+      severity="info"
       icon={customIcons ?? <LanguageOutlined type="text" />}
       style={alertContainerStyle}
-      
     >
       <div style={descriptionStyle}>
-          <span>
-            {customDescription ??
-              `Would you like to enable web push notifications to stay updated?`}
-          </span>
-          <div style={buttonContainerStyle}>
-            <Button
-              style={yesButtonStyle}
-              onClick={() => {
-                if (hideAfterInteraction) {
-                  localStorage.setItem('hideWebPushOptInMessage', 'true');
-                }
-                context.setWebPushOptIn(true);
-                context.setWebPushOptInMessage(false);
-              }}
-            >
-              Yes
-            </Button>
-            <Button
-              style={cancelButtonStyle}
-              onClick={() => {
-                if (hideAfterInteraction) {
-                  localStorage.setItem('hideWebPushOptInMessage', 'true');
-                }
-                context.setWebPushOptInMessage(false);
-              }}
-            >
-              No
-            </Button>
-          </div>
+        <span>
+          {customDescription ??
+            `Would you like to enable web push notifications to stay updated?`}
+        </span>
+        <div style={buttonContainerStyle}>
+          <Button
+            style={yesButtonStyle}
+            onClick={() => {
+              if (hideAfterInteraction) {
+                localStorage.setItem('hideWebPushOptInMessage', 'true');
+              }
+              context.setWebPushOptIn(true);
+              context.setWebPushOptInMessage(false);
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            style={cancelButtonStyle}
+            onClick={() => {
+              if (hideAfterInteraction) {
+                localStorage.setItem('hideWebPushOptInMessage', 'true');
+              }
+              context.setWebPushOptInMessage(false);
+            }}
+          >
+            No
+          </Button>
         </div>
+      </div>
     </Alert>
   );
 };
