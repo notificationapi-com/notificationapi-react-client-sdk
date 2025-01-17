@@ -33,6 +33,7 @@ export type NotificationPopupProps = {
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
   const [openPreferences, setOpenPreferences] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const context = useContext(NotificationAPIContext);
 
   if (!context) {
@@ -76,7 +77,6 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     }
   };
 
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
     context.markAsOpened();

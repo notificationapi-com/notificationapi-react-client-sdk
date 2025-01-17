@@ -20,6 +20,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
   props
 ) => {
   const [openPreferences, setOpenPreferences] = useState(false);
+  const [open, setOpen] = useState(false);
   const context = useContext(NotificationAPIContext);
 
   if (!context) {
@@ -65,8 +66,6 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
       notification: props.renderers?.notification
     }
   };
-
-  const [open, setOpen] = useState(false);
 
   const handleClick = () => {
     setOpen(!open);
