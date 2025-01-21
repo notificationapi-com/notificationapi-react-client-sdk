@@ -1,6 +1,3 @@
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
-import Typography from '@mui/material/Typography';
 import styled from '@emotion/styled';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
@@ -8,7 +5,7 @@ import ReactTimeAgo from 'react-time-ago';
 import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { ReactElement, ReactNode } from 'react';
-import { IconButton } from '@mui/material';
+import { Avatar, Badge, IconButton, Typography } from '@mui/material';
 import { Check } from '@mui/icons-material';
 
 TimeAgo.addDefaultLocale(en);

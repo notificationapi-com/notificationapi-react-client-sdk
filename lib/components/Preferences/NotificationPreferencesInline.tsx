@@ -1,6 +1,6 @@
+import { useContext } from 'react';
 import { Preferences } from './Preferences';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
-import { useContext } from 'react';
 import { NotificationAPIContext } from '../Provider/context';
 import { Divider } from '@mui/material';
 

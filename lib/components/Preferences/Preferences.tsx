@@ -1,10 +1,11 @@
-import { NotificationAPIContext } from '../Provider/context';
 import { useContext } from 'react';
+import { NotificationAPIContext } from '../Provider/context';
 import { PreferenceInput } from './PreferenceInput';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Typography
 } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
@@ -77,5 +78,5 @@ export function Preferences() {
       );
     });
 
-  return <>{items}</>;
+  return <Box sx={{ borderRadius: 2, overflow: 'hidden' }}>{items}</Box>;
 }

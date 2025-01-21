@@ -1,8 +1,7 @@
+import React, { useContext, useState } from 'react';
 import { InboxHeader, InboxHeaderProps } from './InboxHeader';
 import VirtualList from 'rc-virtual-list';
 import { Notification } from './Notification';
-
-import React, { useContext } from 'react';
 import { NotificationPopupProps } from './NotificationPopup';
 import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
@@ -26,7 +25,7 @@ export type InboxProps = {
 
 export const Inbox: React.FC<InboxProps> = (props) => {
   // pagination
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
 
   const context = useContext(NotificationAPIContext);
   if (!context) {

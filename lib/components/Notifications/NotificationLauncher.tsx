@@ -94,7 +94,25 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
           </IconButton>
         </UnreadBadge>
       </div>
-      <Popover open={open}>
+      <Popover
+        open={open}
+        anchorReference="anchorPosition"
+        anchorPosition={{
+          top: window.innerHeight / 2,
+          left: window.innerWidth / 2
+        }}
+        transformOrigin={{ horizontal: 'center', vertical: 'center' }}
+        onClose={() => setOpen(false)}
+        slotProps={{
+          paper: {
+            style: {
+              width: config.popupWidth,
+              padding: '0 16px',
+              borderRadius: 8
+            }
+          }
+        }}
+      >
         <Inbox
           maxHeight={500}
           pagination={config.pagination}

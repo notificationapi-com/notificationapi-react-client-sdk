@@ -103,6 +103,14 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
         anchorEl={anchorEl}
+        slotProps={{
+          paper: {
+            style: {
+              borderRadius: 8
+            }
+          }
+        }}
+        aria-hidden={!anchorEl}
       >
         <div
           style={{

@@ -1,5 +1,5 @@
-import { Typography } from '@mui/material';
 import { ReactNode } from 'react';
+import { Typography } from '@mui/material';
 
 export const DefaultEmptyComponent: ReactNode = (
   <div

@@ -69,6 +69,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
       style={{
         padding: '0 12px',
         boxSizing: 'border-box',
+        borderRadius: 8,
         background: '#fff',
         ...props.style
       }}

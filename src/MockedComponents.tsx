@@ -11,39 +11,63 @@ import {
 import { FakeNotification } from './FakeNotification';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { getMockedClient } from './mockedClient';
-import { Button, Divider } from '@mui/material';
+import { Button, Divider, Grid2 } from '@mui/material';
 
-const MockedComponents: React.FC = () => {
+interface MockedComponentsProps {
+  isMocked: boolean;
+  setIsMocked: (isMocked: boolean) => void;
+}
+
+const MockedComponents: React.FC<MockedComponentsProps> = ({
+  isMocked,
+  setIsMocked
+}) => {
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
     useState(false);
   const [notifications, setNotifications] = useState<InAppNotification[]>([]);
   return (
     <>
-      <div
-        style={{
-          background: '#f5f5f5',
-          padding: 24
+      <NotificationAPIProvider
+        clientId="24nojpnrc53fkslha0roov05"
+        webPushOptInMessage={false}
+        user={{
+          id: 'mockedUser',
+          email: 'mockedUser@gmail.com'
         }}
+        client={getMockedClient(
+          '24nojpnrsdc53fha0roov05',
+          'mockedUser',
+          notifications
+        )}
       >
-        <NotificationAPIProvider
-          clientId="24nojpnrc53fkslha0roov05"
-          webPushOptInMessage={false}
-          user={{
-            id: 'mockedUser',
-            email: 'mockedUser@gmail.com'
-          }}
-          client={getMockedClient(
-            '24nojpnrsdc53fha0roov05',
-            'mockedUser',
-            notifications
-          )}
+        <Grid2
+          container
+          justifyContent={'space-between'}
+          sx={{ paddingX: 3, paddingTop: 1 }}
         >
-          <FakeNotification
-            addToState={(notification: InAppNotification) => {
-              setNotifications([...notifications, notification]);
-            }}
-          />
-          <Divider />
+          <Grid2 container>
+            <FakeNotification
+              addToState={(notification: InAppNotification) => {
+                setNotifications([...notifications, notification]);
+              }}
+            />
+          </Grid2>
+          <Grid2 container>
+            <Button
+              onClick={() => setIsMocked(!isMocked)}
+              variant="contained"
+              color="primary"
+            >
+              {isMocked ? '🔴 Mocked' : '🟢 Live'} - Switch to{' '}
+              {isMocked ? 'Live' : 'Mocked'} Mode
+            </Button>
+          </Grid2>
+        </Grid2>
+        <div
+          style={{
+            padding: 24
+          }}
+        >
           <h2>Popup:</h2>
           <NotificationPopup
             count={(n) => {
@@ -60,6 +84,8 @@ const MockedComponents: React.FC = () => {
             count={(n) => {
               return !n.archived;
             }}
+            buttonStyles={{ backgroundColor: '#000' }}
+            iconColor="white"
           />
 
           <Divider />
@@ -79,15 +105,21 @@ const MockedComponents: React.FC = () => {
               return !n.archived;
             }}
           >
-            <Button>Button</Button>
+            <Button variant="contained" color="primary">
+              Button
+            </Button>
           </NotificationCounter>
-          <Divider />
+          <Divider sx={{ marginTop: 3 }} />
           <h2>Feed:</h2>
           <NotificationFeed infiniteScrollHeight={300} pagination="PAGINATED" />
 
-          <Divider />
+          <Divider sx={{ marginTop: 3 }} />
           <h2>Preferences Popup:</h2>
-          <Button onClick={() => setPreferencesPopupVisiblity(true)}>
+          <Button
+            onClick={() => setPreferencesPopupVisiblity(true)}
+            variant="contained"
+            color="primary"
+          >
             Preferences Popup
           </Button>
           <NotificationPreferencesPopup
@@ -99,8 +131,8 @@ const MockedComponents: React.FC = () => {
 
           <h2>Preferences Inline:</h2>
           <NotificationPreferencesInline />
-        </NotificationAPIProvider>
-      </div>
+        </div>
+      </NotificationAPIProvider>
     </>
   );
 };

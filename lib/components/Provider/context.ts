@@ -1,3 +1,4 @@
+import { createContext } from 'react';
 import { NotificationAPIClientSDK } from '@notificationapi/core';
 import {
   BaseDeliveryOptions,
@@ -8,7 +9,6 @@ import {
   InAppNotification,
   UserAccountMetadata
 } from '@notificationapi/core/dist/interfaces';
-import { createContext } from 'react';
 
 export type Context = {
   notifications?: InAppNotification[];

@@ -1,5 +1,5 @@
-import { Preferences } from './Preferences';
 import { useContext } from 'react';
+import { Preferences } from './Preferences';
 import { NotificationAPIContext } from '../Provider/context';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 import { Dialog } from '@mui/material';
@@ -24,7 +24,14 @@ export function NotificationPreferencesPopup(
   };
 
   return (
-    <Dialog open={config.open} onClose={config.onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={config.open}
+      onClose={config.onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{ style: { borderRadius: 8 } }}
+      aria-hidden={!config.open}
+    >
       <Preferences />
       {context.webPushOptInMessage && (
         <div>

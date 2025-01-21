@@ -38,7 +38,11 @@ export const FakeNotification: React.FC<{
   addToState: (notification: InAppNotification) => void;
 }> = ({ addToState }) => {
   return (
-    <Button onClick={() => addToState(generateFakeNotifications({}))}>
+    <Button
+      onClick={() => addToState(generateFakeNotifications({}))}
+      variant="contained"
+      color="primary"
+    >
       Generate a Fake Notification
     </Button>
   );
