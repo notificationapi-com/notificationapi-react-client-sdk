@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { InboxHeader, InboxHeaderProps } from './InboxHeader';
-import VirtualList from 'rc-virtual-list';
 import { Notification } from './Notification';
 import { NotificationPopupProps } from './NotificationPopup';
 import { Liquid } from 'liquidjs';
@@ -9,6 +8,7 @@ import { Filter } from './interface';
 import { NotificationAPIContext } from '../Provider/context';
 import { List, ListItem, Pagination } from '@mui/material';
 import { DefaultEmptyComponent } from './DefaultEmpty';
+import VirtualList from 'rc-virtual-list';
 
 export type InboxProps = {
   pagination: unknown;

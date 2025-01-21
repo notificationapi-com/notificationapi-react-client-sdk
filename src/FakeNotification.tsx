@@ -1,5 +1,4 @@
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
-
 import { faker } from '@faker-js/faker';
 import { Button } from '@mui/material';
 

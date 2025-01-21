@@ -1,12 +1,12 @@
+import { ReactElement, ReactNode } from 'react';
+import { Liquid } from 'liquidjs';
+import { InAppNotification } from '@notificationapi/core/dist/interfaces';
+import { Avatar, Badge, IconButton, Typography } from '@mui/material';
+import { Check } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ReactTimeAgo from 'react-time-ago';
-import { Liquid } from 'liquidjs';
-import { InAppNotification } from '@notificationapi/core/dist/interfaces';
-import { ReactElement, ReactNode } from 'react';
-import { Avatar, Badge, IconButton, Typography } from '@mui/material';
-import { Check } from '@mui/icons-material';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
@@ -20,6 +20,7 @@ const NotificationDiv = styled.div<{
 
   &:hover {
     background: #eee !important;
+    border-radius: 8px !important;
   }
 
   & .notification-archive-button {

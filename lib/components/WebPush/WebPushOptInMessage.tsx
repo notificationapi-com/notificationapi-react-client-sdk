@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import LanguageOutlined from '@mui/icons-material/LanguageOutlined';
 import { NotificationAPIContext } from '../Provider/context';
 import { Alert, Button } from '@mui/material';
+import LanguageOutlined from '@mui/icons-material/LanguageOutlined';
 
 interface WebPushOptInMessageProps {
   hideAfterInteraction?: boolean;

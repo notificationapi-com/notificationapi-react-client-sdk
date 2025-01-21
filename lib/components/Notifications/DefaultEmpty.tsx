@@ -5,9 +5,9 @@ export const DefaultEmptyComponent: ReactNode = (
   <div
     style={{
       width: '100%',
-      position: 'absolute',
-      top: '50%',
-      textAlign: 'center'
+      textAlign: 'center',
+      marginTop: '12px',
+      marginBottom: '4px'
     }}
   >
     <Typography color="textSecondary">You are all caught up!</Typography>

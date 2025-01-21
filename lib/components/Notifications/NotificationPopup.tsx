@@ -1,15 +1,15 @@
+import React, { useContext, useState } from 'react';
 import { Inbox } from './Inbox';
-import NotificationsOutlined from '@mui/icons-material/NotificationsOutlined';
 import { UnreadBadge, UnreadBadgeProps } from './UnreadBadge';
 import { NotificationProps } from './Notification';
 import { NotificationAPIContext } from '../Provider/context';
-import React, { useContext, useState } from 'react';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { InboxHeaderProps } from './InboxHeader';
 import { Filter, Pagination } from './interface';
-import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 import { Divider, IconButton, Popover } from '@mui/material';
+import NotificationsOutlined from '@mui/icons-material/NotificationsOutlined';
+import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 export type NotificationPopupProps = {
   buttonIcon?: React.ReactNode;

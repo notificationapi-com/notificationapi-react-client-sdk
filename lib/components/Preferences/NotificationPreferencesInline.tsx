@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 import { Preferences } from './Preferences';
-import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 import { NotificationAPIContext } from '../Provider/context';
 import { Divider } from '@mui/material';
+import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 type NotificationPreferencesInlineProps = object;
 

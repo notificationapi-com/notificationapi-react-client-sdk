@@ -1,4 +1,4 @@
-import { Divider, IconButton, Typography, Tooltip } from '@mui/material';
+import { Box, Divider, IconButton, Typography, Tooltip } from '@mui/material';
 import { DoneAll, Settings } from '@mui/icons-material';
 
 export type InboxHeaderProps = {
@@ -23,8 +23,7 @@ export const InboxHeader = (props: InboxHeaderProps) => {
         }}
       >
         {titleComponent}
-
-        <div>
+        <Box>
           <Tooltip title="Resolve all">
             <IconButton
               size="small"
@@ -40,7 +39,7 @@ export const InboxHeader = (props: InboxHeaderProps) => {
               <Settings fontSize="small" />
             </IconButton>
           </Tooltip>
-        </div>
+        </Box>
       </div>
       <Divider />
     </>
