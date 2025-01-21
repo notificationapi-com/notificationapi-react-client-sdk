@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { Preferences } from './Preferences';
 import { NotificationAPIContext } from '../Provider/context';
-import { Dialog } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 type NotificationPreferencesPopupProps = {
@@ -27,7 +27,7 @@ export function NotificationPreferencesPopup(
     <Dialog
       open={config.open}
       onClose={config.onClose}
-      maxWidth="md"
+      maxWidth="sm"
       fullWidth
       PaperProps={{
         style: { borderRadius: 8 }
@@ -35,15 +35,18 @@ export function NotificationPreferencesPopup(
       aria-hidden={!config.open}
       scroll="body"
     >
-      <Preferences />
-      {context.webPushOptInMessage && (
-        <div>
-          <WebPushOptInMessage
-            hideAfterInteraction={false}
-            descriptionStyle={{ fontSize: 12 }}
-          />
-        </div>
-      )}
+      <DialogTitle>Notification Preferences</DialogTitle>
+      <DialogContent>
+        <Preferences />
+        {context.webPushOptInMessage && (
+          <div>
+            <WebPushOptInMessage
+              hideAfterInteraction={false}
+              descriptionStyle={{ fontSize: 12 }}
+            />
+          </div>
+        )}
+      </DialogContent>
     </Dialog>
   );
 }

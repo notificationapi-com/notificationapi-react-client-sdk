@@ -15,7 +15,7 @@ export function NotificationPreferencesInline(
   }
   props;
   return (
-    <>
+    <div style={{ borderRadius: 8, border: '1px solid #dcdcdc' }}>
       <Preferences />{' '}
       {context.webPushOptInMessage && (
         <div>
@@ -36,6 +36,6 @@ export function NotificationPreferencesInline(
           />
         </div>
       )}
-    </>
+    </div>
   );
 }

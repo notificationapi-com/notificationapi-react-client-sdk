@@ -38,9 +38,15 @@ export function Preferences() {
       return (
         <Accordion
           key={n.notificationId}
-          style={{ marginBottom: 0, marginTop: 0 }}
+          style={{
+            marginBottom: 0,
+            marginTop: 0
+          }}
         >
-          <AccordionSummary expandIcon={<ExpandMore />}>
+          <AccordionSummary
+            expandIcon={<ExpandMore />}
+            style={{ backgroundColor: '#f0f0f0' }}
+          >
             <Typography variant="body1">{n.title}</Typography>
           </AccordionSummary>
           <AccordionDetails>
