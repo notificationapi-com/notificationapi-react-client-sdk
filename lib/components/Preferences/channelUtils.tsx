@@ -23,18 +23,18 @@ export const getChannelLabel = (c: Channels): string => {
 export const getChannelIcon = (channel: Channels): React.ReactElement => {
   switch (channel) {
     case Channels.EMAIL:
-      return <EmailOutlined fontSize="small" />;
+      return <EmailOutlined fontSize="small" color="primary" />;
     case Channels.SMS:
-      return <Sms fontSize="small" />;
+      return <Sms fontSize="small" color="primary" />;
     case Channels.PUSH:
-      return <PhoneIphone fontSize="small" />;
+      return <PhoneIphone fontSize="small" color="primary" />;
     case Channels.CALL:
-      return <Call fontSize="small" />;
+      return <Call fontSize="small" color="primary" />;
     case Channels.INAPP_WEB:
-      return <NotificationsOutlined fontSize="small" />;
+      return <NotificationsOutlined fontSize="small" color="primary" />;
     case Channels.WEB_PUSH:
-      return <MarkChatUnread fontSize="small" />;
+      return <MarkChatUnread fontSize="small" color="primary" />;
     default:
-      return <EmailOutlined fontSize="small" />;
+      return <EmailOutlined fontSize="small" color="primary" />;
   }
 };
