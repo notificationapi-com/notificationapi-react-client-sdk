@@ -22,6 +22,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
   const [openPreferences, setOpenPreferences] = useState(false);
   const [open, setOpen] = useState(false);
   const context = useContext(NotificationAPIContext);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   if (!context) {
     return null;
@@ -67,8 +68,9 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     }
   };
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setOpen(!open);
+    setAnchorEl(event?.currentTarget);
     if (open) {
       context.markAsOpened();
     }
@@ -80,7 +82,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
         position: 'fixed',
         right: config.offsetX,
         bottom: config.offsetY,
-        zIndex: 9999
+        zIndex: 999
       }}
     >
       <div
@@ -96,12 +98,16 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
       </div>
       <Popover
         open={open}
-        anchorReference="anchorPosition"
-        anchorPosition={{
-          top: window.innerHeight / 2,
-          left: window.innerWidth / 2
+        anchorEl={anchorEl}
+        anchorReference="anchorEl"
+        anchorOrigin={{
+          horizontal: 'center',
+          vertical: 'top'
         }}
-        transformOrigin={{ horizontal: 'center', vertical: 'center' }}
+        transformOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
         onClose={() => setOpen(false)}
         slotProps={{
           paper: {
