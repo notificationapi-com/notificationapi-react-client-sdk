@@ -121,6 +121,8 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
             }}
           />
 
+          <Divider sx={{ marginTop: 3 }} />
+
           <h2>Preferences Inline:</h2>
           <NotificationPreferencesInline />
         </NotificationAPIProvider>
