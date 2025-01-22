@@ -45,7 +45,11 @@ export function Preferences() {
         >
           <AccordionSummary
             expandIcon={<ExpandMore />}
-            style={{ backgroundColor: '#f0f0f0' }}
+            style={{
+              backgroundColor: '#f0f0f0',
+              flexDirection: 'row-reverse',
+              gap: 16
+            }}
           >
             <Typography variant="body1">{n.title}</Typography>
           </AccordionSummary>
@@ -66,7 +70,13 @@ export function Preferences() {
                       marginTop: 12
                     }}
                   >
-                    <AccordionSummary expandIcon={<ExpandMore />}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMore />}
+                      style={{
+                        flexDirection: 'row-reverse',
+                        gap: 16
+                      }}
+                    >
                       <Typography variant="body1">{sn.title}</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
