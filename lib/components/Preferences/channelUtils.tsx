@@ -1,12 +1,11 @@
 import {
-  MailOutlined,
-  MessageOutlined,
-  MobileOutlined,
-  PhoneOutlined,
-  BellOutlined,
-  ChromeOutlined
-} from '@ant-design/icons';
-import { blue } from '@ant-design/colors';
+  Call,
+  EmailOutlined,
+  MarkChatUnread,
+  NotificationsOutlined,
+  PhoneIphone,
+  Sms
+} from '@mui/icons-material';
 import { Channels } from '../Notifications/interface';
 
 export const getChannelLabel = (c: Channels): string => {
@@ -24,18 +23,18 @@ export const getChannelLabel = (c: Channels): string => {
 export const getChannelIcon = (channel: Channels): React.ReactElement => {
   switch (channel) {
     case Channels.EMAIL:
-      return <MailOutlined style={{ color: blue.primary }} />;
+      return <EmailOutlined fontSize="small" color="primary" />;
     case Channels.SMS:
-      return <MessageOutlined style={{ color: blue.primary }} />;
+      return <Sms fontSize="small" color="primary" />;
     case Channels.PUSH:
-      return <MobileOutlined style={{ color: blue.primary }} />;
+      return <PhoneIphone fontSize="small" color="primary" />;
     case Channels.CALL:
-      return <PhoneOutlined style={{ color: blue.primary }} />;
+      return <Call fontSize="small" color="primary" />;
     case Channels.INAPP_WEB:
-      return <BellOutlined style={{ color: blue.primary }} />;
+      return <NotificationsOutlined fontSize="small" color="primary" />;
     case Channels.WEB_PUSH:
-      return <ChromeOutlined style={{ color: blue.primary }} />;
+      return <MarkChatUnread fontSize="small" color="primary" />;
     default:
-      return <MailOutlined style={{ color: blue.primary }} />;
+      return <EmailOutlined fontSize="small" color="primary" />;
   }
 };

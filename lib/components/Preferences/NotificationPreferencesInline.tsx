@@ -1,8 +1,8 @@
-import { Divider } from 'antd';
-import { Preferences } from './Preferences';
-import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 import { useContext } from 'react';
+import { Preferences } from './Preferences';
 import { NotificationAPIContext } from '../Provider/context';
+import { Divider } from '@mui/material';
+import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 type NotificationPreferencesInlineProps = object;
 
@@ -15,7 +15,7 @@ export function NotificationPreferencesInline(
   }
   props;
   return (
-    <>
+    <div style={{ borderRadius: 8, border: '1px solid #dcdcdc' }}>
       <Preferences />{' '}
       {context.webPushOptInMessage && (
         <div>
@@ -36,6 +36,6 @@ export function NotificationPreferencesInline(
           />
         </div>
       )}
-    </>
+    </div>
   );
 }

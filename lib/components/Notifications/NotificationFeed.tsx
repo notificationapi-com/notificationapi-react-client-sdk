@@ -5,13 +5,12 @@ import { NotificationAPIContext } from '../Provider/context';
 import { InboxHeaderProps } from './InboxHeader';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
-import { Filter, ImageShape, Pagination } from './interface';
-import { Divider } from 'antd';
+import { Filter, Pagination } from './interface';
+import Divider from '@mui/material/Divider';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
-import { GlobalOutlined } from '@ant-design/icons';
+import Language from '@mui/icons-material/Language';
 
 export type NotificationFeedProps = {
-  imageShape?: keyof typeof ImageShape;
   pagination?: keyof typeof Pagination;
   pageSize?: number;
   pagePosition?: 'top' | 'bottom';
@@ -45,9 +44,8 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
   }
 
   const config: Required<NotificationFeedProps> = {
-    imageShape: props.imageShape || 'circle',
     pagination: props.pagination || 'INFINITE_SCROLL',
-    pageSize: props.pageSize || 10,
+    pageSize: props.pageSize || 5,
     pagePosition: props.pagePosition || 'top',
     style: props.style || {},
     filter: props.filter || Filter.ALL,
@@ -69,9 +67,11 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
   return (
     <div
       style={{
-        padding: 12,
+        padding: '0 12px',
         boxSizing: 'border-box',
+        borderRadius: 8,
         background: '#fff',
+        border: '1px solid #dcdcdc',
         ...props.style
       }}
     >
@@ -79,7 +79,6 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         maxHeight={config.infiniteScrollHeight}
         pagination={config.pagination}
         filter={config.filter}
-        imageShape={config.imageShape}
         pageSize={config.pageSize}
         pagePosition={config.pagePosition}
         notificationRenderer={config.renderers.notification}
@@ -91,9 +90,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
             <Divider style={{ margin: '10px 0' }} />
             <WebPushOptInMessage
               hideAfterInteraction={true}
-              icon={
-                <GlobalOutlined type="text" style={{ marginLeft: '9px' }} />
-              }
+              icon={<Language type="text" style={{ marginLeft: '9px' }} />}
               descriptionStyle={{
                 flexDirection: 'column', // Stack the elements vertically
                 justifyContent: 'flex-start', // Align items to the left

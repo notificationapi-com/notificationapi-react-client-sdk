@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { Alert, Button } from 'antd';
-import { GlobalOutlined } from '@ant-design/icons';
 import { NotificationAPIContext } from '../Provider/context';
+import { Alert, Button } from '@mui/material';
+import LanguageOutlined from '@mui/icons-material/LanguageOutlined';
 
 interface WebPushOptInMessageProps {
   hideAfterInteraction?: boolean;
@@ -68,45 +68,42 @@ const WebPushOptInMessage: React.FC<WebPushOptInMessageProps> = ({
 
   return (
     <Alert
-      type="info"
-      showIcon
-      icon={customIcons ?? <GlobalOutlined type="text" />}
+      severity="info"
+      icon={customIcons ?? <LanguageOutlined type="text" />}
       style={alertContainerStyle}
-      description={
-        <div style={descriptionStyle}>
-          <span>
-            {customDescription ??
-              `Would you like to enable web push notifications to stay updated?`}
-          </span>
-          <div style={buttonContainerStyle}>
-            <Button
-              type="primary"
-              style={yesButtonStyle}
-              onClick={() => {
-                if (hideAfterInteraction) {
-                  localStorage.setItem('hideWebPushOptInMessage', 'true');
-                }
-                context.setWebPushOptIn(true);
-                context.setWebPushOptInMessage(false);
-              }}
-            >
-              Yes
-            </Button>
-            <Button
-              style={cancelButtonStyle}
-              onClick={() => {
-                if (hideAfterInteraction) {
-                  localStorage.setItem('hideWebPushOptInMessage', 'true');
-                }
-                context.setWebPushOptInMessage(false);
-              }}
-            >
-              No
-            </Button>
-          </div>
+    >
+      <div style={descriptionStyle}>
+        <span>
+          {customDescription ??
+            `Would you like to enable web push notifications to stay updated?`}
+        </span>
+        <div style={buttonContainerStyle}>
+          <Button
+            style={yesButtonStyle}
+            onClick={() => {
+              if (hideAfterInteraction) {
+                localStorage.setItem('hideWebPushOptInMessage', 'true');
+              }
+              context.setWebPushOptIn(true);
+              context.setWebPushOptInMessage(false);
+            }}
+          >
+            Yes
+          </Button>
+          <Button
+            style={cancelButtonStyle}
+            onClick={() => {
+              if (hideAfterInteraction) {
+                localStorage.setItem('hideWebPushOptInMessage', 'true');
+              }
+              context.setWebPushOptInMessage(false);
+            }}
+          >
+            No
+          </Button>
         </div>
-      }
-    />
+      </div>
+    </Alert>
   );
 };
 

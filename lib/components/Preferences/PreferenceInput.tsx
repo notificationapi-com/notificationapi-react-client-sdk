@@ -1,4 +1,3 @@
-import { Divider, Radio, Space, Switch, Typography } from 'antd';
 import {
   BaseDeliveryOptions,
   DeliveryOptionsForEmail,
@@ -7,7 +6,15 @@ import {
 } from '@notificationapi/core/dist/interfaces';
 import { getChannelIcon, getChannelLabel } from './channelUtils';
 import { Channels } from '../Notifications/interface';
-const Text = Typography.Text;
+import {
+  Divider,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Stack,
+  Switch,
+  Typography
+} from '@mui/material';
 
 const sortChannels = (a: Channels, b: Channels) => {
   const order = ['EMAIL', 'INAPP_WEB', 'SMS', 'CALL', 'PUSH', 'WEB_PUSH'];
@@ -86,13 +93,17 @@ export const PreferenceInput = ({
 
           let selector;
           if (deliveries.length === 1) {
-            selector = <Text>{getDeliveryLabel(preference.delivery)}</Text>;
+            selector = (
+              <Typography variant="body1">
+                {getDeliveryLabel(preference.delivery)}
+              </Typography>
+            );
           } else if (deliveries.length === 2 && deliveries.includes('off')) {
             selector = (
               <Switch
                 checked={preference.delivery !== 'off'}
-                onChange={(state) => {
-                  if (state) {
+                onChange={(_state, checked) => {
+                  if (checked) {
                     const delivery = deliveries.find((d) => d !== 'off')!;
                     updateDelivery(
                       notification.notificationId,
@@ -116,8 +127,8 @@ export const PreferenceInput = ({
               <>
                 <Switch
                   checked={preference.delivery !== 'off'}
-                  onChange={(state) => {
-                    if (state) {
+                  onChange={(_state, checked) => {
+                    if (checked) {
                       const delivery = deliveries
                         .sort(sortDeliveries)
                         .find((d) => d !== 'off')!;
@@ -148,30 +159,38 @@ export const PreferenceInput = ({
                 >
                   <div>
                     <div style={{ marginTop: 20 }}>
-                      <Text strong>Choose frequency:</Text>
+                      <Typography variant="body1" fontWeight={600}>
+                        Choose frequency:
+                      </Typography>
                     </div>
-                    <Radio.Group
+                    <RadioGroup
                       value={preference.delivery}
                       onChange={(e) => {
                         updateDelivery(
                           notification.notificationId,
                           channel,
-                          e.target.value,
+                          e.target.value as
+                            | DeliveryOptionsForEmail
+                            | DeliveryOptionsForInappWeb
+                            | BaseDeliveryOptions,
                           subNotificationId
                         );
                       }}
                     >
-                      <Space direction="vertical" style={{ paddingTop: 10 }}>
+                      <Stack direction="column" style={{ paddingTop: 10 }}>
                         {deliveries
                           .filter((d) => d !== 'off')
                           .sort(sortDeliveries)
                           .map((d) => (
-                            <Radio value={d} key={d}>
-                              <Text>{getDeliveryLabel(d)}</Text>
-                            </Radio>
+                            <FormControlLabel
+                              control={<Radio />}
+                              value={d}
+                              key={d}
+                              label={getDeliveryLabel(d)}
+                            />
                           ))}
-                      </Space>
-                    </Radio.Group>
+                      </Stack>
+                    </RadioGroup>
                   </div>
                 </div>
               </>
@@ -180,18 +199,24 @@ export const PreferenceInput = ({
           return (
             <div key={channel}>
               <div
-                key={channel}
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
                   flexWrap: 'wrap',
-                  marginTop: i === 0 ? 12 : 0,
-                  marginBottom: i === notification.channels.length - 1 ? 12 : 0
+                  marginTop: i === 0 ? 0 : 12,
+                  marginBottom: i === notification.channels.length - 1 ? 0 : 12
                 }}
               >
-                <Text>
-                  {icon} {name}
-                </Text>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8
+                  }}
+                >
+                  {icon}
+                  <Typography variant="body1">{name}</Typography>
+                </div>
                 {selector}
               </div>
               {i !== notification.channels.length - 1 && <Divider />}

@@ -1,29 +1,32 @@
-import { Empty, List } from 'antd';
+import React, { useContext, useState } from 'react';
 import { InboxHeader, InboxHeaderProps } from './InboxHeader';
-import VirtualList from 'rc-virtual-list';
 import { Notification } from './Notification';
-
-import { useContext } from 'react';
 import { NotificationPopupProps } from './NotificationPopup';
 import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
-import { Filter, ImageShape, Pagination } from './interface';
+import { Filter } from './interface';
 import { NotificationAPIContext } from '../Provider/context';
+import { List, ListItem, Pagination } from '@mui/material';
+import { DefaultEmptyComponent } from './DefaultEmpty';
+import VirtualList from 'rc-virtual-list';
 
 export type InboxProps = {
-  pagination: keyof typeof Pagination;
+  pagination: unknown;
   maxHeight: number;
   filter: NotificationPopupProps['filter'];
-  imageShape: keyof typeof ImageShape;
   pageSize: number;
   pagePosition: NotificationPopupProps['pagePosition'];
   notificationRenderer:
     | ((notification: InAppNotification[]) => React.ReactNode)
     | undefined;
   header?: InboxHeaderProps;
+  empty?: React.ReactNode;
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
+  // pagination
+  const [page, setPage] = useState(1);
+
   const context = useContext(NotificationAPIContext);
   if (!context) {
     return null;
@@ -74,25 +77,31 @@ export const Inbox: React.FC<InboxProps> = (props) => {
     }
   );
 
+  const emptyComponent = props.empty ?? DefaultEmptyComponent;
+
+  const handlePageChange = (
+    _event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
+    if (value >= Math.floor(context.notifications!.length / props.pageSize)) {
+      context.loadNotifications();
+    }
+    setPage(value);
+  };
+
   return (
     <div>
       {props.pagination === 'INFINITE_SCROLL' ? (
         <List
-          header={
+          subheader={
             <InboxHeader
               title={props.header?.title}
               button1ClickHandler={props.header?.button1ClickHandler}
               button2ClickHandler={props.header?.button2ClickHandler}
             />
           }
-          dataSource={orderedNotifications}
         >
-          {orderedNotifications.length === 0 && (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="You are caught up!"
-            />
-          )}
+          {orderedNotifications.length === 0 && emptyComponent}
           <VirtualList
             data={orderedNotifications}
             height={props.maxHeight}
@@ -112,60 +121,55 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             }}
           >
             {(n) => (
-              <List.Item key={n[0].id} style={{ padding: 0 }}>
+              <ListItem key={n[0].id} style={{ padding: 0 }}>
                 <Notification
-                  imageShape={props.imageShape}
                   markAsArchived={context.markAsArchived}
                   notifications={n}
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
                 />
-              </List.Item>
+              </ListItem>
             )}
           </VirtualList>
         </List>
       ) : (
         <List
-          header={
+          subheader={
             <InboxHeader
               title={props.header?.title}
               button1ClickHandler={props.header?.button1ClickHandler}
               button2ClickHandler={props.header?.button2ClickHandler}
             />
           }
-          dataSource={orderedNotifications}
-          renderItem={(n) => (
-            <List.Item key={n[0].id} style={{ padding: 0 }}>
-              <Notification
-                imageShape={props.imageShape}
-                markAsArchived={context.markAsArchived}
-                notifications={n}
-                markAsClicked={context.markAsClicked}
-                renderer={props.notificationRenderer}
-              />
-            </List.Item>
-          )}
-          pagination={{
-            pageSize: props.pageSize,
-            align: 'center',
-            position: props.pagePosition,
-            showSizeChanger: false,
-            simple: true,
-            onChange(page, pageSize) {
-              if (
-                page >= Math.floor(context.notifications!.length / pageSize)
-              ) {
-                context.loadNotifications();
-              }
-            }
-          }}
         >
-          {orderedNotifications.length === 0 && (
-            <Empty
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="You are caught up!"
+          {orderedNotifications
+            .filter((_n, i) => {
+              if (props.pagination === 'PAGINATED') {
+                return (
+                  i >= (page - 1) * props.pageSize && i < page * props.pageSize
+                );
+              } else {
+                return true;
+              }
+            })
+            .map((n) => (
+              <ListItem key={n[0].id} style={{ padding: 0 }}>
+                <Notification
+                  markAsArchived={context.markAsArchived}
+                  notifications={n}
+                  markAsClicked={context.markAsClicked}
+                  renderer={props.notificationRenderer}
+                />
+              </ListItem>
+            ))}
+          {orderedNotifications.length > 0 && (
+            <Pagination
+              count={Math.ceil(orderedNotifications.length / props.pageSize)}
+              page={page}
+              onChange={handlePageChange}
             />
           )}
+          {orderedNotifications.length === 0 && emptyComponent}
         </List>
       )}
     </div>

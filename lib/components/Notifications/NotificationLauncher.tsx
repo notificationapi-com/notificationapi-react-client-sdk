@@ -1,25 +1,28 @@
-import { Button, Divider, Popover } from 'antd';
+import { useContext, useState } from 'react';
 import { Inbox } from './Inbox';
-import { BellOutlined, GlobalOutlined } from '@ant-design/icons';
 import { UnreadBadge } from './UnreadBadge';
 import { NotificationPopupProps } from './NotificationPopup';
-import { useContext, useState } from 'react';
 import { NotificationAPIContext } from '../Provider/context';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { Position } from './interface';
+import { LanguageOutlined, NotificationsOutlined } from '@mui/icons-material';
+import { Divider, IconButton, Popover } from '@mui/material';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 
 type NotificationLaucherProps = NotificationPopupProps & {
   position?: keyof typeof Position;
   offsetX?: number | string;
   offsetY?: number | string;
+  buttonStyles?: React.CSSProperties;
 };
 
 export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
   props
 ) => {
   const [openPreferences, setOpenPreferences] = useState(false);
+  const [open, setOpen] = useState(false);
   const context = useContext(NotificationAPIContext);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   if (!context) {
     return null;
@@ -27,22 +30,21 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
 
   const config: Required<NotificationLaucherProps> = {
     buttonIcon: props.buttonIcon || (
-      <BellOutlined
+      <NotificationsOutlined
         style={{
-          fontSize:
-            props.buttonIconSize ||
-            (props.buttonWidth ? props.buttonWidth / 2 : 20),
+          fontSize: props.buttonIconSize || 20,
           color: props.iconColor || '#000000'
         }}
       />
     ),
-    buttonWidth: props.buttonWidth || 40,
-    buttonHeight: props.buttonHeight || 40,
+    buttonStyles: {
+      width: 40,
+      height: 40,
+      ...props.buttonStyles
+    },
     popupWidth: props.popupWidth || 400,
     popupHeight: props.popupHeight || 600,
-    buttonIconSize:
-      props.buttonIconSize || (props.buttonWidth ? props.buttonWidth / 2 : 20),
-    imageShape: props.imageShape || 'circle',
+    buttonIconSize: props.buttonIconSize || 20,
     iconColor: props.iconColor || '#000000',
     pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
@@ -66,83 +68,79 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     }
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setOpen(!open);
+    setAnchorEl(event?.currentTarget);
+    if (open) {
+      context.markAsOpened();
+    }
+  };
+
   return (
     <div
       style={{
         position: 'fixed',
         right: config.offsetX,
         bottom: config.offsetY,
-        zIndex: 9999
+        zIndex: 999
       }}
     >
-      <Popover
-        autoAdjustOverflow
-        trigger="click"
-        content={
-          <>
-            <Inbox
-              maxHeight={500}
-              pagination={config.pagination}
-              filter={config.filter}
-              imageShape={config.imageShape}
-              pageSize={config.pageSize}
-              pagePosition={config.pagePosition}
-              notificationRenderer={config.renderers.notification}
-              header={config.header}
-            />
-            {context.webPushOptInMessage &&
-              localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
-                <div>
-                  <Divider style={{ margin: '10px 0' }} />
-                  <WebPushOptInMessage
-                    hideAfterInteraction={true}
-                    icon={
-                      <GlobalOutlined
-                        type="text"
-                        style={{ marginLeft: '9px' }}
-                      />
-                    }
-                    alertContainerStyle={{ maxWidth: '345px' }}
-                  />
-                </div>
-              )}
-          </>
-        }
-        arrow={false}
-        overlayStyle={{
-          padding: '0 16px',
-          minWidth: config.popupWidth
+      <div
+        style={{
+          display: 'inline-block'
         }}
-        onOpenChange={(visible) => {
-          if (visible) {
-            context.markAsOpened();
+      >
+        <UnreadBadge {...props.unreadBadgeProps} count={config.count}>
+          <IconButton style={config.buttonStyles} onClick={handleClick}>
+            {config.buttonIcon}
+          </IconButton>
+        </UnreadBadge>
+      </div>
+      <Popover
+        open={open}
+        anchorEl={anchorEl}
+        anchorReference="anchorEl"
+        anchorOrigin={{
+          horizontal: 'center',
+          vertical: 'top'
+        }}
+        transformOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        onClose={() => setOpen(false)}
+        slotProps={{
+          paper: {
+            style: {
+              width: config.popupWidth,
+              padding: '0 16px',
+              borderRadius: 8
+            }
           }
         }}
       >
-        <div
-          style={{
-            display: 'inline-block'
-          }}
-        >
-          <UnreadBadge
-            {...props.unreadBadgeProps}
-            style={{
-              top: 5,
-              right: 5
-            }}
-            count={config.count}
-          >
-            <Button
-              icon={config.buttonIcon}
-              style={{
-                width: config.buttonWidth,
-                height: config.buttonHeight
-              }}
-              shape="circle"
-              type="default"
-            />
-          </UnreadBadge>
-        </div>
+        <Inbox
+          maxHeight={500}
+          pagination={config.pagination}
+          filter={config.filter}
+          pageSize={config.pageSize}
+          pagePosition={config.pagePosition}
+          notificationRenderer={config.renderers.notification}
+          header={config.header}
+        />
+        {context.webPushOptInMessage &&
+          localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
+            <div>
+              <Divider style={{ margin: '10px 0' }} />
+              <WebPushOptInMessage
+                hideAfterInteraction={true}
+                icon={
+                  <LanguageOutlined type="text" style={{ marginLeft: '9px' }} />
+                }
+                alertContainerStyle={{ maxWidth: '345px' }}
+              />
+            </div>
+          )}
       </Popover>
       <NotificationPreferencesPopup
         open={openPreferences}

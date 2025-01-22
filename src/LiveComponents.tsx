@@ -8,10 +8,17 @@ import {
   NotificationPreferencesPopup,
   NotificationPreferencesInline
 } from '../lib/main';
-import { Divider, Button } from 'antd';
-import { MyButton } from './MyButton';
+import { Button, Divider, TextField, Grid2 } from '@mui/material';
 
-const LiveComponents: React.FC = () => {
+interface LiveComponentsProps {
+  isMocked: boolean;
+  setIsMocked: (isMocked: boolean) => void;
+}
+
+const LiveComponents: React.FC<LiveComponentsProps> = ({
+  isMocked,
+  setIsMocked
+}) => {
   const [clientId, setClientId] = useState('24nojpnrsdc53fkslha0roov05');
   const [userId, setUserId] = useState('sahand');
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
@@ -19,25 +26,41 @@ const LiveComponents: React.FC = () => {
 
   return (
     <>
-      <div>
-        <label>Client ID:</label>
-        <input
-          type="text"
-          value={clientId}
-          onChange={(e) => setClientId(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>User ID:</label>
-        <input
-          type="text"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
-      </div>
+      <Grid2
+        container
+        justifyContent={'space-between'}
+        sx={{ paddingX: 3, paddingTop: 1 }}
+      >
+        <Grid2 container spacing={2}>
+          <TextField
+            label="Client ID"
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
+            variant="outlined"
+            size="small"
+          />
+          <TextField
+            label="User ID"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            variant="outlined"
+            size="small"
+          />
+        </Grid2>
+
+        <Grid2 container>
+          <Button
+            onClick={() => setIsMocked(!isMocked)}
+            variant="contained"
+            color="primary"
+          >
+            {isMocked ? '🔴 Mocked' : '🟢 Live'} - Switch to{' '}
+            {isMocked ? 'Live' : 'Mocked'} Mode
+          </Button>
+        </Grid2>
+      </Grid2>
       <div
         style={{
-          background: '#f5f5f5',
           padding: 24
         }}
       >
@@ -53,7 +76,10 @@ const LiveComponents: React.FC = () => {
 
           <h2>Launcher:</h2>
           <p>Look at the bottom right :)</p>
-          <NotificationLauncher />
+          <NotificationLauncher
+            buttonStyles={{ backgroundColor: '#000' }}
+            iconColor="white"
+          />
 
           <Divider />
 
@@ -68,18 +94,24 @@ const LiveComponents: React.FC = () => {
               return n.notificationId === 'conversion_failure' && !n.archived;
             }}
           >
-            <MyButton />
+            <Button variant="contained" color="primary">
+              Button
+            </Button>
           </NotificationCounter>
 
-          <Divider />
+          <Divider sx={{ marginTop: 3 }} />
 
           <h2>Feed:</h2>
           <NotificationFeed infiniteScrollHeight={300} />
 
-          <Divider />
+          <Divider sx={{ marginTop: 3 }} />
 
           <h2>Preferences Popup:</h2>
-          <Button onClick={() => setPreferencesPopupVisiblity(true)}>
+          <Button
+            onClick={() => setPreferencesPopupVisiblity(true)}
+            variant="contained"
+            color="primary"
+          >
             Preferences Popup
           </Button>
           <NotificationPreferencesPopup
@@ -89,12 +121,10 @@ const LiveComponents: React.FC = () => {
             }}
           />
 
+          <Divider sx={{ marginTop: 3 }} />
+
           <h2>Preferences Inline:</h2>
           <NotificationPreferencesInline />
-
-          <Divider />
-
-          <MyButton />
         </NotificationAPIProvider>
       </div>
     </>

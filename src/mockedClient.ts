@@ -4,7 +4,7 @@ import {
   InAppNotification
 } from '@notificationapi/core/dist/interfaces';
 
-export const getMarkedClient = (
+export const getMockedClient = (
   clientId: string,
   userId: string,
   inAppNotification: InAppNotification[]
