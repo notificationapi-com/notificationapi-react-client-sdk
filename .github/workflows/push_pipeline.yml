@@ -40,15 +40,25 @@ jobs:
       - name: Build Project
         run: npm run build
 
-      - name: Send Slack Notification (Pre-Publish)
+      - name: Send Slack Success Notification (Pre-Publish)
+        if: success()
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           fields: repo,message,action,took
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        if: always() # Send notifications even if the job fails or is canceled.
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SUCCESS_WEBHOOK_URL }}
+
+      - name: Send Slack Failure Notification (Pre-Publish)
+        if: failure() || cancelled()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,action,took
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_FAILED_WEBHOOK_URL }}      
 
       - name: Publish to npm
         id: publish
@@ -59,7 +69,7 @@ jobs:
           NODE_ENV: production
 
       - name: Send Slack Notification on Success
-        if: steps.publish.outputs.type != 'none' && success()
+        if: success()
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
@@ -70,7 +80,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_SUCCESS_WEBHOOK_URL }}
 
       - name: Send Slack Notification on Failure
-        if: steps.publish.outputs.type != 'none' && (failure() || cancelled())
+        if: failure() || cancelled()
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
