@@ -20,7 +20,7 @@ export type UnreadBadgeProps = {
     left?: number;
   };
   fontColor?: string;
-  bubleColor?: string;
+  bubbleColor?: string;
 };
 
 export const UnreadBadge: React.FunctionComponent<
@@ -57,7 +57,7 @@ export const UnreadBadge: React.FunctionComponent<
       showZero={props.showZero}
       sx={{
         '& .MuiBadge-badge': {
-          backgroundColor: props.bubleColor || '#d32f2f',
+          backgroundColor: props.bubbleColor || '#d32f2f',
           color: props.fontColor || '#FFF'
         }
       }}
