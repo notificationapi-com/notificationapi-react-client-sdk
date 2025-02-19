@@ -19,6 +19,8 @@ export type UnreadBadgeProps = {
     bottom?: number;
     left?: number;
   };
+  fontColor?: string;
+  bubbleColor?: string;
 };
 
 export const UnreadBadge: React.FunctionComponent<
@@ -53,7 +55,12 @@ export const UnreadBadge: React.FunctionComponent<
       max={props.max}
       variant={props.dot ? 'dot' : 'standard'}
       showZero={props.showZero}
-      color="error"
+      sx={{
+        '& .MuiBadge-badge': {
+          backgroundColor: props.bubbleColor || '#d32f2f',
+          color: props.fontColor || '#FFF'
+        }
+      }}
       slotProps={{
         badge: {
           style: {
