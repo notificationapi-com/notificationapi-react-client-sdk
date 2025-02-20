@@ -29,6 +29,12 @@ export type NotificationPopupProps = {
     notification?: NotificationProps['renderer'];
   };
   header?: InboxHeaderProps;
+  popoverPosition?: {
+    anchorOrigin?: {
+      vertical: 'top' | 'center' | 'bottom';
+      horizontal: 'left' | 'center' | 'right';
+    };
+  };
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
@@ -60,7 +66,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     iconColor: props.iconColor || '#000000',
     pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
-    pagePosition: props.pagePosition || 'top',
+    pagePosition: props.pagePosition || 'bottom',
     popupZIndex: props.popupZIndex || 1030,
     unreadBadgeProps: props.unreadBadgeProps ?? {},
     count: props.count || 'COUNT_UNOPENED_NOTIFICATIONS',
@@ -74,6 +80,12 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     },
     renderers: {
       notification: props.renderers?.notification
+    },
+    popoverPosition: {
+      anchorOrigin: {
+        vertical: props.popoverPosition?.anchorOrigin?.vertical ?? 'top',
+        horizontal: props.popoverPosition?.anchorOrigin?.horizontal ?? 'left'
+      }
     }
   };
 
@@ -111,12 +123,14 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
           }
         }}
         aria-hidden={!anchorEl}
+        anchorOrigin={config.popoverPosition.anchorOrigin}
       >
         <div
           style={{
             width: config.popupWidth,
             padding: '0 16px',
-            zIndex: props.popupZIndex
+            zIndex: props.popupZIndex,
+            height: config.popupHeight
           }}
         >
           <Inbox

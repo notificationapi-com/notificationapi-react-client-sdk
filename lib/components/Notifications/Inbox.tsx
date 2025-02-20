@@ -142,6 +142,13 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             />
           }
         >
+          {props.pagePosition === 'top' && orderedNotifications.length > 0 && (
+            <Pagination
+              count={Math.ceil(orderedNotifications.length / props.pageSize)}
+              page={page}
+              onChange={handlePageChange}
+            />
+          )}
           {orderedNotifications
             .filter((_n, i) => {
               if (props.pagination === 'PAGINATED') {
@@ -162,13 +169,14 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                 />
               </ListItem>
             ))}
-          {orderedNotifications.length > 0 && (
-            <Pagination
-              count={Math.ceil(orderedNotifications.length / props.pageSize)}
-              page={page}
-              onChange={handlePageChange}
-            />
-          )}
+          {props.pagePosition === 'bottom' &&
+            orderedNotifications.length > 0 && (
+              <Pagination
+                count={Math.ceil(orderedNotifications.length / props.pageSize)}
+                page={page}
+                onChange={handlePageChange}
+              />
+            )}
           {orderedNotifications.length === 0 && emptyComponent}
         </List>
       )}
