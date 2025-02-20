@@ -38,6 +38,7 @@ export type NotificationProps = {
   markAsArchived: (ids: string[] | 'ALL') => void;
   markAsClicked: (ids: string[]) => void;
   renderer?: (notification: InAppNotification[]) => ReactNode;
+  imageShape?: 'circle' | 'square';
 };
 
 export const Notification = (props: NotificationProps) => {
@@ -110,6 +111,7 @@ export const Notification = (props: NotificationProps) => {
             marginRight: 8,
             marginLeft: 12
           }}
+          variant={props.imageShape === 'circle' ? 'circular' : 'rounded'}
         />
       </div>
 

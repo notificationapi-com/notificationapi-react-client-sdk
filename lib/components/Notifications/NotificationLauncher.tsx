@@ -65,6 +65,12 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     },
     renderers: {
       notification: props.renderers?.notification
+    },
+    popoverPosition: {
+      anchorOrigin: {
+        vertical: props.popoverPosition?.anchorOrigin?.vertical ?? 'top',
+        horizontal: props.popoverPosition?.anchorOrigin?.horizontal ?? 'left'
+      }
     }
   };
 

@@ -21,6 +21,7 @@ export type InboxProps = {
     | undefined;
   header?: InboxHeaderProps;
   empty?: React.ReactNode;
+  imageShape?: 'circle' | 'square';
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
@@ -127,6 +128,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   notifications={n}
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
+                  imageShape={props.imageShape}
                 />
               </ListItem>
             )}
@@ -142,6 +144,13 @@ export const Inbox: React.FC<InboxProps> = (props) => {
             />
           }
         >
+          {props.pagePosition === 'top' && orderedNotifications.length > 0 && (
+            <Pagination
+              count={Math.ceil(orderedNotifications.length / props.pageSize)}
+              page={page}
+              onChange={handlePageChange}
+            />
+          )}
           {orderedNotifications
             .filter((_n, i) => {
               if (props.pagination === 'PAGINATED') {
@@ -159,16 +168,18 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   notifications={n}
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
+                  imageShape={props.imageShape}
                 />
               </ListItem>
             ))}
-          {orderedNotifications.length > 0 && (
-            <Pagination
-              count={Math.ceil(orderedNotifications.length / props.pageSize)}
-              page={page}
-              onChange={handlePageChange}
-            />
-          )}
+          {props.pagePosition === 'bottom' &&
+            orderedNotifications.length > 0 && (
+              <Pagination
+                count={Math.ceil(orderedNotifications.length / props.pageSize)}
+                page={page}
+                onChange={handlePageChange}
+              />
+            )}
           {orderedNotifications.length === 0 && emptyComponent}
         </List>
       )}
