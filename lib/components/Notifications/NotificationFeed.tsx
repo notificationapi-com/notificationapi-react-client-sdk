@@ -21,6 +21,7 @@ export type NotificationFeedProps = {
     notification?: NotificationProps['renderer'];
   };
   header?: InboxHeaderProps;
+  imageShape?: 'circle' | 'square';
 };
 
 export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
@@ -61,7 +62,8 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         props.header?.button1ClickHandler ?? context.markAsArchived,
       button2ClickHandler:
         props.header?.button2ClickHandler ?? (() => setOpenPreferences(true))
-    }
+    },
+    imageShape: props.imageShape || 'circle'
   };
 
   return (
@@ -83,6 +85,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         pagePosition={config.pagePosition}
         notificationRenderer={config.renderers.notification}
         header={config.header}
+        imageShape={config.imageShape}
       />
       {context.webPushOptInMessage &&
         localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (

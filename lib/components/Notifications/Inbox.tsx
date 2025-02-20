@@ -21,6 +21,7 @@ export type InboxProps = {
     | undefined;
   header?: InboxHeaderProps;
   empty?: React.ReactNode;
+  imageShape?: 'circle' | 'square';
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
@@ -127,6 +128,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   notifications={n}
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
+                  imageShape={props.imageShape}
                 />
               </ListItem>
             )}
@@ -166,6 +168,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   notifications={n}
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
+                  imageShape={props.imageShape}
                 />
               </ListItem>
             ))}
