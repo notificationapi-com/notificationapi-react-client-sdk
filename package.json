@@ -3,6 +3,10 @@
   "private": false,
   "version": "1.0.3",
   "type": "module",
+  "overrides": {
+    "esbuild": "^0.25.0",
+    "vue-template-compiler": "^2.7.16"
+  },
   "browserslist": [
     "last 2 versions",
     "last 2 ChromeAndroid versions",
