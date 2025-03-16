@@ -22,6 +22,7 @@ import {
   DeliveryOptionsForInappWeb
 } from '@notificationapi/core/dist/interfaces';
 import { Context, NotificationAPIContext } from './context';
+import { API_REGION, WS_REGION } from '../../constants/interface';
 
 type Props = (
   | {
@@ -33,8 +34,8 @@ type Props = (
 ) & {
   clientId: string;
   hashedUserId?: string;
-  apiURL?: string;
-  wsURL?: string;
+  apiURL?: API_REGION;
+  wsURL?: WS_REGION;
   initialLoadMaxCount?: number;
   initialLoadMaxAge?: Date;
   playSoundOnNewNotification?: boolean;
@@ -53,8 +54,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
   useNotificationAPIContext: typeof useNotificationAPIContext;
 } = (props) => {
   const defaultConfigs = {
-    apiURL: 'https://api.notificationapi.com',
-    wsURL: 'wss://ws.notificationapi.com',
+    apiURL: API_REGION.US,
+    wsURL: WS_REGION.US,
     initialLoadMaxCount: 1000,
     initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
     playSoundOnNewNotification: false,
@@ -131,7 +132,9 @@ export const NotificationAPIProvider: React.FunctionComponent<
           onNewInAppNotifications: (notifications) => {
             playSound();
             addNotificationsToState(notifications);
-          }
+          },
+          host: config.apiURL,
+          websocketHost: config.wsURL
         });
 
     //  identify user
@@ -149,7 +152,9 @@ export const NotificationAPIProvider: React.FunctionComponent<
     config.hashedUserId,
     addNotificationsToState,
     playSound,
-    props.client
+    props.client,
+    config.apiURL,
+    config.wsURL
   ]);
 
   // Notificaiton loading and state updates
