@@ -14,3 +14,4 @@ export {
   NotificationPreferencesPopup
 } from './components/Preferences';
 export { NotificationAPIProvider } from './components/Provider';
+export { API_REGION, WS_REGION } from './constants/interface';
