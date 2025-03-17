@@ -34,8 +34,8 @@ type Props = (
 ) & {
   clientId: string;
   hashedUserId?: string;
-  apiURL?: API_REGION;
-  wsURL?: WS_REGION;
+  apiURL?: API_REGION | string;
+  wsURL?: WS_REGION | string;
   initialLoadMaxCount?: number;
   initialLoadMaxAge?: Date;
   playSoundOnNewNotification?: boolean;
