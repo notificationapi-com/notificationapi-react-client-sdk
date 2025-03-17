@@ -19,7 +19,9 @@ import {
   BaseDeliveryOptions,
   Channels,
   DeliveryOptionsForEmail,
-  DeliveryOptionsForInappWeb
+  DeliveryOptionsForInappWeb,
+  API_REGION,
+  WS_REGION
 } from '@notificationapi/core/dist/interfaces';
 import { Context, NotificationAPIContext } from './context';
 
@@ -33,8 +35,8 @@ type Props = (
 ) & {
   clientId: string;
   hashedUserId?: string;
-  apiURL?: string;
-  wsURL?: string;
+  apiURL?: string | API_REGION;
+  wsURL?: string | WS_REGION;
   initialLoadMaxCount?: number;
   initialLoadMaxAge?: Date;
   playSoundOnNewNotification?: boolean;
