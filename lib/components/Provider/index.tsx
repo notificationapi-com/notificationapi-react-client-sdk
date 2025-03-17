@@ -22,7 +22,6 @@ import {
   DeliveryOptionsForInappWeb
 } from '@notificationapi/core/dist/interfaces';
 import { Context, NotificationAPIContext } from './context';
-import { API_REGION, WS_REGION } from '../../constants/interface';
 
 type Props = (
   | {
@@ -34,8 +33,8 @@ type Props = (
 ) & {
   clientId: string;
   hashedUserId?: string;
-  apiURL?: API_REGION | string;
-  wsURL?: WS_REGION | string;
+  apiURL?: string;
+  wsURL?: string;
   initialLoadMaxCount?: number;
   initialLoadMaxAge?: Date;
   playSoundOnNewNotification?: boolean;
@@ -54,8 +53,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
   useNotificationAPIContext: typeof useNotificationAPIContext;
 } = (props) => {
   const defaultConfigs = {
-    apiURL: API_REGION.US,
-    wsURL: WS_REGION.US,
+    apiURL: 'api.notificationapi.com',
+    wsURL: 'ws.notificationapi.com',
     initialLoadMaxCount: 1000,
     initialLoadMaxAge: new Date(new Date().setMonth(new Date().getMonth() - 3)),
     playSoundOnNewNotification: false,
