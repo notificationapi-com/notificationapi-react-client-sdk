@@ -101,8 +101,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
       notis = Array.isArray(notis) ? notis : [];
 
       notis = notis.filter((n) => {
-        const isExpired =
-          n.expDate && new Date(n.expDate * 1000).toISOString() < now;
+        const isExpired = n.expDate && new Date(n.expDate).toISOString() > now;
         const isFuture =
           new Date(n.date).getTime() > new Date(now).getTime() + 1000; // Allow for 1 second margin
         return !isExpired && !isFuture;
