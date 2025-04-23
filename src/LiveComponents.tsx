@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Component, ErrorInfo } from 'react';
 import {
   NotificationFeed,
   NotificationPopup,
@@ -8,11 +8,39 @@ import {
   NotificationPreferencesPopup,
   NotificationPreferencesInline
 } from '../lib/main';
-import { Button, Divider, TextField, Grid2 } from '@mui/material';
+import { Button, Divider, TextField, Grid2, Alert } from '@mui/material';
+import { NotificationAPIClientSDK } from '@notificationapi/core';
 
 interface LiveComponentsProps {
   isMocked: boolean;
   setIsMocked: (isMocked: boolean) => void;
+}
+
+class ErrorBoundary extends Component<{
+  children: React.ReactNode;
+  key: string;
+}> {
+  state = { error: null as Error | null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <Alert severity="error" sx={{ margin: 2 }}>
+          {this.state.error.message}
+        </Alert>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 const LiveComponents: React.FC<LiveComponentsProps> = ({
@@ -21,8 +49,16 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
 }) => {
   const [clientId, setClientId] = useState('24nojpnrsdc53fkslha0roov05');
   const [userId, setUserId] = useState('sahand');
+  const [apiUrl, setApiUrl] = useState('api.notificationapi.com');
+  const [error, setError] = useState<string | null>(null);
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
     useState(false);
+
+  const handleInputChange =
+    (setter: (value: string) => void) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setter(e.target.value);
+    };
 
   return (
     <>
@@ -34,15 +70,22 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
         <Grid2 container spacing={2}>
           <TextField
             label="Client ID"
-            value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
+            defaultValue={clientId}
+            onChange={handleInputChange(setClientId)}
             variant="outlined"
             size="small"
           />
           <TextField
             label="User ID"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
+            defaultValue={userId}
+            onChange={handleInputChange(setUserId)}
+            variant="outlined"
+            size="small"
+          />
+          <TextField
+            label="API URL"
+            defaultValue={apiUrl}
+            onChange={handleInputChange(setApiUrl)}
             variant="outlined"
             size="small"
           />
@@ -59,73 +102,81 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
           </Button>
         </Grid2>
       </Grid2>
+      {error && (
+        <Alert severity="error" sx={{ margin: 2 }}>
+          {error}
+        </Alert>
+      )}
       <div
         style={{
           padding: 24
         }}
       >
-        <NotificationAPIProvider
-          clientId={clientId}
-          userId={userId}
-          playSoundOnNewNotification={true}
-        >
-          <h2>Popup:</h2>
-          <NotificationPopup />
-
-          <Divider />
-
-          <h2>Launcher:</h2>
-          <p>Look at the bottom right :)</p>
-          <NotificationLauncher
-            buttonStyles={{ backgroundColor: '#000' }}
-            iconColor="white"
-          />
-
-          <Divider />
-
-          <h2>Counter (Standalone)</h2>
-          <NotificationCounter />
-
-          <Divider />
-
-          <h2>Counter on an element</h2>
-          <NotificationCounter
-            count={(n) => {
-              return n.notificationId === 'conversion_failure' && !n.archived;
-            }}
+        <ErrorBoundary key={`${clientId}-${userId}-${apiUrl}`}>
+          <NotificationAPIProvider
+            clientId={clientId}
+            userId={userId}
+            apiURL={apiUrl}
+            playSoundOnNewNotification={true}
           >
-            <Button variant="contained" color="primary">
-              Button
+            <h2>Popup:</h2>
+            <NotificationPopup />
+
+            <Divider />
+
+            <h2>Launcher:</h2>
+            <p>Look at the bottom right :)</p>
+            <NotificationLauncher
+              buttonStyles={{ backgroundColor: '#000' }}
+              iconColor="white"
+            />
+
+            <Divider />
+
+            <h2>Counter (Standalone)</h2>
+            <NotificationCounter />
+
+            <Divider />
+
+            <h2>Counter on an element</h2>
+            <NotificationCounter
+              count={(n) => {
+                return n.notificationId === 'conversion_failure' && !n.archived;
+              }}
+            >
+              <Button variant="contained" color="primary">
+                Button
+              </Button>
+            </NotificationCounter>
+
+            <Divider sx={{ marginTop: 3 }} />
+
+            <h2>Feed:</h2>
+            <NotificationFeed infiniteScrollHeight={300} />
+
+            <Divider sx={{ marginTop: 3 }} />
+
+            <h2>Preferences Popup:</h2>
+            <Button
+              onClick={() => setPreferencesPopupVisiblity(true)}
+              variant="contained"
+              color="primary"
+            >
+              Preferences Popup
             </Button>
-          </NotificationCounter>
+            <NotificationPreferencesPopup
+              open={preferencesPopupVisibility}
+              onClose={() => {
+                setPreferencesPopupVisiblity(false);
+              }}
+            />
 
-          <Divider sx={{ marginTop: 3 }} />
+            <Divider sx={{ marginTop: 3 }} />
 
-          <h2>Feed:</h2>
-          <NotificationFeed infiniteScrollHeight={300} />
-
-          <Divider sx={{ marginTop: 3 }} />
-
-          <h2>Preferences Popup:</h2>
-          <Button
-            onClick={() => setPreferencesPopupVisiblity(true)}
-            variant="contained"
-            color="primary"
-          >
-            Preferences Popup
-          </Button>
-          <NotificationPreferencesPopup
-            open={preferencesPopupVisibility}
-            onClose={() => {
-              setPreferencesPopupVisiblity(false);
-            }}
-          />
-
-          <Divider sx={{ marginTop: 3 }} />
-
-          <h2>Preferences Inline:</h2>
-          <NotificationPreferencesInline />
-        </NotificationAPIProvider>
+            <h2>Preferences Inline:</h2>
+            <NotificationPreferencesInline />
+          </NotificationAPIProvider>
+        </ErrorBoundary>
       </div>
     </>
   );
