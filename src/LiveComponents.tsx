@@ -9,7 +9,6 @@ import {
   NotificationPreferencesInline
 } from '../lib/main';
 import { Button, Divider, TextField, Grid2, Alert } from '@mui/material';
-import { NotificationAPIClientSDK } from '@notificationapi/core';
 
 interface LiveComponentsProps {
   isMocked: boolean;
@@ -50,7 +49,7 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
   const [clientId, setClientId] = useState('24nojpnrsdc53fkslha0roov05');
   const [userId, setUserId] = useState('sahand');
   const [apiUrl, setApiUrl] = useState('api.notificationapi.com');
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
     useState(false);
 
