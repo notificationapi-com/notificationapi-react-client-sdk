@@ -51,7 +51,12 @@ export const Notification = (props: NotificationProps) => {
   const lastNotification = props.notifications[groupSize - 1];
   const template = lastNotification.deliveryOptions?.['instant']?.batching
     ? lastNotification.template?.batch
-    : lastNotification.template?.instant;
+    : (lastNotification.template?.instant ?? {
+        title: lastNotification.title,
+        redirectURL: lastNotification.redirectURL,
+        imageURL: lastNotification.imageURL
+      }); // moving towards simplifying the template object (one set of title, redirectURL, imageURL vs. two)
+
   let parameters: {
     [key: string]: unknown;
     _items: unknown[];
