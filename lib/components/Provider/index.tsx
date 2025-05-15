@@ -439,25 +439,28 @@ export const NotificationAPIProvider: React.FunctionComponent<
   }, [client, loadNotifications, askForWebPushPermission]);
 
   useEffect(() => {
-    if (
-      isClient &&
-      'Notification' in window &&
-      typeof Notification.requestPermission === 'function'
-    ) {
-      if (Notification.permission !== 'default') {
-        setWebPushOptInMessage(false);
-      }
-    }
     client.getUserAccountMetadata().then((res) => {
       setUserAccountMetaData(res);
-      setWebPushOptInMessage(res.userAccountMetadata.hasWebPushEnabled);
+      if (
+        isClient &&
+        'Notification' in window &&
+        typeof Notification.requestPermission === 'function'
+      ) {
+        if (Notification.permission !== 'default') {
+          setWebPushOptInMessage(false);
+        }
+      } else {
+        setWebPushOptInMessage(res.userAccountMetadata.hasWebPushEnabled);
+      }
     });
+  }, [client]);
+  useEffect(() => {
     if (webPushOptInMessage === 'AUTOMATIC') {
       setWebPushOptInMessage(
         localStorage.getItem('hideWebPushOptInMessage') !== 'true'
       );
     }
-  }, [client, webPushOptInMessage]);
+  }, [webPushOptInMessage]);
   useEffect(() => {
     if (webPushOptIn) {
       askForWebPushPermission();
