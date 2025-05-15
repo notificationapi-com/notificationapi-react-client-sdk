@@ -382,7 +382,6 @@ export const NotificationAPIProvider: React.FunctionComponent<
                     ]
                   };
                   await client.identify(body);
-                  console.log('index');
                   localStorage.setItem('hideWebPushOptInMessage', 'true');
                 });
             } else if (permission === 'denied') {
@@ -449,16 +448,14 @@ export const NotificationAPIProvider: React.FunctionComponent<
         setWebPushOptInMessage(false);
       }
     }
-
+    client.getUserAccountMetadata().then((res) => {
+      setUserAccountMetaData(res);
+      setWebPushOptInMessage(res.userAccountMetadata.hasWebPushEnabled);
+    });
     if (webPushOptInMessage === 'AUTOMATIC') {
       setWebPushOptInMessage(
         localStorage.getItem('hideWebPushOptInMessage') !== 'true'
       );
-      client.getUserAccountMetadata().then((res) => {
-        setUserAccountMetaData(res);
-
-        setWebPushOptInMessage(res.userAccountMetadata.hasWebPushEnabled);
-      });
     }
   }, [client, webPushOptInMessage]);
   useEffect(() => {
