@@ -17,7 +17,15 @@ import {
 } from '@mui/material';
 
 const sortChannels = (a: Channels, b: Channels) => {
-  const order = ['EMAIL', 'INAPP_WEB', 'SMS', 'CALL', 'PUSH', 'WEB_PUSH'];
+  const order = [
+    'EMAIL',
+    'INAPP_WEB',
+    'SMS',
+    'CALL',
+    'PUSH',
+    'WEB_PUSH',
+    'SLACK'
+  ];
   return order.indexOf(a) - order.indexOf(b);
 };
 

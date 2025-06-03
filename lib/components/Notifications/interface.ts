@@ -14,7 +14,8 @@ export enum Channels {
   SMS = 'SMS',
   CALL = 'CALL',
   PUSH = 'PUSH',
-  WEB_PUSH = 'WEB_PUSH'
+  WEB_PUSH = 'WEB_PUSH',
+  SLACK = 'SLACK'
 }
 
 export enum DeliveryOptions {
