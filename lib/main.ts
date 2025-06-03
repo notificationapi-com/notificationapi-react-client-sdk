@@ -14,3 +14,6 @@ export {
   NotificationPreferencesPopup
 } from './components/Preferences';
 export { NotificationAPIProvider } from './components/Provider';
+
+// Debug utilities
+export { createDebugLogger, type DebugLogger } from './utils/debug';

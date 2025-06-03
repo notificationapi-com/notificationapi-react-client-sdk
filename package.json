@@ -1,7 +1,7 @@
 {
   "name": "@notificationapi/react",
   "private": false,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "type": "module",
   "overrides": {
     "esbuild": "^0.25.0",
@@ -25,7 +25,10 @@
     "format": "prettier --write \"{src,lib}/**/*.{ts,tsx,js,jsx,json,css,md,html}\"",
     "prettier-check": "prettier --check \"{src,lib}/**/*.{ts,tsx,js,jsx,json,css,md,html}\"",
     "preview": "vite preview",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed"
   },
   "peerDependencies": {
     "react": "^17.0.2 || ^18.0.0 || ^19.0.0",
@@ -45,6 +48,7 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "faker-js": "^1.0.0",
     "glob": "^10.4.1",
+    "@playwright/test": "^1.48.0",
     "prettier": "^3.3.3",
     "typescript": "^5.2.2",
     "vite": "^5.4.18",
