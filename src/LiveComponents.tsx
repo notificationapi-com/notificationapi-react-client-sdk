@@ -8,7 +8,15 @@ import {
   NotificationPreferencesPopup,
   NotificationPreferencesInline
 } from '../lib/main';
-import { Button, Divider, TextField, Grid2, Alert } from '@mui/material';
+import {
+  Button,
+  Divider,
+  TextField,
+  Grid2,
+  Alert,
+  Switch,
+  FormControlLabel
+} from '@mui/material';
 
 interface LiveComponentsProps {
   isMocked: boolean;
@@ -49,6 +57,7 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
   const [clientId, setClientId] = useState('24nojpnrsdc53fkslha0roov05');
   const [userId, setUserId] = useState('sahand');
   const [apiUrl, setApiUrl] = useState('api.notificationapi.com');
+  const [debugMode, setDebugMode] = useState(true);
   const [error] = useState<string | null>(null);
   const [preferencesPopupVisibility, setPreferencesPopupVisiblity] =
     useState(false);
@@ -88,6 +97,16 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
             variant="outlined"
             size="small"
           />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={debugMode}
+                onChange={(e) => setDebugMode(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="🐛 Debug Mode"
+          />
         </Grid2>
 
         <Grid2 container>
@@ -106,17 +125,23 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
           {error}
         </Alert>
       )}
+      {debugMode && (
+        <Alert severity="info" sx={{ margin: 2 }}>
+          🐛 Debug mode is enabled! Check the browser console for detailed logs.
+        </Alert>
+      )}
       <div
         style={{
           padding: 24
         }}
       >
-        <ErrorBoundary key={`${clientId}-${userId}-${apiUrl}`}>
+        <ErrorBoundary key={`${clientId}-${userId}-${apiUrl}-${debugMode}`}>
           <NotificationAPIProvider
             clientId={clientId}
             userId={userId}
             apiURL={apiUrl}
             playSoundOnNewNotification={true}
+            debug={debugMode}
           >
             <h2>Popup:</h2>
             <NotificationPopup />
