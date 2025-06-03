@@ -6,6 +6,22 @@ The React SDK is mainly used for displaying In-App Notifications, allowing users
 
 Please refer to our [documentations](https://docs.notificationapi.com).
 
+# Debug Mode
+
+The SDK includes a comprehensive debug mode to help troubleshoot issues and understand SDK behavior. Enable it by adding the `debug` prop:
+
+```jsx
+<NotificationAPIProvider
+  clientId="your-client-id"
+  userId="your-user-id"
+  debug={true}
+>
+  {/* Your app components */}
+</NotificationAPIProvider>
+```
+
+For detailed information about debug mode, see [DEBUG.md](./DEBUG.md).
+
 # Development
 
 1. Install dependencies:
@@ -19,6 +35,8 @@ npm install
 ```
 npm run dev
 ```
+
+The example application includes a debug mode toggle to demonstrate the feature.
 
 # React + TypeScript + Vite
 
@@ -100,7 +118,7 @@ We welcome contributions! To ensure smooth collaboration, please follow these st
 
 5. **Commit and Push**
 
-   - Once you’ve made and tested your changes, commit them with a meaningful message:
+   - Once you've made and tested your changes, commit them with a meaningful message:
 
      ```bash
      git add .
