@@ -225,6 +225,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     config.user.email,
     config.user.number,
     config.hashedUserId,
+    config.debug,
     addNotificationsToState,
     playSound,
     props.client,
