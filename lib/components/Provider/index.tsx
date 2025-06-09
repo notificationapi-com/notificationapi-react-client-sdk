@@ -188,7 +188,8 @@ export const NotificationAPIProvider: React.FunctionComponent<
       userId: config.user.id,
       hashedUserId: config.hashedUserId,
       host: config.apiURL,
-      websocketHost: config.wsURL
+      websocketHost: config.wsURL,
+      debug: config.debug
     };
 
     debug.log('Client configuration', clientConfig);
