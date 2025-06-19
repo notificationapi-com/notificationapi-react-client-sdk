@@ -146,10 +146,12 @@ export const Notification = (props: NotificationProps) => {
       <div
         style={{
           position: 'relative',
-          width: 52,
+          minWidth: 52,
           height: 32,
           display: 'flex',
-          alignItems: 'center'
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          paddingRight: 12
         }}
       >
         <IconButton
@@ -161,6 +163,10 @@ export const Notification = (props: NotificationProps) => {
             e.stopPropagation();
             return false;
           }}
+          style={{
+            position: 'absolute',
+            left: 0
+          }}
         >
           <Check fontSize="small" />
         </IconButton>
@@ -169,12 +175,7 @@ export const Notification = (props: NotificationProps) => {
           color="error"
           className="notification-highlight"
           style={{
-            visibility: archived ? 'hidden' : 'visible',
-            marginRight: 0,
-            marginLeft: 12,
-            marginTop: 6,
-            bottom: 2,
-            right: 0
+            visibility: archived ? 'hidden' : 'visible'
           }}
         />
       </div>
