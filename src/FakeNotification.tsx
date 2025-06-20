@@ -1,25 +1,28 @@
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { faker } from '@faker-js/faker';
-import { Button } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 
 const generateFakeNotifications = (params: {
   title?: string;
+  longText?: boolean;
 }): InAppNotification => {
+  const title =
+    params.title ??
+    (params.longText
+      ? `${faker.person.firstName()} ${faker.person.lastName()} has submitted a very long review for the product ${faker.commerce.productName()} and it needs your immediate attention right now! This is a really long notification that should cause wrapping.`
+      : `${faker.person.firstName()} reviewed ${faker.commerce.productName()}`);
+
   return {
     id: new Date().getTime().toString(),
     notificationId: 'fake notificaitonId',
     template: {
       instant: {
-        title:
-          params.title ??
-          `${faker.person.firstName()} reviewed ${faker.commerce.productName()}`,
+        title,
         redirectURL: '#',
         imageURL: faker.image.avatar()
       },
       batch: {
-        title:
-          params.title ??
-          `${faker.person.firstName()} reviewed ${faker.commerce.productName()}`,
+        title,
         redirectURL: '#',
         imageURL: faker.image.avatar()
       }
@@ -37,12 +40,23 @@ export const FakeNotification: React.FC<{
   addToState: (notification: InAppNotification) => void;
 }> = ({ addToState }) => {
   return (
-    <Button
-      onClick={() => addToState(generateFakeNotifications({}))}
-      variant="contained"
-      color="primary"
-    >
-      Generate a Fake Notification
-    </Button>
+    <Stack direction="row" spacing={2}>
+      <Button
+        onClick={() => addToState(generateFakeNotifications({}))}
+        variant="contained"
+        color="primary"
+      >
+        Add Short Notification
+      </Button>
+      <Button
+        onClick={() =>
+          addToState(generateFakeNotifications({ longText: true }))
+        }
+        variant="contained"
+        color="primary"
+      >
+        Add Long Notification
+      </Button>
+    </Stack>
   );
 };
