@@ -42,6 +42,7 @@ export function SlackConnect({
   selectChannelText = 'Choose a channel or user to receive notifications:'
 }: SlackConnectProps = {}) {
   const context = useContext(NotificationAPIContext);
+  const client = context?.getClient();
   const [slackToken, setSlackToken] = useState<
     User['slackToken'] | undefined
   >();
@@ -53,11 +54,10 @@ export function SlackConnect({
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchUserSlackStatus = useCallback(async () => {
-    if (!context) return;
+    if (!client) return;
 
     try {
       setLoading(true);
-      const client = context.getClient();
 
       // Get user's current slack configuration using user.get
       const user = await client.user.get();
@@ -75,15 +75,14 @@ export function SlackConnect({
     } finally {
       setLoading(false);
     }
-  }, [context]);
+  }, [client]);
 
   const loadChannels = useCallback(async () => {
-    if (!context || !slackToken) return [];
+    if (!client || !slackToken) return [];
 
     try {
       setLoading(true);
       setError(null);
-      const client = context.getClient();
 
       // Get channels and users from Slack
       const response = await client.slack.getChannels();
@@ -115,7 +114,7 @@ export function SlackConnect({
     } finally {
       setLoading(false);
     }
-  }, [context, slackToken]);
+  }, [client, slackToken]);
 
   useEffect(() => {
     // Fetch the user's current slackToken and slackChannel from the API
@@ -129,12 +128,11 @@ export function SlackConnect({
   }, [slackToken, slackChannel, isEditing, loadChannels]);
 
   const handleConnectSlack = async () => {
-    if (!context) return;
+    if (!client) return;
 
     try {
       setLoading(true);
       setError(null);
-      const client = context.getClient();
 
       // Generate Slack OAuth URL
       const url = await client.slack.getOAuthUrl();
@@ -150,12 +148,11 @@ export function SlackConnect({
   };
 
   const handleSaveChannel = async () => {
-    if (!context || !selectedChannel) return;
+    if (!client || !selectedChannel) return;
 
     try {
       setLoading(true);
       setError(null);
-      const client = context.getClient();
 
       // Find the selected channel info to get its name and type
       const channelInfo = channels.find((c) => c.id === selectedChannel);
@@ -184,12 +181,11 @@ export function SlackConnect({
   };
 
   const handleDisconnect = async () => {
-    if (!context) return;
+    if (!client) return;
 
     try {
       setLoading(true);
       setError(null);
-      const client = context.getClient();
 
       // Remove slackToken and slackChannel using identify
       await client.identify({
@@ -243,7 +239,7 @@ export function SlackConnect({
     setSelectedChannel('');
   };
 
-  if (!context) {
+  if (!client) {
     return null;
   }
 
