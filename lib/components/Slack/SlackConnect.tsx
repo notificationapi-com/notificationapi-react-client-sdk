@@ -95,14 +95,14 @@ export function SlackConnect({
           .map((c) => ({
             id: c.id!,
             name: c.name!,
-            type: 'channel' as const
+            type: 'channel' as SlackChannel['type']
           })),
         ...(response.users || [])
           .filter((u) => u.id && u.name)
           .map((u) => ({
             id: u.id!,
             name: u.name!,
-            type: 'user' as const
+            type: 'user' as SlackChannel['type']
           }))
       ];
 
