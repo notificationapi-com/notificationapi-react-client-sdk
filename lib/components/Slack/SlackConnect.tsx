@@ -78,7 +78,7 @@ export function SlackConnect({
   }, [context]);
 
   const loadChannels = useCallback(async () => {
-    if (!context || !slackToken) return;
+    if (!context || !slackToken) return [];
 
     try {
       setLoading(true);
@@ -107,9 +107,11 @@ export function SlackConnect({
       ];
 
       setChannels(allOptions);
+      return allOptions;
     } catch (err) {
       console.error('Error loading channels and users:', err);
       setError('Failed to load Slack channels and users. Please try again.');
+      return [];
     } finally {
       setLoading(false);
     }
@@ -155,10 +157,22 @@ export function SlackConnect({
       setError(null);
       const client = context.getClient();
 
-      // Set the selected channel
-      await client.slack.setChannel(selectedChannel);
+      // Find the selected channel info to get its name and type
+      const channelInfo = channels.find((c) => c.id === selectedChannel);
+      if (!channelInfo) {
+        setError('Channel not found. Please try again.');
+        return;
+      }
 
-      setSlackChannel(selectedChannel);
+      // Format the channel as #channelname or @username
+      const formattedChannel = `${channelInfo.type === 'channel' ? '#' : '@'}${
+        channelInfo.name
+      }`;
+
+      // Set the selected channel with formatted name
+      await client.slack.setChannel(formattedChannel);
+
+      setSlackChannel(formattedChannel);
       setIsEditing(false);
       setError(null);
     } catch (err) {
@@ -198,11 +212,29 @@ export function SlackConnect({
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     setIsEditing(true);
-    setSelectedChannel(slackChannel || '');
+
+    // Load channels if not already loaded
+    let channelsList = channels;
     if (channels.length === 0) {
-      loadChannels();
+      channelsList = await loadChannels();
+    }
+
+    // Parse the slackChannel to find the matching channel ID
+    if (slackChannel) {
+      const isChannel = slackChannel.startsWith('#');
+      const channelName = slackChannel.substring(1); // Remove # or @
+      const channelType = isChannel ? 'channel' : 'user';
+
+      // Find the channel ID that matches the name and type
+      const matchingChannel = channelsList.find(
+        (c) => c.name === channelName && c.type === channelType
+      );
+
+      if (matchingChannel) {
+        setSelectedChannel(matchingChannel.id);
+      }
     }
   };
 
@@ -325,18 +357,13 @@ export function SlackConnect({
   }
 
   // Has both token and channel - show connected state
-  const selectedChannelInfo = channels.find((c) => c.id === slackChannel);
-  const channelName = selectedChannelInfo?.name || slackChannel;
-  const channelType = selectedChannelInfo?.type || 'channel';
-
   return (
     <Stack direction="row" spacing={2} alignItems="center">
       <Typography variant="body2" color="text.secondary">
         {connectedText}
       </Typography>
       <Typography variant="body1" fontWeight="medium">
-        {channelType === 'channel' ? '#' : '@'}
-        {channelName}
+        {slackChannel}
       </Typography>
       <Button variant="outlined" onClick={handleEdit} disabled={loading}>
         {editButtonText}
