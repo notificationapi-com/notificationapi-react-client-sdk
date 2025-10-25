@@ -14,6 +14,7 @@ export {
   NotificationPreferencesPopup
 } from './components/Preferences';
 export { NotificationAPIProvider } from './components/Provider';
+export { SlackConnect } from './components/Slack';
 
 // Debug utilities
 export { createDebugLogger, type DebugLogger } from './utils/debug';
