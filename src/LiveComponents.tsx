@@ -6,7 +6,8 @@ import {
   NotificationCounter,
   NotificationAPIProvider,
   NotificationPreferencesPopup,
-  NotificationPreferencesInline
+  NotificationPreferencesInline,
+  SlackConnect
 } from '../lib/main';
 import {
   Button,
@@ -199,6 +200,11 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
 
             <h2>Preferences Inline:</h2>
             <NotificationPreferencesInline />
+
+            <Divider sx={{ marginTop: 3 }} />
+
+            <h2>Slack Connect:</h2>
+            <SlackConnect />
           </NotificationAPIProvider>
         </ErrorBoundary>
       </div>
