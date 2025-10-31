@@ -144,6 +144,9 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
             playSoundOnNewNotification={true}
             debug={debugMode}
           >
+            <h2>Slack Connect:</h2>
+            <SlackConnect />
+
             <h2>Popup:</h2>
             <NotificationPopup />
 
@@ -202,9 +205,6 @@ const LiveComponents: React.FC<LiveComponentsProps> = ({
             <NotificationPreferencesInline />
 
             <Divider sx={{ marginTop: 3 }} />
-
-            <h2>Slack Connect:</h2>
-            <SlackConnect />
           </NotificationAPIProvider>
         </ErrorBoundary>
       </div>

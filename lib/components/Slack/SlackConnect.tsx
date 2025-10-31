@@ -29,6 +29,12 @@ interface SlackConnectProps {
   cancelButtonText?: string;
   connectedText?: string;
   selectChannelText?: string;
+  /**
+   * Controls what type of Slack destination the user can select:
+   * - 'me': Only allows sending to the authenticated user's own DM (no channel picker or edit option)
+   * - 'any': Allows selecting any channel or user (default behavior)
+   */
+  destinationType?: 'me' | 'any';
 }
 
 export function SlackConnect({
@@ -39,7 +45,8 @@ export function SlackConnect({
   saveButtonText = 'Save',
   cancelButtonText = 'Cancel',
   connectedText = 'Slack notifications will be sent to:',
-  selectChannelText = 'Choose a channel or user to receive notifications:'
+  selectChannelText = 'Choose a channel or user to receive notifications:',
+  destinationType = 'any'
 }: SlackConnectProps = {}) {
   const context = useContext(NotificationAPIContext);
   const client = context?.getClient();
@@ -123,9 +130,50 @@ export function SlackConnect({
 
   useEffect(() => {
     if (slackToken && !slackChannel && !isEditing) {
-      loadChannels();
+      if (destinationType === 'me') {
+        // Auto-set DM for 'me' mode
+        const autoSetDirectMessage = async () => {
+          try {
+            setLoading(true);
+            setError(null);
+
+            // Get the current Slack user's info
+            const response = await client?.slack.getChannels();
+
+            // Use the authenticated user from the response
+            const currentUser = response?.me;
+
+            if (currentUser && currentUser.name && client) {
+              // Set the channel to the current user's DM
+              const formattedChannel = `@${currentUser.name}`;
+              await client.slack.setChannel(formattedChannel);
+              setSlackChannel(formattedChannel);
+            } else {
+              setError(
+                'Unable to automatically set direct message. Please try again.'
+              );
+            }
+          } catch (err) {
+            console.error('Error setting direct message:', err);
+            setError('Failed to set direct message. Please try again.');
+          } finally {
+            setLoading(false);
+          }
+        };
+        autoSetDirectMessage();
+      } else {
+        // Load channels for 'any' mode
+        loadChannels();
+      }
     }
-  }, [slackToken, slackChannel, isEditing, loadChannels]);
+  }, [
+    slackToken,
+    slackChannel,
+    isEditing,
+    loadChannels,
+    destinationType,
+    client
+  ]);
 
   const handleConnectSlack = async () => {
     if (!client) return;
@@ -278,8 +326,25 @@ export function SlackConnect({
     );
   }
 
+  // For 'me' mode, show loading while auto-setting DM
+  if (destinationType === 'me' && slackToken && !slackChannel) {
+    return (
+      <Box>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+        <Box display="flex" justifyContent="center" alignItems="center" p={3}>
+          <CircularProgress />
+        </Box>
+      </Box>
+    );
+  }
+
   // Has token but no channel (or editing)
-  if (!slackChannel || isEditing) {
+  // Don't show channel picker for 'me' mode - it auto-sets
+  if ((!slackChannel || isEditing) && destinationType === 'any') {
     return (
       <Box>
         {error && (
@@ -361,9 +426,11 @@ export function SlackConnect({
       <Typography variant="body1" fontWeight="medium">
         {slackChannel}
       </Typography>
-      <Button variant="outlined" onClick={handleEdit} disabled={loading}>
-        {editButtonText}
-      </Button>
+      {destinationType === 'any' && (
+        <Button variant="outlined" onClick={handleEdit} disabled={loading}>
+          {editButtonText}
+        </Button>
+      )}
       <Button
         variant="text"
         color="error"
