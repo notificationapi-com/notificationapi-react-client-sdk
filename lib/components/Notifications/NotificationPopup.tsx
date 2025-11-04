@@ -35,6 +35,7 @@ export type NotificationPopupProps = {
       horizontal: 'left' | 'center' | 'right';
     };
   };
+  newTab?: boolean;
 };
 
 export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
@@ -86,7 +87,8 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         vertical: props.popoverPosition?.anchorOrigin?.vertical ?? 'top',
         horizontal: props.popoverPosition?.anchorOrigin?.horizontal ?? 'left'
       }
-    }
+    },
+    newTab: props.newTab ?? false
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -141,6 +143,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
             pagePosition={config.pagePosition}
             notificationRenderer={config.renderers.notification}
             header={config.header}
+            newTab={config.newTab}
           />
           {context.webPushOptInMessage &&
             localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (

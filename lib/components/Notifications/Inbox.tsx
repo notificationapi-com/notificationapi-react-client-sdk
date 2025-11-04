@@ -22,6 +22,7 @@ export type InboxProps = {
   header?: InboxHeaderProps;
   empty?: React.ReactNode;
   imageShape?: 'circle' | 'square';
+  newTab?: boolean;
 };
 
 export const Inbox: React.FC<InboxProps> = (props) => {
@@ -129,6 +130,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
                   imageShape={props.imageShape}
+                  newTab={props.newTab}
                 />
               </ListItem>
             )}
@@ -169,6 +171,7 @@ export const Inbox: React.FC<InboxProps> = (props) => {
                   markAsClicked={context.markAsClicked}
                   renderer={props.notificationRenderer}
                   imageShape={props.imageShape}
+                  newTab={props.newTab}
                 />
               </ListItem>
             ))}

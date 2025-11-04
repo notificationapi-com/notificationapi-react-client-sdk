@@ -71,7 +71,8 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
         vertical: props.popoverPosition?.anchorOrigin?.vertical ?? 'top',
         horizontal: props.popoverPosition?.anchorOrigin?.horizontal ?? 'left'
       }
-    }
+    },
+    newTab: props.newTab ?? false
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -133,6 +134,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
           pagePosition={config.pagePosition}
           notificationRenderer={config.renderers.notification}
           header={config.header}
+          newTab={config.newTab}
         />
         {context.webPushOptInMessage &&
           localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (

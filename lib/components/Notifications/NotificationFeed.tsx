@@ -22,6 +22,7 @@ export type NotificationFeedProps = {
   };
   header?: InboxHeaderProps;
   imageShape?: 'circle' | 'square';
+  newTab?: boolean;
 };
 
 export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
@@ -63,7 +64,8 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
       button2ClickHandler:
         props.header?.button2ClickHandler ?? (() => setOpenPreferences(true))
     },
-    imageShape: props.imageShape || 'circle'
+    imageShape: props.imageShape || 'circle',
+    newTab: props.newTab ?? false
   };
 
   return (
@@ -86,6 +88,7 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         notificationRenderer={config.renderers.notification}
         header={config.header}
         imageShape={config.imageShape}
+        newTab={config.newTab}
       />
       {context.webPushOptInMessage &&
         localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
