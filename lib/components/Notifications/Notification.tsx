@@ -39,6 +39,7 @@ export type NotificationProps = {
   markAsClicked: (ids: string[]) => void;
   renderer?: (notification: InAppNotification[]) => ReactNode;
   imageShape?: 'circle' | 'square';
+  newTab?: boolean;
 };
 
 export const Notification = (props: NotificationProps) => {
@@ -96,7 +97,11 @@ export const Notification = (props: NotificationProps) => {
       onClick={() => {
         props.markAsClicked(ids);
         if (redirectURL) {
-          window.location.href = redirectURL;
+          if (props.newTab) {
+            window.open(redirectURL, '_blank');
+          } else {
+            window.location.href = redirectURL;
+          }
         }
       }}
       style={{
