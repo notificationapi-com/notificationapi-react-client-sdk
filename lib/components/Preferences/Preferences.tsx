@@ -31,7 +31,9 @@ export function Preferences() {
       const subNotifications = context.preferences?.subNotifications.filter(
         (sn) =>
           subPreferences?.find(
-            (p) => p.subNotificationId === sn.subNotificationId
+            (p) =>
+              p.subNotificationId === sn.subNotificationId &&
+              p.notificationId === sn.notificationId
           )
       );
 
