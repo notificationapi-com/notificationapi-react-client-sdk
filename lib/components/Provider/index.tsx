@@ -46,7 +46,7 @@ type Props = (
   webPushOptInMessage?: 'AUTOMATIC' | boolean;
   customServiceWorkerPath?: string;
   debug?: boolean;
-  onNewNotification?: (notifications: InAppNotification[]) => void;
+  onNewNotifications?: (notifications: InAppNotification[]) => void;
 };
 
 // Ensure that the code runs only in the browser
@@ -181,7 +181,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     [debug]
   );
 
-  const { onNewNotification } = props;
+  const { onNewNotifications } = props;
   const handleNewInAppNotifications = useCallback(
     (notifications: InAppNotification[]) => {
       debug.log('Received new in-app notifications via WebSocket', {
@@ -190,14 +190,14 @@ export const NotificationAPIProvider: React.FunctionComponent<
       });
       playSound();
       addNotificationsToState(notifications);
-      if (onNewNotification) {
-        debug.log('Calling onNewNotification callback', {
+      if (onNewNotifications) {
+        debug.log('Calling onNewNotifications callback', {
           count: notifications?.length || 0
         });
-        onNewNotification(notifications);
+        onNewNotifications(notifications);
       }
     },
-    [playSound, addNotificationsToState, onNewNotification, debug]
+    [playSound, addNotificationsToState, onNewNotifications, debug]
   );
 
   const client = useMemo(() => {
