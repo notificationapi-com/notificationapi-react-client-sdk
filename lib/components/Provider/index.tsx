@@ -46,6 +46,7 @@ type Props = (
   webPushOptInMessage?: 'AUTOMATIC' | boolean;
   customServiceWorkerPath?: string;
   debug?: boolean;
+  onNewNotification?: (notifications: InAppNotification[]) => void;
 };
 
 // Ensure that the code runs only in the browser
@@ -180,6 +181,25 @@ export const NotificationAPIProvider: React.FunctionComponent<
     [debug]
   );
 
+  const { onNewNotification } = props;
+  const handleNewInAppNotifications = useCallback(
+    (notifications: InAppNotification[]) => {
+      debug.log('Received new in-app notifications via WebSocket', {
+        count: notifications?.length || 0,
+        notifications
+      });
+      playSound();
+      addNotificationsToState(notifications);
+      if (onNewNotification) {
+        debug.log('Calling onNewNotification callback', {
+          count: notifications?.length || 0
+        });
+        onNewNotification(notifications);
+      }
+    },
+    [playSound, addNotificationsToState, onNewNotification, debug]
+  );
+
   const client = useMemo(() => {
     debug.group('Initializing NotificationAPI client');
 
@@ -198,14 +218,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
       ? props.client
       : NotificationAPIClientSDK.init({
           ...clientConfig,
-          onNewInAppNotifications: (notifications) => {
-            debug.log('Received new in-app notifications via WebSocket', {
-              count: notifications?.length || 0,
-              notifications
-            });
-            playSound();
-            addNotificationsToState(notifications);
-          }
+          onNewInAppNotifications: handleNewInAppNotifications
         });
 
     //  identify user
@@ -226,8 +239,7 @@ export const NotificationAPIProvider: React.FunctionComponent<
     config.user.number,
     config.hashedUserId,
     config.debug,
-    addNotificationsToState,
-    playSound,
+    handleNewInAppNotifications,
     props.client,
     config.apiURL,
     config.wsURL,
