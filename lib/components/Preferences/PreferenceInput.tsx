@@ -13,8 +13,10 @@ import {
   RadioGroup,
   Stack,
   Switch,
-  Typography
+  Typography,
+  useTheme
 } from '@mui/material';
+import { getThemeColors } from '../../utils/theme';
 
 const sortChannels = (a: Channels, b: Channels) => {
   const order = [
@@ -72,6 +74,9 @@ export const PreferenceInput = ({
   updateDelivery,
   subNotificationId
 }: Props) => {
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
+
   return (
     <>
       {(notification.channels as Channels[])
@@ -102,7 +107,7 @@ export const PreferenceInput = ({
           let selector;
           if (deliveries.length === 1) {
             selector = (
-              <Typography variant="body1">
+              <Typography variant="body1" sx={{ color: themeColors.text }}>
                 {getDeliveryLabel(preference.delivery)}
               </Typography>
             );
@@ -167,7 +172,11 @@ export const PreferenceInput = ({
                 >
                   <div>
                     <div style={{ marginTop: 20 }}>
-                      <Typography variant="body1" fontWeight={600}>
+                      <Typography
+                        variant="body1"
+                        fontWeight={600}
+                        sx={{ color: themeColors.text }}
+                      >
                         Choose frequency:
                       </Typography>
                     </div>
@@ -223,11 +232,15 @@ export const PreferenceInput = ({
                   }}
                 >
                   {icon}
-                  <Typography variant="body1">{name}</Typography>
+                  <Typography variant="body1" sx={{ color: themeColors.text }}>
+                    {name}
+                  </Typography>
                 </div>
                 {selector}
               </div>
-              {i !== notification.channels.length - 1 && <Divider />}
+              {i !== notification.channels.length - 1 && (
+                <Divider sx={{ borderColor: themeColors.divider }} />
+              )}
             </div>
           );
         })}

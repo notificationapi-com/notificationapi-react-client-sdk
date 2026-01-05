@@ -6,9 +6,10 @@ import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { Filter } from './interface';
 import { NotificationAPIContext } from '../Provider/context';
-import { List, ListItem, Pagination } from '@mui/material';
+import { List, ListItem, Pagination, useTheme } from '@mui/material';
 import { DefaultEmptyComponent } from './DefaultEmpty';
 import VirtualList from 'rc-virtual-list';
+import { getThemeColors } from '../../utils/theme';
 
 export type InboxProps = {
   pagination: unknown;
@@ -30,6 +31,9 @@ export const Inbox: React.FC<InboxProps> = (props) => {
   const [page, setPage] = useState(1);
 
   const context = useContext(NotificationAPIContext);
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
+
   if (!context) {
     return null;
   }
@@ -95,6 +99,10 @@ export const Inbox: React.FC<InboxProps> = (props) => {
     <div>
       {props.pagination === 'INFINITE_SCROLL' ? (
         <List
+          sx={{
+            backgroundColor: themeColors.paper,
+            color: themeColors.text
+          }}
           subheader={
             <InboxHeader
               title={props.header?.title}
@@ -138,6 +146,10 @@ export const Inbox: React.FC<InboxProps> = (props) => {
         </List>
       ) : (
         <List
+          sx={{
+            backgroundColor: themeColors.paper,
+            color: themeColors.text
+          }}
           subheader={
             <InboxHeader
               title={props.header?.title}

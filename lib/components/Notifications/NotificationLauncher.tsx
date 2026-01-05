@@ -6,8 +6,9 @@ import { NotificationAPIContext } from '../Provider/context';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { Position } from './interface';
 import { LanguageOutlined, NotificationsOutlined } from '@mui/icons-material';
-import { Divider, IconButton, Popover } from '@mui/material';
+import { Divider, IconButton, Popover, useTheme } from '@mui/material';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
+import { getThemeColors } from '../../utils/theme';
 
 type NotificationLaucherProps = NotificationPopupProps & {
   position?: keyof typeof Position;
@@ -23,6 +24,8 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
   const [open, setOpen] = useState(false);
   const context = useContext(NotificationAPIContext);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
 
   if (!context) {
     return null;
@@ -33,7 +36,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
       <NotificationsOutlined
         style={{
           fontSize: props.buttonIconSize || 20,
-          color: props.iconColor || '#000000'
+          color: props.iconColor || themeColors.icon
         }}
       />
     ),
@@ -45,7 +48,7 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
     popupWidth: props.popupWidth || 400,
     popupHeight: props.popupHeight || 600,
     buttonIconSize: props.buttonIconSize || 20,
-    iconColor: props.iconColor || '#000000',
+    iconColor: props.iconColor || themeColors.icon,
     pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
     pagePosition: props.pagePosition || 'top',
@@ -119,36 +122,52 @@ export const NotificationLauncher: React.FC<NotificationLaucherProps> = (
         slotProps={{
           paper: {
             style: {
-              width: config.popupWidth,
-              padding: '0 16px',
-              borderRadius: 8
+              borderRadius: 8,
+              backgroundColor: themeColors.paper,
+              color: themeColors.text
             }
           }
         }}
       >
-        <Inbox
-          maxHeight={500}
-          pagination={config.pagination}
-          filter={config.filter}
-          pageSize={config.pageSize}
-          pagePosition={config.pagePosition}
-          notificationRenderer={config.renderers.notification}
-          header={config.header}
-          newTab={config.newTab}
-        />
-        {context.webPushOptInMessage &&
-          localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
-            <div>
-              <Divider style={{ margin: '10px 0' }} />
-              <WebPushOptInMessage
-                hideAfterInteraction={true}
-                icon={
-                  <LanguageOutlined type="text" style={{ marginLeft: '9px' }} />
-                }
-                alertContainerStyle={{ maxWidth: '345px' }}
-              />
-            </div>
-          )}
+        <div
+          style={{
+            width: config.popupWidth,
+            padding: '0 16px',
+            zIndex: config.popupZIndex,
+            height: config.popupHeight,
+            backgroundColor: themeColors.paper,
+            color: themeColors.text
+          }}
+        >
+          <Inbox
+            maxHeight={config.popupHeight - 73}
+            pagination={config.pagination}
+            filter={config.filter}
+            pageSize={config.pageSize}
+            pagePosition={config.pagePosition}
+            notificationRenderer={config.renderers.notification}
+            header={config.header}
+            newTab={config.newTab}
+          />
+          {context.webPushOptInMessage &&
+            localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
+              <div>
+                <Divider
+                  style={{ margin: '10px 0', borderColor: themeColors.divider }}
+                />
+                <WebPushOptInMessage
+                  hideAfterInteraction={true}
+                  icon={
+                    <LanguageOutlined
+                      type="text"
+                      style={{ marginLeft: '9px' }}
+                    />
+                  }
+                  alertContainerStyle={{ maxWidth: '345px' }}
+                />
+              </div>
+            )}
+        </div>
       </Popover>
       <NotificationPreferencesPopup
         open={openPreferences}
