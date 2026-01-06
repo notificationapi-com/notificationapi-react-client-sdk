@@ -7,8 +7,10 @@ import { NotificationPreferencesPopup } from '../Preferences';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { Filter, Pagination } from './interface';
 import Divider from '@mui/material/Divider';
+import { useTheme } from '@mui/material/styles';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
 import Language from '@mui/icons-material/Language';
+import { getThemeColors } from '../../utils/theme';
 
 export type NotificationFeedProps = {
   pagination?: keyof typeof Pagination;
@@ -28,6 +30,8 @@ export type NotificationFeedProps = {
 export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
   const [openPreferences, setOpenPreferences] = useState(false);
   const context = useContext(NotificationAPIContext);
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
 
   // every 5 seconds
   useEffect(() => {
@@ -74,8 +78,9 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
         padding: '0 12px',
         boxSizing: 'border-box',
         borderRadius: 8,
-        background: '#fff',
-        border: '1px solid #dcdcdc',
+        background: themeColors.paper,
+        border: `1px solid ${themeColors.border}`,
+        color: themeColors.text,
         ...props.style
       }}
     >
@@ -93,7 +98,9 @@ export const NotificationFeed: React.FC<NotificationFeedProps> = (props) => {
       {context.webPushOptInMessage &&
         localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
           <div>
-            <Divider style={{ margin: '10px 0' }} />
+            <Divider
+              style={{ margin: '10px 0', borderColor: themeColors.divider }}
+            />
             <WebPushOptInMessage
               hideAfterInteraction={true}
               icon={<Language type="text" style={{ marginLeft: '9px' }} />}

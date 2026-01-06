@@ -18,3 +18,11 @@ export { SlackConnect } from './components/Slack';
 
 // Debug utilities
 export { createDebugLogger, type DebugLogger } from './utils/debug';
+
+// Theme utilities
+export type {
+  NotificationAPITheme,
+  NotificationAPIThemeMode,
+  NotificationAPIThemeColors
+} from './utils/theme';
+export { createNotificationAPITheme, getThemeColors } from './utils/theme';

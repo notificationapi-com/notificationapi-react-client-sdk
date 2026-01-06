@@ -25,6 +25,11 @@ import {
 } from '@notificationapi/core/dist/interfaces';
 import { Context, NotificationAPIContext } from './context';
 import { createDebugLogger, formatApiCall } from '../../utils/debug';
+import { ThemeProvider } from '@mui/material/styles';
+import {
+  NotificationAPITheme,
+  createNotificationAPITheme
+} from '../../utils/theme';
 
 type Props = (
   | {
@@ -47,6 +52,7 @@ type Props = (
   customServiceWorkerPath?: string;
   debug?: boolean;
   onNewNotifications?: (notifications: InAppNotification[]) => void;
+  theme?: NotificationAPITheme;
 };
 
 // Ensure that the code runs only in the browser
@@ -856,10 +862,20 @@ export const NotificationAPIProvider: React.FunctionComponent<
     webPushOptIn
   });
 
+  // Create MUI theme from theme prop
+  const muiTheme = useMemo(() => {
+    if (props.theme) {
+      return createNotificationAPITheme(props.theme);
+    }
+    return createNotificationAPITheme('light'); // Default to light theme
+  }, [props.theme]);
+
   return (
-    <NotificationAPIContext.Provider value={value}>
-      {props.children}
-    </NotificationAPIContext.Provider>
+    <ThemeProvider theme={muiTheme}>
+      <NotificationAPIContext.Provider value={value}>
+        {props.children}
+      </NotificationAPIContext.Provider>
+    </ThemeProvider>
   );
 };
 

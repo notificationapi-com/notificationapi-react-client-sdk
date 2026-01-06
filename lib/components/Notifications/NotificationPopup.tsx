@@ -7,9 +7,10 @@ import { InAppNotification } from '@notificationapi/core/dist/interfaces';
 import { NotificationPreferencesPopup } from '../Preferences';
 import { InboxHeaderProps } from './InboxHeader';
 import { Filter, Pagination } from './interface';
-import { Divider, IconButton, Popover } from '@mui/material';
+import { Divider, IconButton, Popover, useTheme } from '@mui/material';
 import NotificationsOutlined from '@mui/icons-material/NotificationsOutlined';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
+import { getThemeColors } from '../../utils/theme';
 
 export type NotificationPopupProps = {
   buttonIcon?: React.ReactNode;
@@ -42,6 +43,8 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
   const [openPreferences, setOpenPreferences] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const context = useContext(NotificationAPIContext);
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
 
   if (!context) {
     return null;
@@ -52,7 +55,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
       <NotificationsOutlined
         style={{
           fontSize: props.buttonIconSize || 20,
-          color: props.iconColor || '#000000'
+          color: props.iconColor || themeColors.icon
         }}
       />
     ),
@@ -64,7 +67,7 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
     popupWidth: props.popupWidth || 400,
     popupHeight: props.popupHeight || 600,
     buttonIconSize: props.buttonIconSize || 20,
-    iconColor: props.iconColor || '#000000',
+    iconColor: props.iconColor || themeColors.icon,
     pagination: props.pagination || 'INFINITE_SCROLL',
     pageSize: props.pageSize || 10,
     pagePosition: props.pagePosition || 'bottom',
@@ -120,7 +123,9 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
         slotProps={{
           paper: {
             style: {
-              borderRadius: 8
+              borderRadius: 8,
+              backgroundColor: themeColors.paper,
+              color: themeColors.text
             }
           }
         }}
@@ -132,7 +137,9 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
             width: config.popupWidth,
             padding: '0 16px',
             zIndex: props.popupZIndex,
-            height: config.popupHeight
+            height: config.popupHeight,
+            backgroundColor: themeColors.paper,
+            color: themeColors.text
           }}
         >
           <Inbox
@@ -148,7 +155,9 @@ export const NotificationPopup: React.FC<NotificationPopupProps> = (props) => {
           {context.webPushOptInMessage &&
             localStorage.getItem('hideWebPushOptInMessage') !== 'true' && (
               <div>
-                <Divider style={{ margin: '10px 0' }} />
+                <Divider
+                  style={{ margin: '10px 0', borderColor: themeColors.divider }}
+                />
                 <WebPushOptInMessage hideAfterInteraction={true} />
               </div>
             )}

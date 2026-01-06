@@ -6,12 +6,16 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Typography
+  Typography,
+  useTheme
 } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
+import { getThemeColors } from '../../utils/theme';
 
 export function Preferences() {
   const context = useContext(NotificationAPIContext);
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
 
   if (!context || !context.preferences) {
     return null;
@@ -40,22 +44,40 @@ export function Preferences() {
       return (
         <Accordion
           key={n.notificationId}
-          style={{
+          sx={{
             marginBottom: 0,
-            marginTop: 0
+            marginTop: 0,
+            backgroundColor: themeColors.paper,
+            color: themeColors.text,
+            '&:before': {
+              backgroundColor: themeColors.divider
+            }
           }}
         >
           <AccordionSummary
-            expandIcon={<ExpandMore />}
-            style={{
-              backgroundColor: '#f0f0f0',
+            expandIcon={<ExpandMore sx={{ color: themeColors.text }} />}
+            sx={{
+              backgroundColor:
+                theme.palette.mode === 'dark'
+                  ? 'rgba(255, 255, 255, 0.05)'
+                  : 'rgba(0, 0, 0, 0.02)',
               flexDirection: 'row-reverse',
-              gap: 16
+              gap: 16,
+              '&:hover': {
+                backgroundColor:
+                  theme.palette.mode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.08)'
+                    : 'rgba(0, 0, 0, 0.04)'
+              }
             }}
           >
-            <Typography variant="body1">{n.title}</Typography>
+            <Typography variant="body1" sx={{ color: themeColors.text }}>
+              {n.title}
+            </Typography>
           </AccordionSummary>
-          <AccordionDetails>
+          <AccordionDetails
+            sx={{ backgroundColor: themeColors.paper, color: themeColors.text }}
+          >
             <>
               <PreferenceInput
                 key={n.notificationId}
@@ -68,20 +90,47 @@ export function Preferences() {
                 return (
                   <Accordion
                     key={`${sn.notificationId}-${sn.subNotificationId}`}
-                    style={{
-                      marginTop: 12
+                    sx={{
+                      marginTop: 12,
+                      backgroundColor: themeColors.paper,
+                      color: themeColors.text,
+                      '&:before': {
+                        backgroundColor: themeColors.divider
+                      }
                     }}
                   >
                     <AccordionSummary
-                      expandIcon={<ExpandMore />}
-                      style={{
+                      expandIcon={
+                        <ExpandMore sx={{ color: themeColors.text }} />
+                      }
+                      sx={{
                         flexDirection: 'row-reverse',
-                        gap: 16
+                        gap: 16,
+                        backgroundColor:
+                          theme.palette.mode === 'dark'
+                            ? 'rgba(255, 255, 255, 0.03)'
+                            : 'rgba(0, 0, 0, 0.01)',
+                        '&:hover': {
+                          backgroundColor:
+                            theme.palette.mode === 'dark'
+                              ? 'rgba(255, 255, 255, 0.06)'
+                              : 'rgba(0, 0, 0, 0.02)'
+                        }
                       }}
                     >
-                      <Typography variant="body1">{sn.title}</Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ color: themeColors.text }}
+                      >
+                        {sn.title}
+                      </Typography>
                     </AccordionSummary>
-                    <AccordionDetails>
+                    <AccordionDetails
+                      sx={{
+                        backgroundColor: themeColors.paper,
+                        color: themeColors.text
+                      }}
+                    >
                       <PreferenceInput
                         key={sn.subNotificationId}
                         notification={n}
@@ -99,5 +148,16 @@ export function Preferences() {
       );
     });
 
-  return <Box sx={{ borderRadius: 2, overflow: 'hidden' }}>{items}</Box>;
+  return (
+    <Box
+      sx={{
+        borderRadius: 2,
+        overflow: 'hidden',
+        backgroundColor: themeColors.paper,
+        color: themeColors.text
+      }}
+    >
+      {items}
+    </Box>
+  );
 }

@@ -1,12 +1,13 @@
 import { ReactElement, ReactNode } from 'react';
 import { Liquid } from 'liquidjs';
 import { InAppNotification } from '@notificationapi/core/dist/interfaces';
-import { Avatar, Badge, IconButton, Typography } from '@mui/material';
+import { Avatar, Badge, IconButton, Typography, useTheme } from '@mui/material';
 import { Check } from '@mui/icons-material';
 import styled from '@emotion/styled';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import ReactTimeAgo from 'react-time-ago';
+import { getThemeColors } from '../../utils/theme';
 
 TimeAgo.addDefaultLocale(en);
 TimeAgo.addLocale(en);
@@ -15,11 +16,12 @@ const NotificationDiv = styled.div<{
   $redirect: boolean;
   $seen: boolean;
   $archived: boolean;
+  $hoverBackground: string;
 }>`
   cursor: ${(props) => (props.$redirect ? 'pointer' : 'default')};
 
   &:hover {
-    background: #eee !important;
+    background: ${(props) => props.$hoverBackground} !important;
     border-radius: 8px !important;
   }
 
@@ -43,6 +45,9 @@ export type NotificationProps = {
 };
 
 export const Notification = (props: NotificationProps) => {
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
+
   if (props.renderer) {
     return props.renderer(props.notifications) as ReactElement;
   }
@@ -89,11 +94,18 @@ export const Notification = (props: NotificationProps) => {
   const date = props.notifications[groupSize - 1].date;
   const ids = props.notifications.map((n) => n.id);
 
+  // Calculate hover background (slightly lighter/darker than paper)
+  const hoverBackground =
+    theme.palette.mode === 'dark'
+      ? 'rgba(255, 255, 255, 0.08)'
+      : 'rgba(0, 0, 0, 0.04)';
+
   return (
     <NotificationDiv
       $redirect={redirectURL ? true : false}
       $seen={seen || (opened ? true : false)}
       $archived={archived ? true : false}
+      $hoverBackground={hoverBackground}
       onClick={() => {
         props.markAsClicked(ids);
         if (redirectURL) {
@@ -106,7 +118,8 @@ export const Notification = (props: NotificationProps) => {
       }}
       style={{
         padding: '16px 6px 16px 0',
-        background: '#fff',
+        background: themeColors.paper,
+        color: themeColors.text,
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
@@ -135,14 +148,22 @@ export const Notification = (props: NotificationProps) => {
             variant="body2"
             fontWeight={archived ? 300 : 400}
             style={{
-              whiteSpace: 'pre-line'
+              whiteSpace: 'pre-line',
+              color: themeColors.text
             }}
           >
             <span dangerouslySetInnerHTML={{ __html: title as string }}></span>
           </Typography>
         </div>
         <div>
-          <Typography variant="body2" fontWeight={300} style={{ fontSize: 12 }}>
+          <Typography
+            variant="body2"
+            fontWeight={300}
+            style={{
+              fontSize: 12,
+              color: themeColors.textSecondary
+            }}
+          >
             <ReactTimeAgo date={new Date(date).getTime()} locale="en-US" />
           </Typography>
         </div>

@@ -1,8 +1,9 @@
 import { useContext } from 'react';
 import { Preferences } from './Preferences';
 import { NotificationAPIContext } from '../Provider/context';
-import { Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, useTheme } from '@mui/material';
 import WebPushOptInMessage from '../WebPush/WebPushOptInMessage';
+import { getThemeColors } from '../../utils/theme';
 
 type NotificationPreferencesPopupProps = {
   open?: boolean;
@@ -14,6 +15,9 @@ export function NotificationPreferencesPopup(
   props: NotificationPreferencesPopupProps
 ) {
   const context = useContext(NotificationAPIContext);
+  const theme = useTheme();
+  const themeColors = getThemeColors(theme);
+
   if (!context) {
     return null;
   }
@@ -30,13 +34,21 @@ export function NotificationPreferencesPopup(
       maxWidth="sm"
       fullWidth
       PaperProps={{
-        style: { borderRadius: 8 }
+        style: {
+          borderRadius: 8,
+          backgroundColor: themeColors.paper,
+          color: themeColors.text
+        }
       }}
       aria-hidden={!config.open}
       scroll="body"
     >
-      <DialogTitle>Notification Preferences</DialogTitle>
-      <DialogContent>
+      <DialogTitle sx={{ color: themeColors.text }}>
+        Notification Preferences
+      </DialogTitle>
+      <DialogContent
+        sx={{ backgroundColor: themeColors.paper, color: themeColors.text }}
+      >
         <Preferences />
         {context.webPushOptInMessage && (
           <div>
