@@ -2,14 +2,12 @@ import { useContext, useEffect, useState, useCallback } from 'react';
 import {
   Box,
   Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Typography,
   CircularProgress,
   Alert,
-  Stack
+  Stack,
+  Autocomplete,
+  TextField
 } from '@mui/material';
 import { NotificationAPIContext } from '../Provider/context';
 import { User } from '@notificationapi/core/dist/interfaces';
@@ -361,30 +359,32 @@ export function SlackConnect({
             <Typography variant="body2" color="text.secondary">
               {selectChannelText}
             </Typography>
-            <FormControl sx={{ minWidth: 200 }} size="small">
-              <InputLabel id="slack-channel-label">Channel or User</InputLabel>
-              <Select
-                labelId="slack-channel-label"
-                value={selectedChannel}
-                label="Channel or User"
-                onChange={(e) => setSelectedChannel(e.target.value)}
-              >
-                {channels
-                  .sort((a, b) => {
-                    // Sort channels first, then users
-                    if (a.type === b.type) {
-                      return a.name.localeCompare(b.name);
-                    }
-                    return a.type === 'channel' ? -1 : 1;
-                  })
-                  .map((channel) => (
-                    <MenuItem key={channel.id} value={channel.id}>
-                      {channel.type === 'channel' ? '#' : '@'}
-                      {channel.name}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
+            <Autocomplete
+              disablePortal
+              id="slack-channel-select"
+              options={channels.sort((a, b) => {
+                if (a.type === b.type) {
+                  return a.name.localeCompare(b.name);
+                }
+                return a.type === 'channel' ? -1 : 1;
+              })}
+              groupBy={(option) =>
+                option.type === 'channel' ? 'Channels' : 'Users'
+              }
+              getOptionLabel={(option) =>
+                `${option.type === 'channel' ? '#' : '@'}${option.name}`
+              }
+              sx={{ minWidth: 200, flexGrow: 1 }} // Allow it to grow but keep min width
+              size="small"
+              value={channels.find((c) => c.id === selectedChannel) || null}
+              onChange={(_, newValue) => {
+                setSelectedChannel(newValue ? newValue.id : '');
+              }}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              renderInput={(params) => (
+                <TextField {...params} label="Channel or User" />
+              )}
+            />
             <Button
               variant="contained"
               color="primary"
