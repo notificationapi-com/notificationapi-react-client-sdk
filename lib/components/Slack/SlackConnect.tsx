@@ -7,7 +7,8 @@ import {
   Alert,
   Stack,
   Autocomplete,
-  TextField
+  TextField,
+  Paper
 } from '@mui/material';
 import { NotificationAPIContext } from '../Provider/context';
 import { User } from '@notificationapi/core/dist/interfaces';
@@ -57,6 +58,8 @@ export function SlackConnect({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [hasMoreChannels, setHasMoreChannels] = useState(false);
+  const [hasMoreUsers, setHasMoreUsers] = useState(false);
 
   const fetchUserSlackStatus = useCallback(async () => {
     if (!client) return;
@@ -109,6 +112,9 @@ export function SlackConnect({
             type: 'user' as SlackChannel['type']
           }))
       ];
+
+      setHasMoreChannels(response.hasMoreChannels || false);
+      setHasMoreUsers(response.hasMoreUsers || false);
 
       setChannels(allOptions);
       return allOptions;
@@ -200,17 +206,28 @@ export function SlackConnect({
       setLoading(true);
       setError(null);
 
-      // Find the selected channel info to get its name and type
+      let formattedChannel: string;
+
+      // Check if selectedChannel is an ID (from dropdown selection)
       const channelInfo = channels.find((c) => c.id === selectedChannel);
-      if (!channelInfo) {
-        setError('Channel not found. Please try again.');
+
+      if (channelInfo) {
+        // User selected from dropdown - format as #channelname or @username
+        formattedChannel = `${channelInfo.type === 'channel' ? '#' : '@'}${channelInfo.name}`;
+      } else if (
+        selectedChannel.startsWith('#') ||
+        selectedChannel.startsWith('@')
+      ) {
+        // User typed a custom value with proper prefix (freeSolo mode)
+        formattedChannel = selectedChannel;
+      } else {
+        // Invalid format - show error
+        setError(
+          'Please enter a channel as #channel-name or user as @username'
+        );
+        setLoading(false);
         return;
       }
-
-      // Format the channel as #channelname or @username
-      const formattedChannel = `${channelInfo.type === 'channel' ? '#' : '@'}${
-        channelInfo.name
-      }`;
 
       // Set the selected channel with formatted name
       await client.slack.setChannel(formattedChannel);
@@ -276,6 +293,10 @@ export function SlackConnect({
 
       if (matchingChannel) {
         setSelectedChannel(matchingChannel.id);
+      } else {
+        // Channel not found in list (possibly due to pagination)
+        // Set the formatted channel string directly for freeSolo mode
+        setSelectedChannel(slackChannel);
       }
     }
   };
@@ -361,7 +382,35 @@ export function SlackConnect({
             </Typography>
             <Autocomplete
               disablePortal
+              freeSolo={hasMoreChannels || hasMoreUsers}
               id="slack-channel-select"
+              slots={{
+                paper: ({ children, ...props }) => (
+                  <Paper {...props}>
+                    {children && (hasMoreChannels || hasMoreUsers) && (
+                      <Typography
+                        variant="body2"
+                        color="info.main"
+                        sx={{
+                          px: 2,
+                          py: 1,
+                          display: 'block',
+                          borderBottom: '1px solid',
+                          borderColor: 'divider'
+                        }}
+                      >
+                        {hasMoreChannels && hasMoreUsers
+                          ? 'Not all channels and users could be loaded.'
+                          : hasMoreChannels
+                            ? 'Not all channels could be loaded.'
+                            : 'Not all users could be loaded.'}{' '}
+                        Type #channel-name or @username to enter manually.
+                      </Typography>
+                    )}
+                    {children}
+                  </Paper>
+                )
+              }}
               options={channels.sort((a, b) => {
                 if (a.type === b.type) {
                   return a.name.localeCompare(b.name);
@@ -369,18 +418,52 @@ export function SlackConnect({
                 return a.type === 'channel' ? -1 : 1;
               })}
               groupBy={(option) =>
-                option.type === 'channel' ? 'Channels' : 'Users'
+                typeof option === 'string'
+                  ? ''
+                  : option.type === 'channel'
+                    ? 'Channels'
+                    : 'Users'
               }
               getOptionLabel={(option) =>
-                `${option.type === 'channel' ? '#' : '@'}${option.name}`
+                typeof option === 'string'
+                  ? option
+                  : `${option.type === 'channel' ? '#' : '@'}${option.name}`
               }
-              sx={{ minWidth: 200, flexGrow: 1 }} // Allow it to grow but keep min width
+              sx={{ minWidth: 200, flexGrow: 1 }}
               size="small"
-              value={channels.find((c) => c.id === selectedChannel) || null}
+              value={
+                channels.find((c) => c.id === selectedChannel) ||
+                (selectedChannel &&
+                (selectedChannel.startsWith('#') ||
+                  selectedChannel.startsWith('@'))
+                  ? selectedChannel
+                  : null)
+              }
               onChange={(_, newValue) => {
-                setSelectedChannel(newValue ? newValue.id : '');
+                if (typeof newValue === 'string') {
+                  setSelectedChannel(newValue);
+                } else if (newValue) {
+                  setSelectedChannel(newValue.id);
+                } else {
+                  setSelectedChannel('');
+                }
               }}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
+              onInputChange={(_, newInputValue, reason) => {
+                if (
+                  (hasMoreChannels || hasMoreUsers) &&
+                  reason === 'input' &&
+                  (newInputValue.startsWith('#') ||
+                    newInputValue.startsWith('@'))
+                ) {
+                  setSelectedChannel(newInputValue);
+                }
+              }}
+              isOptionEqualToValue={(option, value) => {
+                if (typeof option === 'string' || typeof value === 'string') {
+                  return option === value;
+                }
+                return option.id === value.id;
+              }}
               renderInput={(params) => (
                 <TextField {...params} label="Channel or User" />
               )}
