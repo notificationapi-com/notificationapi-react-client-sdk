@@ -396,7 +396,7 @@ export function SlackConnect({
                           py: 1,
                           display: 'block',
                           borderBottom: '1px solid',
-                          borderColor: 'divider',
+                          borderColor: 'divider'
                         }}
                       >
                         {hasMoreChannels && hasMoreUsers
@@ -434,8 +434,8 @@ export function SlackConnect({
               value={
                 channels.find((c) => c.id === selectedChannel) ||
                 (selectedChannel &&
-                  (selectedChannel.startsWith('#') ||
-                    selectedChannel.startsWith('@'))
+                (selectedChannel.startsWith('#') ||
+                  selectedChannel.startsWith('@'))
                   ? selectedChannel
                   : null)
               }
@@ -465,10 +465,7 @@ export function SlackConnect({
                 return option.id === value.id;
               }}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Channel or User"
-                />
+                <TextField {...params} label="Channel or User" />
               )}
             />
             <Button
